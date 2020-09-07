@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Copyright>2020 OX</Copyright>
+    <AssemblyTitle>ox.vm</AssemblyTitle>
+    <Description>OX.VM</Description>
+    <Version>1.0.2</Version>
+    <Authors>OX</Authors>
+	  <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>ox.vm</AssemblyName>
+    <PackageId>OX.VM</PackageId>
+    <PackageTags></PackageTags>
+    <PackageProjectUrl></PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl></RepositoryUrl>   
+    <RootNamespace>OX.VM</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Nullable>warnings</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\ox</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>c:\ox</OutputPath>
+  </PropertyGroup>
+
+
+</Project>

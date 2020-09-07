@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Copyright>2020 OX</Copyright>
+    <AssemblyTitle>OX.Node</AssemblyTitle>
+    <Version>1.0.1</Version>
+    <Authors>OX.Node</Authors>
+	  <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>ox.node</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>OX.Node</PackageId>
+    <RootNamespace>OX.Node</RootNamespace>
+    <Company>OX.Node</Company>
+    <Product>OX.Node</Product>
+    <Description>OX.Node</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>False</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ox\ox.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

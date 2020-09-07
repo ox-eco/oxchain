@@ -1,0 +1,39 @@
+﻿{
+  "ApplicationConfiguration": {
+    "Paths": {
+      "Chain": "Chain_{0}",
+      "BizChain": "BizChain_{0}",
+      "Index": "Index_{0}",
+      "CertCache": "Certs"
+    },
+    "P2P": {
+      "Port": 11333,
+      "WsPort": 11334
+    },
+    "RPC": {
+      "BindAddress": "127.0.0.1",
+      "Port": 11332,
+      "SslCert": "",
+      "SslCertPassword": ""
+    },
+    "Seeds": [
+      "node.oxchain.link:11333",
+      "node1.oxchain.link:11333",
+      "node2.oxchain.link:11333",
+      "node3.oxchain.link:11333",
+      "node4.oxchain.link:11333",
+      "node5.oxchain.link:11333",
+      "node6.oxchain.link:11333",
+      "node7.oxchain.link:11333",
+      "node8.oxchain.link:11333",
+      "node9.oxchain.link:11333"
+    ],
+    "UnlockWallet": {
+      "Path": "",
+      "Password": "",
+      "StartConsensus": false,
+      "IsActive": false
+    },
+    "PluginURL": ""
+  }
+}
