@@ -11,7 +11,6 @@ namespace OX
 
             return input == "true" || input == "yes" || input == "1";
         }
-
         internal static string GetVersion(this Assembly assembly)
         {
             CustomAttributeData attribute = assembly.CustomAttributes.FirstOrDefault(p => p.AttributeType == typeof(AssemblyInformationalVersionAttribute));
