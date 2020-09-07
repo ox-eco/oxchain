@@ -16,16 +16,16 @@
       "SslCertPassword": ""
     },
     "Seeds": [
-      "node.oxchain.link:11333",
-      "node1.oxchain.link:11333",
-      "node2.oxchain.link:11333",
-      "node3.oxchain.link:11333",
-      "node4.oxchain.link:11333",
-      "node5.oxchain.link:11333",
-      "node6.oxchain.link:11333",
-      "node7.oxchain.link:11333",
-      "node8.oxchain.link:11333",
-      "node9.oxchain.link:11333"
+      "seed.oxchain.link:11333",
+      "seed1.oxchain.link:11333",
+      "seed2.oxchain.link:11333",
+      "seed3.oxchain.link:11333",
+      "seed4.oxchain.link:11333",
+      "seed5.oxchain.link:11333",
+      "seed6.oxchain.link:11333",
+      "seed7.oxchain.link:11333",
+      "seed8.oxchain.link:11333",
+      "seed9.oxchain.link:11333"
     ],
     "UnlockWallet": {
       "Path": "",
