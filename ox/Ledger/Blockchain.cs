@@ -619,11 +619,14 @@ namespace OX.Ledger
                                     var sh = tx_detain.ScriptHash;
                                     double r = Math.Pow(10, m.ToString().Length);
                                     var q = block.Index * r + m;
-                                    AccountState acts = snapshot.Accounts.GetAndChange(sh, () => new AccountState(sh) { DetainState = tx_detain.DetainState, DetainExpire = block.Index, Magic = (uint)q });
+                                    var accountState = new AccountState(sh) { DetainState = tx_detain.DetainState, DetainExpire = block.Index, Magic = (uint)q };
+                                    AccountState acts = snapshot.Accounts.GetAndChange(sh, () => accountState);
                                     var expire = acts.DetainExpire;
                                     if (expire < block.Index)
                                         expire = block.Index;
                                     expire += tx_detain.DetainDuration;
+                                    acts.Magic = (uint)q;
+                                    acts.DetainState = tx_detain.DetainState;
                                     acts.DetainExpire = expire;
                                     break;
                                 case DetainStatus.UnFreeze:
