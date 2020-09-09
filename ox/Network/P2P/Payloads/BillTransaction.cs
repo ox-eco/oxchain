@@ -18,7 +18,6 @@ namespace OX.Network.P2P.Payloads
 
         public Record[] Records;
 
-        public override Fixed8 NetworkFee => Fixed8.Zero;
         public override int Size => base.Size + sizeof(uint) + Records.GetVarSize();
 
         public BillTransaction()

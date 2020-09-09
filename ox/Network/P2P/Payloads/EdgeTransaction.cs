@@ -52,5 +52,23 @@ namespace OX.Network.P2P.Payloads
         {
             yield return this.From;
         }
+        public bool GetDataModel<T>(byte dataType, out T model) where T : ISerializable, new()
+        {
+            if (this.DataType != dataType)
+            {
+                model = default;
+                return false;
+            }
+            try
+            {
+                model = this.Data.AsSerializable<T>();
+                return true;
+            }
+            catch
+            {
+                model = default;
+                return false;
+            }
+        }
     }
 }
