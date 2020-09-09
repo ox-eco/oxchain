@@ -228,10 +228,10 @@ namespace OX.Wallets
             Array.Clear(privateKey, 0, privateKey.Length);
             return account;
         }
-        public ContractTransaction MakeSingleTransaction(SingleTransactionWrapper tx)
+        public T MakeSingleTransaction<T>(SingleTransactionWrapper<T> tx) where T : Transaction, new()
         {
-            ContractTransaction ct = tx.Get();
-            return MakeTransaction<ContractTransaction>(ct, tx.From, tx.From);
+            T ct = tx.Get();
+            return MakeTransaction<T>(ct, tx.From, tx.From);
         }
         public T MakeTransaction<T>(T tx, UInt160 from = null, UInt160 change_address = null, Fixed8 fee = default(Fixed8)) where T : Transaction
         {

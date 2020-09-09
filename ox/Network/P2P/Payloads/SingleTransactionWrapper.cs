@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class SingleTransactionWrapper
+    public class SingleTransactionWrapper<T> where T : Transaction, new()
     {
-        ContractTransaction tx;
+        T tx;
         public UInt160 From { get; private set; }
         public SingleTransactionWrapper(UInt160 from, TransactionOutput output) : base()
         {
             this.From = from;
-            tx = new ContractTransaction();
+            tx = new T();
             List<TransactionAttribute> attributes = new List<TransactionAttribute>();
             tx.Attributes = attributes.ToArray();
             tx.Outputs = new TransactionOutput[] { output };
@@ -21,7 +21,7 @@ namespace OX.Network.P2P.Payloads
         public SingleTransactionWrapper(UInt160 from, UInt160 to, UInt256 assetId, Fixed8 amount) : this(from, new TransactionOutput() { AssetId = assetId, ScriptHash = to, Value = amount })
         {
         }
-        public ContractTransaction Get()
+        public T Get()
         {
             return tx;
         }

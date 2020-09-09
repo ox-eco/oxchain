@@ -37,9 +37,9 @@ namespace OX.Network.P2P.Payloads
         DetainTransaction = 0xc5,
         [ReflectionCache(typeof(EventTransaction))]
         EventTransaction = 0xc6,
-        [ReflectionCache(typeof(BizCallTransaction))]
-        BizCallTransaction = 0xc7,
+        [ReflectionCache(typeof(ReplyTransaction))]
+        ReplyTransaction = 0xc7,
         [ReflectionCache(typeof(AskTransaction))]
-        AskTransaction =0xc8
+        AskTransaction = 0xc8 
     }
 }

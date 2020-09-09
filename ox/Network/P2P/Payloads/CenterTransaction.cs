@@ -14,7 +14,7 @@ namespace OX.Network.P2P.Payloads
 {
     public abstract class CenterTransaction : BizTransaction
     {
-        public uint TxNo;
+        public uint BizNo;
         public override int Size => base.Size + sizeof(uint);
 
         public CenterTransaction(TransactionType type)
@@ -25,12 +25,12 @@ namespace OX.Network.P2P.Payloads
         protected abstract void SerializeCenterData(BinaryWriter writer);
         protected override void DeserializeBizData(BinaryReader reader)
         {
-            TxNo = reader.ReadUInt32();
+            BizNo = reader.ReadUInt32();
             DeserializeCenterData(reader);
         }
         protected override void SerializeBizData(BinaryWriter writer)
         {
-            writer.Write(TxNo);
+            writer.Write(BizNo);
             SerializeCenterData(writer);
         }
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)

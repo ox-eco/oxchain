@@ -88,9 +88,9 @@ namespace OX.BizSystems
             if (sys.IsNull()) return false;
             return sys.Permits.Contains(scriptHash);
         }
-        public bool IsBizTransaction(Transaction tx, out BillTransaction BT)
+        public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
         {
-            if (tx is BillTransaction bt)
+            if (tx is BizTransaction bt)
             {
                 if (this.Permits.Contains(bt.BizScriptHash))
                 {
@@ -101,6 +101,7 @@ namespace OX.BizSystems
             BT = default;
             return false;
         }
+      
         internal static void LoadBizSystems(OXSystem system)
         {
             System = system;

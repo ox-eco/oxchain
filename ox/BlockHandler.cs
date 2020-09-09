@@ -25,10 +25,10 @@ namespace OX
     public abstract class BlockHandler : UntypedActor
     {
         public class WalletCommand { public Wallet Wallet; }
-        protected OXSystem oxsystem;
-        protected Wallet wallet;
-        protected WalletAccount Account;
-        protected KeyPair KeyPair;
+        public OXSystem oxsystem { get; protected set; }
+        public Wallet wallet { get; protected set; }
+        public WalletAccount Account { get; protected set; }
+        public KeyPair KeyPair { get; protected set; }
 
         public List<UInt160> Permits = new List<UInt160>();
         public abstract string[] BizAddresses { get; }

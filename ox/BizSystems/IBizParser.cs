@@ -12,7 +12,7 @@ namespace OX.BizSystems
     {
         Wallet Wallet { get; set; }
         event EventHandler<BizEvent> BizEvent;
-        event EventHandler<TipEvent> TipEvent;
+        //event EventHandler<TipEvent> TipEvent;
         event EventHandler<BlockEvent> BlockEvent;
         void OnBlock(Block block);
         void OnRebuild(Wallet wallet = null);
@@ -21,18 +21,19 @@ namespace OX.BizSystems
     {
         public UInt160 BizScriptHash;
         public Block Block;
-        public BillTransaction Transaction;
-        public BizRecordModel RecordModel;
-    }
-    public class TipEvent : EventArgs
-    {
-        public UInt160 BizScriptHash;
-        public Block Block;
-        public Transaction Transaction;
+        public BizTransaction BizTransaction;
         public ushort? N;
-        public TransactionAttributeUsage TipType;
-        //public TransactionTip Tip;
+        public object Tag;
     }
+    //public class TipEvent : EventArgs
+    //{
+    //    public UInt160 BizScriptHash;
+    //    public Block Block;
+    //    public Transaction Transaction;
+    //    public ushort? N;
+    //    public TransactionAttributeUsage TipType;
+    //    //public TransactionTip Tip;
+    //}
     public class BlockEvent : EventArgs
     {
         /// <summary>
