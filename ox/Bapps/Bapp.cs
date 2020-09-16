@@ -10,6 +10,7 @@ using System.Threading;
 using OX.Plugins;
 using OX.Wallets;
 using OX.Ledger;
+using OX.BizSystems;
 
 namespace OX.Bapps
 {
@@ -19,23 +20,43 @@ namespace OX.Bapps
 
         private static readonly string BappsRootPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "bapps");
         protected static OXSystem System { get; private set; }
-        public static string KernelVersion => System.GetType().Assembly.GetVersion();
-        public virtual string Name => GetType().Name;
-        public abstract string[] BizAddresses { get; }
-        public abstract string MatchKernelVersion { get; }
-        public bool IsMatchKernel => KernelVersion == MatchKernelVersion;
-        UInt160[] _bizScriptHashs;
-        public UInt160[] BizScriptHashs
+        IBappProvider _bappProvider;
+        protected IBappProvider BappProvider
         {
             get
             {
-                if (_bizScriptHashs.IsNullOrEmpty())
+                if (_bappProvider.IsNull())
                 {
-                    _bizScriptHashs = BizAddresses.Select(m => m.ToScriptHash()).ToArray();
+                    _bappProvider = BuildBappProvider();
+                    _bappProvider.Bapp = this;
                 }
-                return _bizScriptHashs;
+                return _bappProvider;
             }
         }
+        public static string KernelVersion => System.GetType().Assembly.GetVersion();
+        public virtual string Name => GetType().Name;
+
+        public bool IsMatchKernel => KernelVersion == MatchKernelVersion;
+        Dictionary<UInt160, bool> _bizScriptHashState;
+        public Dictionary<UInt160, bool> BizScriptHashStates
+        {
+            get
+            {
+                if (_bizScriptHashState.IsNullOrEmpty())
+                {
+                    _bizScriptHashState = new Dictionary<UInt160, bool>(); // BizAddresses.Select(m => m.ToScriptHash()).ToDictionary();
+                    foreach (var address in BizAddresses)
+                    {
+                        _bizScriptHashState[address.ToScriptHash()] = false;
+                    }
+                }
+                return _bizScriptHashState;
+            }
+        }
+        public abstract string[] BizAddresses { get; }
+        public abstract string MatchKernelVersion { get; }
+        public abstract IBappProvider BuildBappProvider();
+
         static Bapp()
         {
             if (Directory.Exists(BappsRootPath))
@@ -46,9 +67,22 @@ namespace OX.Bapps
 
         protected Bapp()
         {
-            if (IsMatchKernel)
+            bapps.Add(this);
+            this.resetBappState();
+        }
+        #region static
+        public static void OnBlockIndex(Block block)
+        {
+            foreach (var bapp in bapps)
             {
-                bapps.Add(this);
+                bapp.OnBlock(block);
+            }
+        }
+        public static void OnRebuildIndex()
+        {
+            foreach (var bapp in bapps)
+            {
+                bapp.OnRebuild();
             }
         }
         public static T GetBapp<T>() where T : Bapp
@@ -62,22 +96,8 @@ namespace OX.Bapps
         {
             var sys = Bapp.GetBapp<T>();
             if (sys.IsNull()) return false;
-            return sys.Permits.Contains(scriptHash);
+            return false;//sys.Permits.Contains(scriptHash);
         }
-        public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
-        {
-            if (tx is BizTransaction bt)
-            {
-                if (this.Permits.Contains(bt.BizScriptHash))
-                {
-                    BT = bt;
-                    return true;
-                }
-            }
-            BT = default;
-            return false;
-        }
-
         internal static void LoadBapps(OXSystem system)
         {
             System = system;
@@ -134,6 +154,59 @@ namespace OX.Bapps
                 Plugin.Log(nameof(Bapp), LogLevel.Error, $"Failed to resolve assembly or its dependency: {ex.Message}");
                 return null;
             }
+        }
+
+        #endregion
+        void resetBappState()
+        {
+            foreach (var ad in BizScriptHashStates)
+            {
+                var sh = ad.Key;
+                BizScriptHashStates[sh] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance);
+            }
+        }
+        public void OnBlock(Block block)
+        {
+            bool ok = false;
+            foreach (var tx in block.Transactions)
+            {
+                bool ok2 = false;
+                foreach (var reference in tx.References)
+                {
+                    if (this.BizScriptHashStates.ContainsKey(reference.Value.ScriptHash) && reference.Value.AssetId == Blockchain.Singleton.OXS)
+                    {
+                        ok2 = true;
+                        break;
+                    }
+                }
+                if (ok2)
+                {
+                    ok = true;
+                    break;
+                }
+            }
+            if (ok)
+            {
+                resetBappState();
+            }
+            this.BappProvider?.OnBlock(block);
+        }
+        public void OnRebuild()
+        {
+            this.BappProvider?.OnRebuild();
+        }
+        public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
+        {
+            //if (tx is BizTransaction bt)
+            //{
+            //    if (this.Permits.Contains(bt.BizScriptHash))
+            //    {
+            //        BT = bt;
+            //        return true;
+            //    }
+            //}
+            BT = default;
+            return false;
         }
     }
 }

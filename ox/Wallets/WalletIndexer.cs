@@ -4,7 +4,6 @@ using OX.Ledger;
 using OX.Network.P2P.Payloads;
 using OX.Persistence;
 using OX.Plugins;
-using OX.BizSystems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading;
+using OX.Bapps;
 
 namespace OX.Wallets
 {
@@ -227,10 +227,7 @@ namespace OX.Wallets
                 }
 
             }
-
-            foreach (IBizParser plugin in BizSystem.BizParsers.Values)
-                plugin.OnBlock(block);
-
+            Bapp.OnBlockIndex(block);
             return change_set.ToArray();
         }
 
@@ -314,8 +311,7 @@ namespace OX.Wallets
                     batch.Delete(key);
                 db.Write(WriteOptions.Default, batch);
             }
-            foreach (IBizParser plugin in BizSystem.BizParsers.Values)
-                plugin.OnRebuild(wallet);
+            Bapp.OnRebuildIndex();
         }
 
         public void RegisterAccounts(IEnumerable<UInt160> accounts, uint height = 0)

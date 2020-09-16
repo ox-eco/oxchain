@@ -5,7 +5,6 @@ using OX.Network.P2P;
 using OX.Network.RPC;
 using OX.Persistence;
 using OX.Plugins;
-using OX.BizSystems;
 using OX.Wallets;
 using System;
 using System.Net;
@@ -36,13 +35,11 @@ namespace OX
         {
             this.store = store;
             Plugin.LoadPlugins(this);
-            BizSystem.LoadBizSystems(this);
+            Bapps.Bapp.LoadBapps(this);
             this.Blockchain = ActorSystem.ActorOf(Ledger.Blockchain.Props(this, store));
             this.LocalNode = ActorSystem.ActorOf(Network.P2P.LocalNode.Props(this));
             this.TaskManager = ActorSystem.ActorOf(Network.P2P.TaskManager.Props(this));
             Plugin.NotifyPluginsLoadedAfterSystemConstructed();
-            BizSystem.NotifyBizSystemsLoadedAfterSystemConstructed();
-            BizSystem.CheckPermit();
         }
 
         public void Dispose()

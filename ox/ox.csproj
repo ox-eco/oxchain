@@ -29,6 +29,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="BizSystems\**" />
+    <EmbeddedResource Remove="BizSystems\**" />
+    <None Remove="BizSystems\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Extensions\TransactionTip.cs" />
     <Compile Remove="Extensions\TransactionTipHelper.cs" />
     <Compile Remove="Plugins\IBizPlugin.cs" />

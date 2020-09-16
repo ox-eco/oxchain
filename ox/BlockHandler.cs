@@ -18,7 +18,6 @@ using OX.Wallets;
 using OX.Network.P2P;
 using OX.SmartContract;
 using System.Runtime.CompilerServices;
-using OX.BizSystems;
 
 namespace OX
 {
@@ -52,7 +51,7 @@ namespace OX
             }
             LoadPermits();
         }
-       
+
         void LoadPermits()
         {
             this.Permits.Clear();
@@ -65,7 +64,7 @@ namespace OX
                 }
             }
         }
-      
+
         protected override void OnReceive(object message)
         {
             if (message is Blockchain.PersistCompleted completed)
