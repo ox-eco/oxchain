@@ -101,7 +101,7 @@ namespace OX.BizSystems
             BT = default;
             return false;
         }
-      
+
         internal static void LoadBizSystems(OXSystem system)
         {
             System = system;

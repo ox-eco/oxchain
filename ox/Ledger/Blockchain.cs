@@ -30,7 +30,7 @@ namespace OX.Ledger
         public class FillCompleted { }
 
         public static readonly uint SecondsPerBlock = ProtocolSettings.Default.SecondsPerBlock;
-        public static readonly Fixed8 BizSystemDetainOXS = ProtocolSettings.Default.BizSystemDetainOXS;
+        public static readonly Fixed8 BappDetainOXS = ProtocolSettings.Default.BappDetainOXS;
         public const uint DecrementInterval = 2000000;
         public const int MaxValidators = 1024;
         public static readonly uint[] GenerationAmount = { 800, 700, 600, 500, 400, 300, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
@@ -781,7 +781,7 @@ namespace OX.Ledger
             OXSBalance = balance;
             if (acts.DetainState == DetainStatus.UnFreeze) return false;
             if (acts.DetainExpire < currentSnapshot.Height) return false;
-            if (balance < BizSystemDetainOXS) return false;
+            if (balance < BappDetainOXS) return false;
             return true;
         }
         public bool IsFrozen(UInt160 scriptHash, out uint ExpireIndex)

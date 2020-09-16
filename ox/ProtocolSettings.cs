@@ -21,7 +21,7 @@ namespace OX
         public IReadOnlyDictionary<TransactionType, Fixed8> SystemFee { get; }
         public Fixed8 LowPriorityThreshold { get; }
         public uint SecondsPerBlock { get; }
-        public Fixed8 BizSystemDetainOXS { get; }
+        public Fixed8 BappDetainOXS { get; }
         static ProtocolSettings _default;
 
         public static ProtocolSettings Default
@@ -54,6 +54,7 @@ namespace OX
             Dictionary<TransactionType, Fixed8> sys_fee = new Dictionary<TransactionType, Fixed8>
             {
                 //[TransactionType.BillTransaction] = Fixed8.Satoshi * 10_000_000,
+                //[TransactionType.ReplyTransaction] = Fixed8.Satoshi * 10_000_000,
                 [TransactionType.AskTransaction] = Fixed8.Satoshi * 1_000_000,
                 [TransactionType.EnrollmentTransaction] = Fixed8.FromDecimal(1000),
                 [TransactionType.IssueTransaction] = Fixed8.FromDecimal(5000),
@@ -63,7 +64,7 @@ namespace OX
 
             this.SystemFee = sys_fee;
             this.SecondsPerBlock = 15;
-            this.BizSystemDetainOXS = Fixed8.FromDecimal(100_000);
+            this.BappDetainOXS = Fixed8.FromDecimal(100_000);
             this.LowPriorityThreshold = Fixed8.Parse("0.001");
         }
         public IEnumerable<IPEndPoint> GetSeedIPs()
