@@ -9,11 +9,11 @@ using OX.Bapps;
 
 namespace OX.Bapps
 {
-    public interface IBappProvider : IBappPort
+    public interface IBappUi : IBappPort
     {
         Bapp Bapp { get; set; }
+        IUIModule[] Modules { get; }
         void OnBlock(Block block);
-        void OnRebuild(Wallet wallet = null);
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);
     }

@@ -10,15 +10,16 @@ using System.Threading;
 using OX.Plugins;
 using OX.Wallets;
 using OX.Ledger;
-using OX.BizSystems;
 
 namespace OX.Bapps
 {
     public abstract class Bapp
     {
-        public static readonly List<Bapp> bapps = new List<Bapp>();
+        static readonly List<Bapp> bapps = new List<Bapp>();
 
-        private static readonly string BappsRootPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "bapps");
+        static readonly string BappsRootPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "bapps");
+        public static string KernelVersion => System.GetType().Assembly.GetVersion();
+
         protected static OXSystem System { get; private set; }
         IBappProvider _bappProvider;
         protected IBappProvider BappProvider
@@ -33,10 +34,39 @@ namespace OX.Bapps
                 return _bappProvider;
             }
         }
-        public static string KernelVersion => System.GetType().Assembly.GetVersion();
+        IBappApi _bappApi;
+        protected IBappApi BappApi
+        {
+            get
+            {
+                if (_bappApi.IsNull())
+                {
+                    _bappApi = BuildBappApi();
+                    _bappApi.Bapp = this;
+                }
+                return _bappApi;
+            }
+        }
+        IBappUi _bappUi;
+        protected IBappUi BappUi
+        {
+            get
+            {
+                if (_bappUi.IsNull())
+                {
+                    _bappUi = BuildBappUi();
+                    _bappUi.Bapp = this;
+                }
+                return _bappUi;
+            }
+        }
+
         public virtual string Name => GetType().Name;
 
         public bool IsMatchKernel => KernelVersion == MatchKernelVersion;
+        public bool IsActive => BizAddresses.IsNullOrEmpty() || BizScriptHashStates.ContainsValue(true);
+        public bool IsValid => IsMatchKernel && IsActive;
+
         Dictionary<UInt160, bool> _bizScriptHashState;
         public Dictionary<UInt160, bool> BizScriptHashStates
         {
@@ -56,6 +86,14 @@ namespace OX.Bapps
         public abstract string[] BizAddresses { get; }
         public abstract string MatchKernelVersion { get; }
         public abstract IBappProvider BuildBappProvider();
+        public abstract IBappApi BuildBappApi();
+        public abstract IBappUi BuildBappUi();
+        public abstract void BeforeBlockPersistence(Block block);
+        public abstract void AfterBlockPersistence(Block block);
+        public abstract void BeforeBlockShow(Block block);
+        public abstract void AfterBlockShow(Block block);
+        public abstract void BeforeBlockApi(Block block);
+        public abstract void AfterBlockApi(Block block);
 
         static Bapp()
         {
@@ -71,6 +109,58 @@ namespace OX.Bapps
             this.resetBappState();
         }
         #region static
+        public static void PushCrossBappMessage(CrossBappMessage message)
+        {
+            foreach (var bapp in bapps)
+            {
+                bapp.BappProvider?.OnCrossBappMessage(message);
+                bapp.BappApi?.OnCrossBappMessage(message);
+                bapp.BappUi?.OnCrossBappMessage(message);
+            }
+        }
+        public static IEnumerable<KeyValuePair<string, IUIModule>> AllUIModules()
+        {
+            Dictionary<string, IUIModule> modules = new Dictionary<string, IUIModule>();
+            foreach (var bapp in bapps)
+            {
+                if (bapp.BappUi.IsNotNull())
+                {
+                    foreach (var m in bapp.BappUi.Modules)
+                        modules[m.ModuleName] = m;
+                }
+            }
+            return modules;
+        }
+        public static IEnumerable<IBappUi> AllBappUis()
+        {
+            foreach (var bapp in bapps)
+            {
+                if (bapp.BappUi.IsNotNull())
+                {
+                    yield return bapp.BappUi;
+                }
+            }
+        }
+        public static IEnumerable<IBappApi> AllBappApis()
+        {
+            foreach (var bapp in bapps)
+            {
+                if (bapp.BappApi.IsNotNull())
+                {
+                    yield return bapp.BappApi;
+                }
+            }
+        }
+        public static IEnumerable<IBappProvider> AllBappProviders()
+        {
+            foreach (var bapp in bapps)
+            {
+                if (bapp.BappProvider.IsNotNull())
+                {
+                    yield return bapp.BappProvider;
+                }
+            }
+        }
         public static void OnBlockIndex(Block block)
         {
             foreach (var bapp in bapps)
@@ -90,6 +180,30 @@ namespace OX.Bapps
             var instance = bapps.Where(m => m is T)?.FirstOrDefault();
             if (instance.IsNotNull())
                 return instance as T;
+            return default;
+        }
+        public static ProviderType GetBappProvider<BappType, ProviderType>() where BappType : Bapp where ProviderType : class, IBappProvider
+        {
+            var Bapp = GetBapp<BappType>();
+            if (Bapp.IsNull()) return default;
+            if (Bapp.BappProvider.IsNull()) return default;
+            if (Bapp.BappProvider is ProviderType) return Bapp.BappProvider as ProviderType;
+            return default;
+        }
+        public static ApiType GetBappApi<BappType, ApiType>() where BappType : Bapp where ApiType : class, IBappApi
+        {
+            var Bapp = GetBapp<BappType>();
+            if (Bapp.IsNull()) return default;
+            if (Bapp.BappApi.IsNull()) return default;
+            if (Bapp.BappApi is ApiType) return Bapp.BappApi as ApiType;
+            return default;
+        }
+        public static UiType GetBappUi<BappType, UiType>() where BappType : Bapp where UiType : class, IBappUi
+        {
+            var Bapp = GetBapp<BappType>();
+            if (Bapp.IsNull()) return default;
+            if (Bapp.BappUi.IsNull()) return default;
+            if (Bapp.BappUi is UiType) return Bapp.BappUi as UiType;
             return default;
         }
         public static bool ContainBizScriptHash<T>(UInt160 scriptHash) where T : Bapp
@@ -165,7 +279,7 @@ namespace OX.Bapps
                 BizScriptHashStates[sh] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance);
             }
         }
-        public void OnBlock(Block block)
+        void OnBlock(Block block)
         {
             bool ok = false;
             foreach (var tx in block.Transactions)
@@ -174,6 +288,14 @@ namespace OX.Bapps
                 foreach (var reference in tx.References)
                 {
                     if (this.BizScriptHashStates.ContainsKey(reference.Value.ScriptHash) && reference.Value.AssetId == Blockchain.Singleton.OXS)
+                    {
+                        ok2 = true;
+                        break;
+                    }
+                }
+                foreach (var output in tx.Outputs)
+                {
+                    if (this.BizScriptHashStates.ContainsKey(output.ScriptHash) && output.AssetId == Blockchain.Singleton.OXS)
                     {
                         ok2 = true;
                         break;
@@ -189,24 +311,34 @@ namespace OX.Bapps
             {
                 resetBappState();
             }
-            this.BappProvider?.OnBlock(block);
+            if (this.BappProvider.IsNotNull())
+            {
+                BeforeBlockPersistence(block);
+                this.BappProvider.OnBlock(block);
+                AfterBlockPersistence(block);
+            }
+            if (this.BappApi.IsNotNull())
+            {
+                BeforeBlockApi(block);
+                this.BappApi.OnBlock(block);
+                AfterBlockApi(block);
+            }
+            if (this.BappUi.IsNotNull())
+            {
+                BeforeBlockShow(block);
+                this.BappUi.OnBlock(block);
+                AfterBlockShow(block);
+            }
         }
-        public void OnRebuild()
+        void OnRebuild()
         {
             this.BappProvider?.OnRebuild();
         }
-        public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
+        public void PushEvent(BappEvent bappEvent)
         {
-            //if (tx is BizTransaction bt)
-            //{
-            //    if (this.Permits.Contains(bt.BizScriptHash))
-            //    {
-            //        BT = bt;
-            //        return true;
-            //    }
-            //}
-            BT = default;
-            return false;
+            this.BappProvider?.OnBappEvent(bappEvent);
+            this.BappApi?.OnBappEvent(bappEvent);
+            this.BappUi?.OnBappEvent(bappEvent);
         }
     }
 }

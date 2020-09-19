@@ -9,11 +9,10 @@ using OX.Bapps;
 
 namespace OX.Bapps
 {
-    public interface IBappProvider : IBappPort
+    public interface IBappApi: IBappPort
     {
         Bapp Bapp { get; set; }
         void OnBlock(Block block);
-        void OnRebuild(Wallet wallet = null);
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);
     }
