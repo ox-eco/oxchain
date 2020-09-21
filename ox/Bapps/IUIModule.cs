@@ -9,6 +9,7 @@ namespace OX.Bapps
 {
     public interface IUIModule
     {
+        Bapp Bapp { get; set; }
         string ModuleName { get; }
         void OnBappEvent(BappEvent bappEvent);
 

@@ -9,9 +9,15 @@ namespace OX.Bapps
 {
     public class BappEvent
     {
+        public int EventType { get; set; }
+        public Object Arg { get; set; }
     }
     public class CrossBappMessage
     {
+        public CrossBappMessage()
+        {
+            MessageType = 0;
+        }
         public int MessageType { get; set; }
         public string Content { get; set; }
         public byte[] MessageData { get; set; }

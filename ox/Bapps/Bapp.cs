@@ -11,10 +11,15 @@ using OX.Plugins;
 using OX.Wallets;
 using OX.Ledger;
 
+
 namespace OX.Bapps
 {
     public abstract class Bapp
     {
+        public static event BappEventHandler<BappEvent> BappEvent;
+        public static event BappEventHandler<CrossBappMessage> CrossBappMessage;
+        public static event BappEventHandler<Block> BappBlockEvent;
+        public static event BappEventHandler BappRebuildIndex;
         static readonly List<Bapp> bapps = new List<Bapp>();
 
         static readonly string BappsRootPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "bapps");
@@ -29,7 +34,7 @@ namespace OX.Bapps
                 if (_bappProvider.IsNull())
                 {
                     _bappProvider = BuildBappProvider();
-                    _bappProvider.Bapp = this;
+                    if (_bappProvider.IsNotNull()) _bappProvider.Bapp = this;
                 }
                 return _bappProvider;
             }
@@ -42,7 +47,7 @@ namespace OX.Bapps
                 if (_bappApi.IsNull())
                 {
                     _bappApi = BuildBappApi();
-                    _bappApi.Bapp = this;
+                    if (_bappApi.IsNotNull()) _bappApi.Bapp = this;
                 }
                 return _bappApi;
             }
@@ -55,7 +60,7 @@ namespace OX.Bapps
                 if (_bappUi.IsNull())
                 {
                     _bappUi = BuildBappUi();
-                    _bappUi.Bapp = this;
+                    if (_bappUi.IsNotNull()) _bappUi.Bapp = this;
                 }
                 return _bappUi;
             }
@@ -75,10 +80,11 @@ namespace OX.Bapps
                 if (_bizScriptHashState.IsNullOrEmpty())
                 {
                     _bizScriptHashState = new Dictionary<UInt160, bool>(); // BizAddresses.Select(m => m.ToScriptHash()).ToDictionary();
-                    foreach (var address in BizAddresses)
-                    {
-                        _bizScriptHashState[address.ToScriptHash()] = false;
-                    }
+                    if (BizAddresses.IsNotNullAndEmpty())
+                        foreach (var address in BizAddresses)
+                        {
+                            _bizScriptHashState[address.ToScriptHash()] = false;
+                        }
                 }
                 return _bizScriptHashState;
             }
@@ -117,6 +123,7 @@ namespace OX.Bapps
                 bapp.BappApi?.OnCrossBappMessage(message);
                 bapp.BappUi?.OnCrossBappMessage(message);
             }
+            CrossBappMessage?.Invoke(message);
         }
         public static IEnumerable<KeyValuePair<string, IUIModule>> AllUIModules()
         {
@@ -167,6 +174,7 @@ namespace OX.Bapps
             {
                 bapp.OnBlock(block);
             }
+            BappBlockEvent?.Invoke(block);
         }
         public static void OnRebuildIndex()
         {
@@ -174,6 +182,7 @@ namespace OX.Bapps
             {
                 bapp.OnRebuild();
             }
+            BappRebuildIndex?.Invoke();
         }
         public static T GetBapp<T>() where T : Bapp
         {
@@ -339,6 +348,7 @@ namespace OX.Bapps
             this.BappProvider?.OnBappEvent(bappEvent);
             this.BappApi?.OnBappEvent(bappEvent);
             this.BappUi?.OnBappEvent(bappEvent);
+            BappEvent?.Invoke(bappEvent);
         }
     }
 }

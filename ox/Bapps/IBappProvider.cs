@@ -11,7 +11,8 @@ namespace OX.Bapps
 {
     public interface IBappProvider : IBappPort
     {
-        Bapp Bapp { get; set; }
+     
+        Wallet Wallet { get; set; }
         void OnBlock(Block block);
         void OnRebuild(Wallet wallet = null);
         void OnBappEvent(BappEvent bappEvent);
