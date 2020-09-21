@@ -219,7 +219,20 @@ namespace OX.Bapps
         {
             var sys = Bapp.GetBapp<T>();
             if (sys.IsNull()) return false;
-            return false;//sys.Permits.Contains(scriptHash);
+            return sys.BizAddresses.Contains(scriptHash.ToAddress());
+        }
+        public bool IsBizTransaction(Transaction tx, out BillTransaction BT)
+        {
+            if (tx is BillTransaction bt)
+            {
+                if (this.BizScriptHashStates.ContainsKey(bt.BizScriptHash))
+                {
+                    BT = bt;
+                    return true;
+                }
+            }
+            BT = default;
+            return false;
         }
         internal static void LoadBapps(OXSystem system)
         {
