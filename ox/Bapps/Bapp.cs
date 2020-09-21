@@ -221,9 +221,9 @@ namespace OX.Bapps
             if (sys.IsNull()) return false;
             return sys.BizAddresses.Contains(scriptHash.ToAddress());
         }
-        public bool IsBizTransaction(Transaction tx, out BillTransaction BT)
+        public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
         {
-            if (tx is BillTransaction bt)
+            if (tx is BizTransaction bt)
             {
                 if (this.BizScriptHashStates.ContainsKey(bt.BizScriptHash))
                 {
