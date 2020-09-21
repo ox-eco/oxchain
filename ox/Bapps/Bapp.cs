@@ -89,6 +89,15 @@ namespace OX.Bapps
                 return _bizScriptHashState;
             }
         }
+        public UInt160[] ValidBizScriptHashs
+        {
+            get
+            {
+                var bs = BizScriptHashStates.Where(m => m.Value);
+                if (bs.IsNullOrEmpty()) return default;
+                return bs.Select(m => m.Key).ToArray();
+            }
+        }
         public abstract string[] BizAddresses { get; }
         public abstract string MatchKernelVersion { get; }
         public abstract IBappProvider BuildBappProvider();
