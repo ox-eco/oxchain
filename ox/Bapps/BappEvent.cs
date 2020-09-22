@@ -10,6 +10,13 @@ namespace OX.Bapps
     public class BappEvent
     {
         public BappEventItem[] EventItems { get; set; }
+        public bool ContainEventType(int EventType, out BappEventItem[] eventItems)
+        {
+            eventItems = default;
+            if (this.EventItems.IsNullOrEmpty()) return false;
+            eventItems = this.EventItems.Where(m => m.EventType == EventType)?.ToArray();
+            return eventItems.IsNotNullAndEmpty();
+        }
     }
     public class BappEventItem
     {
