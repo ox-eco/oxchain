@@ -243,6 +243,26 @@ namespace OX.Bapps
             BT = default;
             return false;
         }
+        public bool ContainBizTransaction(Block block, out BizTransaction[] bts)
+        {
+            bts = default;
+            bool find = false;
+            List<BizTransaction> list = new List<BizTransaction>();
+            foreach (var tx in block.Transactions)
+            {
+                if (tx is BizTransaction bt)
+                {
+                    if (this.BizScriptHashStates.ContainsKey(bt.BizScriptHash))
+                    {
+                        find = true;
+                        list.Add(bt);
+                    }
+                }
+            }
+            if (find)
+                bts = list.ToArray();
+            return find;
+        }
         internal static void LoadBapps(OXSystem system)
         {
             System = system;
