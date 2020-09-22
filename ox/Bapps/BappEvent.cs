@@ -9,6 +9,10 @@ namespace OX.Bapps
 {
     public class BappEvent
     {
+        public BappEventItem[] EventItems { get; set; }
+    }
+    public class BappEventItem
+    {
         public int EventType { get; set; }
         public Object Arg { get; set; }
     }
