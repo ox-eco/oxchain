@@ -40,6 +40,7 @@ namespace OX
             this.LocalNode = ActorSystem.ActorOf(Network.P2P.LocalNode.Props(this));
             this.TaskManager = ActorSystem.ActorOf(Network.P2P.TaskManager.Props(this));
             Plugin.NotifyPluginsLoadedAfterSystemConstructed();
+            Bapps.Bapp.ResetBappState();
         }
 
         public void Dispose()

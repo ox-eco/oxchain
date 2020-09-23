@@ -121,7 +121,6 @@ namespace OX.Bapps
         protected Bapp()
         {
             bapps.Add(this);
-            this.resetBappState();
         }
         #region static
         public static void PushCrossBappMessage(CrossBappMessage message)
@@ -262,6 +261,13 @@ namespace OX.Bapps
             if (find)
                 bts = list.ToArray();
             return find;
+        }
+        internal static void ResetBappState()
+        {
+            foreach (var bapp in bapps)
+            {
+                bapp.resetBappState();
+            }
         }
         internal static void LoadBapps(OXSystem system)
         {
