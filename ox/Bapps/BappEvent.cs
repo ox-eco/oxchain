@@ -18,6 +18,7 @@ namespace OX.Bapps
             return eventItems.IsNotNullAndEmpty();
         }
     }
+
     public class BappEventItem
     {
         public int EventType { get; set; }
