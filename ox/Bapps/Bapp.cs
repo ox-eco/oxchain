@@ -266,7 +266,7 @@ namespace OX.Bapps
         {
             foreach (var bapp in bapps)
             {
-                bapp.resetBappState();
+                bapp.setBappState();
             }
         }
         internal static void LoadBapps(OXSystem system)
@@ -328,7 +328,7 @@ namespace OX.Bapps
         }
 
         #endregion
-        void resetBappState()
+        void setBappState()
         {
             foreach (var ad in BizScriptHashStates)
             {
@@ -366,7 +366,7 @@ namespace OX.Bapps
             }
             if (ok)
             {
-                resetBappState();
+                setBappState();
             }
             if (this.BappProvider.IsNotNull())
             {
