@@ -15,4 +15,5 @@ namespace OX.Bapps
         void OnCrossBappMessage(CrossBappMessage message);
         void OnBlock(Block block);
     }
+
 }
