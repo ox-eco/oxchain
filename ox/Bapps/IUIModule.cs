@@ -12,7 +12,6 @@ namespace OX.Bapps
         Bapp Bapp { get; set; }
         string ModuleName { get; }
         void OnBappEvent(BappEvent bappEvent);
-
         void OnCrossBappMessage(CrossBappMessage message);
         void OnBlock(Block block);
     }
