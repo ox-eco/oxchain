@@ -11,7 +11,6 @@ namespace OX.Bapps
 {
     public interface IBappUi : IBappPort
     {
-        Bapp Bapp { get; set; }
         IUIModule[] Modules { get; }
         void OnBlock(Block block);
         void OnBappEvent(BappEvent bappEvent);

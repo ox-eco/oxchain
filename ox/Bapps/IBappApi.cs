@@ -9,9 +9,8 @@ using OX.Bapps;
 
 namespace OX.Bapps
 {
-    public interface IBappApi: IBappPort
+    public interface IBappApi : IBappPort
     {
-        Bapp Bapp { get; set; }
         void OnBlock(Block block);
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);
