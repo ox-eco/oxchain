@@ -14,7 +14,7 @@ namespace OX.Network.P2P.Payloads
 {
     public abstract class EdgeTransaction : BizTransaction
     {
-        public UInt160 From;
+        public ECPoint From;
         public byte EdgeVersion;
         public byte DataType;
         public byte[] Data;
@@ -27,7 +27,7 @@ namespace OX.Network.P2P.Payloads
         protected abstract void SerializeEdgeData(BinaryWriter writer);
         protected override void DeserializeBizData(BinaryReader reader)
         {
-            From = reader.ReadSerializable<UInt160>();
+            From = reader.ReadSerializable<ECPoint>();
             EdgeVersion = reader.ReadByte();
             DataType = reader.ReadByte();
             Data = reader.ReadVarBytes();
@@ -50,7 +50,7 @@ namespace OX.Network.P2P.Payloads
 
         private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator()
         {
-            yield return this.From;
+            yield return Contract.CreateSignatureRedeemScript(this.From).ToScriptHash();
         }
         public bool GetDataModel<T>(UInt160[] bizScriptHashs, byte dataType, out T model) where T : ISerializable, new()
         {
