@@ -1,5 +1,4 @@
-﻿using OX.Cryptography.ECC;
-using OX.IO;
+﻿using OX.IO;
 using OX.Network.P2P.Payloads;
 using OX.SmartContract;
 using OX.Wallets;
@@ -88,6 +87,6 @@ namespace OX.UI
             }
         }
 
-   
+
     }
 }

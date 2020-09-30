@@ -83,7 +83,7 @@ namespace OX.Network.P2P
                 ImmutableInterlocked.Update(ref UnconnectedPeers, p => p.Union(ps));
             }
         }
-       
+
 
         protected void ConnectToPeer(IPEndPoint endPoint, bool isTrusted = false)
         {
@@ -166,7 +166,8 @@ namespace OX.Network.P2P
                     if (wsPort > 0)
                         UPnP.ForwardPort(wsPort, ProtocolType.Tcp, "OX WebSocket");
                 }
-                catch {
+                catch
+                {
                 }
             }
             if (port > 0)

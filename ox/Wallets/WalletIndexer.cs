@@ -1,9 +1,9 @@
-﻿using OX.IO;
+﻿using OX.Bapps;
+using OX.IO;
 using OX.IO.Data.LevelDB;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
 using OX.Persistence;
-using OX.Plugins;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading;
-using OX.Bapps;
 
 namespace OX.Wallets
 {

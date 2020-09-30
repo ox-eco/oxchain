@@ -1,6 +1,5 @@
 ﻿using OX.IO;
 using OX.SmartContract;
-using OX.VM;
 using System;
 using System.IO;
 using System.Linq;

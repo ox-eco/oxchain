@@ -1,6 +1,5 @@
 ﻿using OX.IO;
 using System.IO;
-using System.Collections.Generic;
 
 namespace OX.Network.P2P.Payloads
 {

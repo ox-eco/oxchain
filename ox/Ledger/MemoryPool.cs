@@ -1,14 +1,14 @@
-﻿using OX.Network.P2P.Payloads;
+﻿using Akka.Util.Internal;
+using OX.Network.P2P;
+using OX.Network.P2P.Payloads;
+using OX.Persistence;
+using OX.Plugins;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Akka.Util.Internal;
-using OX.Network.P2P;
-using OX.Persistence;
-using OX.Plugins;
 
 namespace OX.Ledger
 {
@@ -19,12 +19,12 @@ namespace OX.Ledger
         private const int BlocksTillRebroadcastHighPriorityPoolTx = 10;
         private int RebroadcastMultiplierThreshold => Capacity / 10;
 
-        private static readonly double MaxSecondsToReverifyHighPrioTx = (double) Blockchain.SecondsPerBlock / 3;
-        private static readonly double MaxSecondsToReverifyLowPrioTx = (double) Blockchain.SecondsPerBlock / 5;
+        private static readonly double MaxSecondsToReverifyHighPrioTx = (double)Blockchain.SecondsPerBlock / 3;
+        private static readonly double MaxSecondsToReverifyLowPrioTx = (double)Blockchain.SecondsPerBlock / 5;
 
         // These two are not expected to be hit, they are just safegaurds.
-        private static readonly double MaxSecondsToReverifyHighPrioTxPerIdle = (double) Blockchain.SecondsPerBlock / 15;
-        private static readonly double MaxSecondsToReverifyLowPrioTxPerIdle = (double) Blockchain.SecondsPerBlock / 30;
+        private static readonly double MaxSecondsToReverifyHighPrioTxPerIdle = (double)Blockchain.SecondsPerBlock / 15;
+        private static readonly double MaxSecondsToReverifyLowPrioTxPerIdle = (double)Blockchain.SecondsPerBlock / 30;
 
         private readonly OXSystem _system;
 
@@ -211,9 +211,9 @@ namespace OX.Ledger
             _txRwLock.EnterReadLock();
             try
             {
-               return _sortedHighPrioTransactions.Reverse().Select(p => p.Tx)
-                        .Concat(_sortedLowPrioTransactions.Reverse().Select(p => p.Tx))
-                        .ToArray();
+                return _sortedHighPrioTransactions.Reverse().Select(p => p.Tx)
+                         .Concat(_sortedLowPrioTransactions.Reverse().Select(p => p.Tx))
+                         .ToArray();
             }
             finally
             {

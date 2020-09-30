@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using OX.Cryptography;
 using OX.IO;
 using OX.IO.Json;
-using OX.Cryptography;
-using OX.VM;
+using System.IO;
 
 namespace OX.Network.P2P.Payloads
 {
-  
+
     public abstract class PacketBase : IBizVerifiable
     {
         public uint Version;

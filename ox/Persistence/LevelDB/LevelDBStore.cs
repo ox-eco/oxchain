@@ -46,7 +46,7 @@ namespace OX.Persistence.LevelDB
         {
             return new DbCache<UInt160, AccountState>(db, null, null, Prefixes.ST_Account);
         }
-        
+
         public override DataCache<UInt256, AssetState> GetAssets()
         {
             return new DbCache<UInt256, AssetState>(db, null, null, Prefixes.ST_Asset);

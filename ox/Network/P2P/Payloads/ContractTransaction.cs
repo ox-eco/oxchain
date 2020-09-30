@@ -1,9 +1,6 @@
-﻿using System;
+﻿using OX.IO;
+using System;
 using System.IO;
-using System.Collections.Generic;
-using OX.Ledger;
-using OX.Persistence;
-using OX.IO;
 using System.Linq;
 
 namespace OX.Network.P2P.Payloads
@@ -19,6 +16,6 @@ namespace OX.Network.P2P.Payloads
         {
             if (Version != 0) throw new FormatException();
         }
-       
+
     }
 }

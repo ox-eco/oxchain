@@ -1,7 +1,6 @@
 ﻿using OX.IO;
 using OX.IO.Json;
 using OX.SmartContract;
-using OX.VM;
 using System.IO;
 
 namespace OX.Network.P2P.Payloads

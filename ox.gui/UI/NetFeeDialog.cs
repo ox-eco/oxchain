@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 //using OX.Properties;
 
@@ -30,7 +24,7 @@ namespace OX.UI
         {
             StringBuilder sb = new StringBuilder(32);
 
-            string content = sb.AppendFormat("{0} {1} {2}", fee.ToString(), "OXC", LanHelper.LocalLanguage( "will be consumed, confirm?")).ToString();
+            string content = sb.AppendFormat("{0} {1} {2}", fee.ToString(), "OXC", LanHelper.LocalLanguage("will be consumed, confirm?")).ToString();
             this.CostContext.Text = content;
         }
 

@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Diagnostics;
-using System.IO;
-using OX.Wallets;
 using OX.Persistence.LevelDB;
 using OX.UI;
+using OX.Wallets;
+using System;
+using System.IO;
+using System.Windows.Forms;
 
 namespace OX
 {

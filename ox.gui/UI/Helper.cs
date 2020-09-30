@@ -6,7 +6,6 @@ using OX.SmartContract;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Text;
 
 namespace OX.UI
 {
@@ -54,7 +53,7 @@ namespace OX.UI
                 tx.Witnesses = context.GetWitnesses();
                 Program.CurrentWallet.ApplyTransaction(tx);
                 Program.OXSystem.LocalNode.Tell(new LocalNode.Relay { Inventory = tx });
-                InformationBox.Show(tx.Hash.ToString(), LanHelper.LocalLanguage( "Transaction sent, TXID:"), LanHelper.LocalLanguage( "Transaction successful"));
+                InformationBox.Show(tx.Hash.ToString(), LanHelper.LocalLanguage("Transaction sent, TXID:"), LanHelper.LocalLanguage("Transaction successful"));
             }
             else
             {

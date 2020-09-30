@@ -141,7 +141,7 @@ namespace OX.Network.P2P
                 case "notfound":
                 case "reject":
                 default:
-                   
+
                     break;
             }
         }
@@ -275,7 +275,7 @@ namespace OX.Network.P2P
         private void OnInventoryReceived(IInventory inventory)
         {
             system.TaskManager.Tell(new TaskManager.TaskCompleted { Hash = inventory.Hash }, Context.Parent);
-            if (inventory is MinerTransaction) return;           
+            if (inventory is MinerTransaction) return;
             system.LocalNode.Tell(new LocalNode.Relay { Inventory = inventory });
             pendingKnownHashes.Remove(inventory.Hash);
             knownHashes.Add(inventory.Hash);

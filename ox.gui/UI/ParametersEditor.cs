@@ -77,7 +77,7 @@ namespace OX.UI
                 textBox1.Text = listView1.SelectedItems[0].SubItems["value"].Text;
                 textBox2.Clear();
             }
-            catch(Exception err)
+            catch (Exception err)
             {
                 MessageBox.Show(err.Message);
             }

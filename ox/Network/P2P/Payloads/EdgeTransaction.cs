@@ -1,14 +1,12 @@
-﻿using OX.IO;
-using OX.IO.Json;
-using OX.Ledger;
+﻿using OX.Cryptography;
+using OX.Cryptography.ECC;
+using OX.IO;
 using OX.Persistence;
+using OX.SmartContract;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OX.Cryptography;
-using OX.Cryptography.ECC;
-using OX.SmartContract;
 
 namespace OX.Network.P2P.Payloads
 {

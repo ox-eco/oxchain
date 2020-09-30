@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using OX.Ledger;
 using OX.Network.P2P.Payloads;
+using OX.Plugins;
+using OX.Wallets;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using OX.Plugins;
-using OX.Wallets;
-using OX.Ledger;
 
 
 namespace OX.Bapps

@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 
 namespace OX
 {
-    
+
     public static class EnumHelper
     {
         public static int Value<EnumType>(this EnumType enu) where EnumType : struct
         {
             return Convert.ToInt32(enu);
         }
-      
+
         public static EnumType[] Parse<EnumType>(this EnumType enu) where EnumType : struct
         {
             List<EnumType> list = new List<EnumType>();
@@ -54,13 +53,13 @@ namespace OX
             return list.ToArray();
 
         }
-      
+
         public static EnumType[] Parse<EnumType>(this int MergeValue) where EnumType : struct
         {
             EnumType hrt = (EnumType)Enum.Parse(typeof(EnumType), MergeValue.ToString());
             return Parse<EnumType>(hrt);
         }
-       
+
         public static EnumType MergeParse<EnumType>(this int MergeValue) where EnumType : struct
         {
             EnumType hrt = (EnumType)Enum.Parse(typeof(EnumType), MergeValue.ToString());
@@ -82,7 +81,7 @@ namespace OX
         {
             return EnumHelper.Total<EnumType>().Parse();
         }
-    
+
         public static bool Contains<EnumType>(this EnumType enu, EnumType enu2) where EnumType : struct
         {
             return Convert.ToInt32(enu.intersect(enu2)) == Convert.ToInt32(enu2);
@@ -91,7 +90,7 @@ namespace OX
         {
             return enu.intersect(enu2) == enu2;
         }
-       
+
         public static EnumType intersect<EnumType>(this EnumType enu, EnumType enu2) where EnumType : struct
         {
             return (Convert.ToInt32(enu) & Convert.ToInt32(enu2)).MergeParse<EnumType>();
@@ -100,7 +99,7 @@ namespace OX
         {
             return enu & enu2;
         }
-       
+
         public static String StringMaxValue<EnumType>(this EnumType value) where EnumType : struct
         {
             Attribute[] attributes = typeof(EnumType).GetTypeInfo().GetCustomAttributes(typeof(EnumStringsAttribute), false) as Attribute[];
@@ -161,7 +160,7 @@ namespace OX
             string name = EnumStringsAttribute.EnumName;
             return name.IsNullOrEmpty() ? string.Empty : name;
         }
-       
+
         public static String StringValue<EnumType>(this EnumType value) where EnumType : struct
         {
             Attribute[] attributes = typeof(EnumType).GetTypeInfo().GetCustomAttributes(typeof(EnumStringsAttribute), false) as Attribute[];

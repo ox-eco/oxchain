@@ -1,11 +1,8 @@
-﻿using OX.Cryptography.ECC;
-using OX.IO;
+﻿using OX.IO;
 using OX.IO.Json;
 using OX.Ledger;
 using OX.Persistence;
-using OX.SmartContract;
 using OX.Wallets;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -1,12 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Net;
-using OX.Network.P2P;
+﻿using OX.Network.P2P;
 using OX.Network.P2P.Payloads;
-using OX.Cryptography.ECC;
+using System.Collections.Generic;
+using System.Net;
 
 namespace OX
 {

@@ -240,7 +240,7 @@ namespace OX.Persistence
                                     Blockchain.ProcessValidatorStateDescriptor(descriptor, snapshot);
                                     break;
                             }
-                        break;      
+                        break;
                 }
             }
             int count = (int)snapshot.ValidatorsCount.Get().Votes.Select((p, i) => new

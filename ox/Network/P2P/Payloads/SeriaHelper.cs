@@ -1,13 +1,12 @@
-﻿using System;
+﻿using OX.IO;
+using OX.IO.Caching;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using OX.IO;
-using OX.IO.Caching;
-using System.IO;
+using System.Text;
 //using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using OX.Cryptography.ECC;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -90,7 +89,7 @@ namespace OX.Network.P2P.Payloads
     }
     public static class SeriaHelper
     {
-       
+
         public static T DeserializeFrom<T>(BinaryReader reader) where T : ISerializable, new()
         {
             T record = new T();

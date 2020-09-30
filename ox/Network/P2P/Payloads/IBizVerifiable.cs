@@ -1,6 +1,4 @@
 ﻿using OX.IO;
-using OX.Persistence;
-using OX.VM;
 using System.IO;
 
 namespace OX.Network.P2P.Payloads
@@ -9,6 +7,6 @@ namespace OX.Network.P2P.Payloads
     {
         void DeserializeUnsigned(BinaryReader reader);
         void SerializeUnsigned(BinaryWriter writer);
-       
+
     }
 }

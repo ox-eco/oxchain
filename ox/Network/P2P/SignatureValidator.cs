@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using OX.IO;
-using OX.IO.Json;
-using OX.Network.P2P;
-using OX.Network.P2P.Payloads;
+﻿using OX.Cryptography;
 using OX.Cryptography.ECC;
-using OX.Cryptography;
-using OX.SmartContract;
+using OX.IO;
+using System.IO;
+using System.Linq;
 
 namespace OX.Network.P2P
 {

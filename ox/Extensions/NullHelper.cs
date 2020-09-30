@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OX
 {
@@ -13,7 +11,7 @@ namespace OX
         }
         public static bool IsNotNullAndEmpty<T>(this T[] collection)
         {
-            return  !collection .IsNullOrEmpty ();
+            return !collection.IsNullOrEmpty();
         }
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection)
         {

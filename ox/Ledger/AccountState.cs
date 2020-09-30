@@ -2,7 +2,6 @@
 using OX.IO;
 using OX.IO.Json;
 using OX.Network.P2P.Payloads;
-using OX.VM;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -8,7 +8,6 @@ using OX.Plugins;
 using OX.Wallets;
 using System;
 using System.Net;
-using System.Threading;
 
 namespace OX
 {

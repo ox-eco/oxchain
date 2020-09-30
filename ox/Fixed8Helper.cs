@@ -1,9 +1,4 @@
-﻿using OX.IO;
-using System;
-using System.Globalization;
-using System.IO;
-
-namespace OX
+﻿namespace OX
 {
     /// <summary>
     /// Accurate to 10^-8 64-bit fixed-point numbers minimize rounding errors.

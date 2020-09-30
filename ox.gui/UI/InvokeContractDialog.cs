@@ -159,7 +159,7 @@ namespace OX.UI
             }
             else
             {
-                MessageBox.Show(LanHelper.LocalLanguage( "Execution terminated in fault state."));
+                MessageBox.Show(LanHelper.LocalLanguage("Execution terminated in fault state."));
             }
         }
 

@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using OX.Network.P2P.Payloads;
+﻿using OX.Network.P2P.Payloads;
 using OX.Persistence;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace OX.Consensus
@@ -22,7 +22,7 @@ namespace OX.Consensus
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CountCommitted(this IConsensusContext context) => context.CommitPayloads.Count(p => p != null);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int CountFailed(this IConsensusContext context) => context.LastSeenMessage.Count(p => p < (((int) context.BlockIndex) - 1));
+        public static int CountFailed(this IConsensusContext context) => context.LastSeenMessage.Count(p => p < (((int)context.BlockIndex) - 1));
 
         // Consensus States
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

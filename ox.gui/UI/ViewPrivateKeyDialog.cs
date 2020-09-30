@@ -1,7 +1,6 @@
-﻿using OX.Wallets;
+﻿using OX.Ledger;
+using OX.Wallets;
 using System.Windows.Forms;
-using OX.Ledger;
-using System.Reflection.PortableExecutable;
 
 namespace OX.UI
 {

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using OX.IO;
 using System.IO;
-using OX.IO;
-using OX.Cryptography;
-using OX.Network.P2P.Payloads;
-using OX.Cryptography.ECC;
 
 namespace OX.Network.P2P.Payloads
 {

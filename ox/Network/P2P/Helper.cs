@@ -1,9 +1,9 @@
-﻿using OX.Network.P2P.Payloads;
+﻿using OX.Cryptography;
+using OX.IO;
+using OX.Network.P2P.Payloads;
+using OX.Wallets;
 using System.IO;
 using System.Linq;
-using OX.IO;
-using OX.Cryptography;
-using OX.Wallets;
 
 namespace OX.Network.P2P
 {
@@ -29,7 +29,7 @@ namespace OX.Network.P2P
                 return ms.ToArray();
             }
         }
-       
+
         public static byte[] Sign(this ISerializable serializable, KeyPair key)
         {
             return Crypto.Default.Sign(serializable.GetHashData(), key.PrivateKey, key.PublicKey.EncodePoint(false).Skip(1).ToArray());

@@ -1,5 +1,4 @@
 ﻿using OX.IO.Json;
-using System;
 
 namespace OX.Wallets.NEP6
 {

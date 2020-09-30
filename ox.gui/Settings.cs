@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
 using OX.Network.P2P;
-using System.Net;
 using System.Linq;
+using System.Net;
 
 namespace OX
 {
@@ -10,7 +9,7 @@ namespace OX
 
     internal partial class Settings
     {
-        
+
         public PathsSettings Paths { get; }
         public P2PSettings P2P { get; }
         public RPCSettings RPC { get; }

@@ -54,7 +54,7 @@ namespace OX.UI
         {
             if (textBox1.Text == "")
             {
-                MessageBox.Show(LanHelper.LocalLanguage( "You must input JSON object pending signature data."));
+                MessageBox.Show(LanHelper.LocalLanguage("You must input JSON object pending signature data."));
                 return;
             }
 
