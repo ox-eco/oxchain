@@ -13,5 +13,4 @@ namespace OX.Bapps
     {
         Bapp Bapp { get; set; }
     }
-
 }

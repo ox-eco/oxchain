@@ -10,8 +10,7 @@ using OX.Bapps;
 namespace OX.Bapps
 {
     public interface IBappProvider : IBappPort
-    {
-     
+    {     
         Wallet Wallet { get; set; }
         void OnBlock(Block block);
         void OnRebuild(Wallet wallet = null);
