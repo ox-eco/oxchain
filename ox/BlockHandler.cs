@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using OX.Cryptography.ECC;
 using OX.Ledger;
 using OX.Network.P2P;
 using OX.Network.P2P.Payloads;
@@ -17,6 +18,7 @@ namespace OX
         public Wallet wallet { get; protected set; }
         public WalletAccount Account { get; protected set; }
         public KeyPair KeyPair { get; protected set; }
+        public ECPoint PublicKey { get; protected set; }
 
         public List<UInt160> Permits = new List<UInt160>();
         public abstract string[] BizAddresses { get; }
@@ -37,6 +39,7 @@ namespace OX
                 WalletAccount walletAccount = wallet.GetHeldAccounts().FirstOrDefault();
                 this.Account = walletAccount;
                 this.KeyPair = walletAccount.GetKey();
+                this.PublicKey = this.KeyPair.PublicKey;
             }
             LoadPermits();
         }
@@ -65,6 +68,7 @@ namespace OX
                 this.wallet = walletCommand.Wallet;
                 WalletAccount walletAccount = walletCommand.Wallet.GetHeldAccounts().FirstOrDefault();
                 this.KeyPair = walletAccount.GetKey();
+                this.PublicKey = this.KeyPair.PublicKey;
             }
             else if (message is IInventory inventory)
             {
