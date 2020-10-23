@@ -20,8 +20,8 @@ namespace OX.Ledger
 {
     public sealed class Blockchain : UntypedActor
     {
-        public UInt256 OXS => GoverningToken.Hash;
-        public UInt256 OXC => UtilityToken.Hash;
+        public static UInt256 OXS => GoverningToken.Hash;
+        public static UInt256 OXC => UtilityToken.Hash;
         public class ApplicationExecuted { public Transaction Transaction; public ApplicationExecutionResult[] ExecutionResults; }
         public class PersistCompleted { public Block Block; }
         public class Import { public IEnumerable<Block> Blocks; }

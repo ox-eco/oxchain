@@ -341,7 +341,7 @@ namespace OX.Bapps
                 bool ok2 = false;
                 foreach (var reference in tx.References)
                 {
-                    if (this.BizScriptHashStates.ContainsKey(reference.Value.ScriptHash) && reference.Value.AssetId == Blockchain.Singleton.OXS)
+                    if (this.BizScriptHashStates.ContainsKey(reference.Value.ScriptHash) && reference.Value.AssetId == Blockchain.OXS)
                     {
                         ok2 = true;
                         break;
@@ -349,7 +349,7 @@ namespace OX.Bapps
                 }
                 foreach (var output in tx.Outputs)
                 {
-                    if (this.BizScriptHashStates.ContainsKey(output.ScriptHash) && output.AssetId == Blockchain.Singleton.OXS)
+                    if (this.BizScriptHashStates.ContainsKey(output.ScriptHash) && output.AssetId == Blockchain.OXS)
                     {
                         ok2 = true;
                         break;
