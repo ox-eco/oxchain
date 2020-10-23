@@ -11,8 +11,10 @@ using System.Linq;
 
 namespace OX
 {
+
     public abstract class BlockHandler : UntypedActor
     {
+        protected static Props _Instance = default;
         public class WalletCommand { public Wallet Wallet; }
         public OXSystem oxsystem { get; protected set; }
         public Wallet wallet { get; protected set; }
@@ -26,9 +28,9 @@ namespace OX
         public abstract void OnStop();
         protected abstract void OnReceived(object message);
         protected abstract void OnBlockPersistCompleted(Block block);
+
         public BlockHandler(OXSystem system) : this(system, null)
         {
-
         }
         public BlockHandler(OXSystem system, Wallet wallet)
         {
