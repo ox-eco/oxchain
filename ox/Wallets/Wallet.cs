@@ -1,4 +1,5 @@
 ﻿using OX.Cryptography;
+using OX.IO;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
 using OX.SmartContract;
@@ -232,6 +233,28 @@ namespace OX.Wallets
         {
             T ct = tx.Get();
             return MakeTransaction<T>(ct, tx.From, tx.From);
+        }
+        public AskTransaction MakeSingleAskTransaction(SingleAskTransactionWrapper txWrapper, UInt160 bizScriptHash, byte DataType, ISerializable askItem, uint maxindex = 0x00, uint minindex = 0x00, byte edgeVersion = 0x00)
+        {
+            if (!Blockchain.Singleton.VerifyBizValidator(bizScriptHash, out Fixed8 balance, out uint askFee)) return default;
+            AskTransaction ct = txWrapper.Get();
+            ct = MakeTransaction<AskTransaction>(ct, txWrapper.From, txWrapper.From);
+            ct.EdgeVersion = edgeVersion;
+            ct.DataType = DataType;
+            ct.Data = askItem.ToArray();
+            ct.From = txWrapper.Account.GetKey().PublicKey;
+            ct.BizScriptHash = bizScriptHash;
+            ct.MaxIndex = maxindex;
+            ct.MinIndex = minindex;
+            if (askFee > 0)
+            {
+                List<TransactionOutput> list = new List<TransactionOutput>();
+                if (ct.Outputs.IsNotNullAndEmpty())
+                    list.AddRange(ct.Outputs);
+                list.Add(new TransactionOutput() { AssetId = Blockchain.OXC, ScriptHash = bizScriptHash, Value = Fixed8.OXU * askFee });
+                ct.Outputs = list.ToArray();
+            }
+            return ct;
         }
         public T MakeTransaction<T>(T tx, UInt160 from = null, UInt160 change_address = null, Fixed8 fee = default(Fixed8)) where T : Transaction
         {

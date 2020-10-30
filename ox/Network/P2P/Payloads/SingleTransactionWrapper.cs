@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using OX.Wallets;
+using System.Collections.Generic;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -21,6 +22,14 @@ namespace OX.Network.P2P.Payloads
         public T Get()
         {
             return tx;
+        }
+    }
+    public class SingleAskTransactionWrapper : SingleTransactionWrapper<AskTransaction>
+    {
+        public WalletAccount Account { get; private set; }
+        public SingleAskTransactionWrapper(WalletAccount account, TransactionOutput output = default) : base(account.ScriptHash, output)
+        {
+            this.Account = account;
         }
     }
 }
