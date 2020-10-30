@@ -1,6 +1,8 @@
 ﻿using OX.Persistence;
 using System.Collections.Generic;
 using System.IO;
+using OX.Ledger;
+using System.Linq;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -42,7 +44,11 @@ namespace OX.Network.P2P.Payloads
             {
                 if (MinIndex > snapshot.Height + 1) return false;
             }
-            return true;
+            if (!Blockchain.Singleton.VerifyBizValidator(this.BizScriptHash, out Fixed8 balance, out uint askFee)) return false;
+            if (askFee == 0) return true;
+            var outputs = this.Outputs.Where(m => m.AssetId == Blockchain.OXC && m.ScriptHash.Equals(this.BizScriptHash));
+            if (outputs.IsNullOrEmpty()) return false;
+            return outputs.Sum(m => m.Value) >= Fixed8.OXU * askFee;
         }
 
     }

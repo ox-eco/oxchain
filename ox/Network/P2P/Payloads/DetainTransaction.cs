@@ -13,7 +13,7 @@ namespace OX.Network.P2P.Payloads
         public UInt160 ScriptHash;
         public DetainStatus DetainState;
         public uint DetainDuration;
-        public uint Flag;
+        public uint AskFee;
         public byte[] Data;
 
         public override int Size => base.Size + ScriptHash.Size + sizeof(DetainStatus) + sizeof(uint) + sizeof(uint) + Data.GetVarSize();
@@ -36,7 +36,7 @@ namespace OX.Network.P2P.Payloads
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
-            Flag = 0;
+            AskFee = 0;
             Data = new byte[] { 0x00 };
         }
         public DetainTransaction(UInt160 scriptHash)
@@ -59,7 +59,7 @@ namespace OX.Network.P2P.Payloads
             ScriptHash = reader.ReadSerializable<UInt160>();
             DetainState = (DetainStatus)reader.ReadByte();
             DetainDuration = reader.ReadUInt32();
-            Flag = reader.ReadUInt32();
+            AskFee = reader.ReadUInt32();
             Data = reader.ReadVarBytes();
         }
 
@@ -68,7 +68,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write(ScriptHash);
             writer.Write((byte)DetainState);
             writer.Write(DetainDuration);
-            writer.Write(Flag);
+            writer.Write(AskFee);
             writer.WriteVarBytes(Data);
         }
 
@@ -78,13 +78,14 @@ namespace OX.Network.P2P.Payloads
             json["scripthash"] = ScriptHash.ToAddress();
             json["detaintype"] = DetainState.Value();
             json["detainduration"] = DetainDuration.ToString();
-            json["flag"] = Flag.ToString();
+            json["flag"] = AskFee.ToString();
             json["data"] = Data.ToHexString();
             return json;
         }
 
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
+            if (this.AskFee > 1000) return false;
             if (this.DetainState == DetainStatus.Freeze && this.DetainDuration < 100) return false;
             return base.Verify(snapshot, mempool);
         }

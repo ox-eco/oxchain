@@ -22,6 +22,8 @@ namespace OX
 
         public static readonly Fixed8 Satoshi = new Fixed8 { value = 1 };
 
+        public static readonly Fixed8 OXU = new Fixed8 { value = 1_000_000 };
+
         public static readonly Fixed8 Zero = default(Fixed8);
 
         public int Size => sizeof(long);

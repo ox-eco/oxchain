@@ -330,7 +330,7 @@ namespace OX.Bapps
             foreach (var ad in BizScriptHashStates)
             {
                 var sh = ad.Key;
-                BizScriptHashStates[sh] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance);
+                BizScriptHashStates[sh] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out uint askFee);
             }
         }
         void OnBlock(Block block)

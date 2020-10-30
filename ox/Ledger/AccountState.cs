@@ -13,7 +13,7 @@ namespace OX.Ledger
         public UInt160 ScriptHash;
         public DetainStatus DetainState;
         public uint DetainExpire;
-        public uint Magic;
+        public uint AskFee;
         public ECPoint[] Votes;
         public Dictionary<UInt256, Fixed8> Balances;
 
@@ -27,7 +27,7 @@ namespace OX.Ledger
             this.ScriptHash = hash;
             this.DetainState = DetainStatus.UnFreeze;
             this.DetainExpire = 0;
-            this.Magic = 0;
+            this.AskFee = 0;
             this.Votes = new ECPoint[0];
             this.Balances = new Dictionary<UInt256, Fixed8>();
         }
@@ -39,7 +39,7 @@ namespace OX.Ledger
                 ScriptHash = ScriptHash,
                 DetainState = DetainState,
                 DetainExpire = DetainExpire,
-                Magic = Magic,
+                AskFee = AskFee,
                 Votes = Votes,
                 Balances = Balances.ToDictionary(p => p.Key, p => p.Value)
             };
@@ -51,7 +51,7 @@ namespace OX.Ledger
             ScriptHash = reader.ReadSerializable<UInt160>();
             DetainState = (DetainStatus)reader.ReadByte();
             DetainExpire = reader.ReadUInt32();
-            Magic = reader.ReadUInt32();
+            AskFee = reader.ReadUInt32();
             Votes = new ECPoint[reader.ReadVarInt()];
             for (int i = 0; i < Votes.Length; i++)
                 Votes[i] = ECPoint.DeserializeFrom(reader, ECCurve.Secp256r1);
@@ -70,7 +70,7 @@ namespace OX.Ledger
             ScriptHash = replica.ScriptHash;
             DetainState = replica.DetainState;
             DetainExpire = replica.DetainExpire;
-            Magic = replica.Magic;
+            AskFee = replica.AskFee;
             Votes = replica.Votes;
             Balances = replica.Balances;
         }
@@ -88,7 +88,7 @@ namespace OX.Ledger
             writer.Write(ScriptHash);
             writer.Write((byte)DetainState);
             writer.Write(DetainExpire);
-            writer.Write(Magic);
+            writer.Write(AskFee);
             writer.Write(Votes);
             var balances = Balances.Where(p => p.Value > Fixed8.Zero).ToArray();
             writer.WriteVarInt(balances.Length);
@@ -105,7 +105,7 @@ namespace OX.Ledger
             json["script_hash"] = ScriptHash.ToString();
             json["detainstate"] = DetainState.Value();
             json["detainexpire"] = DetainExpire.ToString();
-            json["magic"] = Magic.ToString();
+            json["magic"] = AskFee.ToString();
             json["votes"] = Votes.Select(p => (JObject)p.ToString()).ToArray();
             json["balances"] = Balances.Select(p =>
             {

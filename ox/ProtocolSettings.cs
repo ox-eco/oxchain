@@ -48,9 +48,9 @@ namespace OX
                 };
             Dictionary<TransactionType, Fixed8> sys_fee = new Dictionary<TransactionType, Fixed8>
             {
-                [TransactionType.BillTransaction] = Fixed8.Satoshi * 10_000_000,
-                [TransactionType.ReplyTransaction] = Fixed8.Satoshi * 10_000_000,
-                [TransactionType.AskTransaction] = Fixed8.Satoshi * 1_000_000,
+                [TransactionType.BillTransaction] = Fixed8.OXU * 10,
+                [TransactionType.ReplyTransaction] = Fixed8.OXU * 10,
+                [TransactionType.AskTransaction] = Fixed8.OXU * 10,
                 [TransactionType.EnrollmentTransaction] = Fixed8.FromDecimal(1000),
                 [TransactionType.IssueTransaction] = Fixed8.FromDecimal(5000),
                 [TransactionType.PublishTransaction] = Fixed8.FromDecimal(500),

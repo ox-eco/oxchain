@@ -617,15 +617,13 @@ namespace OX.Ledger
                             {
                                 case DetainStatus.Freeze:
                                     var sh = tx_detain.ScriptHash;
-                                    double r = Math.Pow(10, m.ToString().Length);
-                                    var q = block.Index * r + m;
-                                    var accountState = new AccountState(sh) { DetainState = tx_detain.DetainState, DetainExpire = block.Index, Magic = (uint)q };
+                                    var accountState = new AccountState(sh) { DetainState = tx_detain.DetainState, DetainExpire = block.Index, AskFee = tx_detain.AskFee };
                                     AccountState acts = snapshot.Accounts.GetAndChange(sh, () => accountState);
                                     var expire = acts.DetainExpire;
                                     if (expire < block.Index)
                                         expire = block.Index;
                                     expire += tx_detain.DetainDuration;
-                                    acts.Magic = (uint)q;
+                                    acts.AskFee = tx_detain.AskFee;
                                     acts.DetainState = tx_detain.DetainState;
                                     acts.DetainExpire = expire;
                                     break;
@@ -772,13 +770,15 @@ namespace OX.Ledger
         {
             Interlocked.Exchange(ref currentSnapshot, GetSnapshot())?.Dispose();
         }
-        public bool VerifyBizValidator(UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance)
+        public bool VerifyBizValidator(UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out uint AskFee)
         {
             OXSBalance = Fixed8.Zero;
+            AskFee = 0;
             var acts = currentSnapshot.Accounts.GetAndChange(bizValidatorScriptHash, () => null);
             if (acts.IsNull()) return false;
             var balance = acts.GetBalance(OXS);
             OXSBalance = balance;
+            AskFee = acts.AskFee;
             if (acts.DetainState == DetainStatus.UnFreeze) return false;
             if (acts.DetainExpire < currentSnapshot.Height) return false;
             if (balance < BappDetainOXS) return false;

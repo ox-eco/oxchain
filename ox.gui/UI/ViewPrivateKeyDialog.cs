@@ -15,7 +15,7 @@ namespace OX.UI
             textBox1.Text = key.PrivateKey.ToHexString();
             textBox2.Text = key.Export();
             string msg = Blockchain.Singleton.IsFrozen(account.ScriptHash, out uint expireIndex) ? $"Frozen to {expireIndex}" : "Unfrozen";
-            var ok = Blockchain.Singleton.VerifyBizValidator(account.Address.ToScriptHash(), out Fixed8 balance);
+            var ok = Blockchain.Singleton.VerifyBizValidator(account.Address.ToScriptHash(), out Fixed8 balance,out uint askFee);
             if (ok)
             {
                 msg = $"  BziValidator Valid";
