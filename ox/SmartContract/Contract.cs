@@ -1,4 +1,5 @@
 ﻿using OX.Cryptography.ECC;
+using OX.Network.P2P.Payloads;
 using OX.VM;
 using OX.Wallets;
 using System;
@@ -86,6 +87,15 @@ namespace OX.SmartContract
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitPush(publicKey.EncodePoint(true));
+                sb.Emit(OpCode.CHECKSIG);
+                return sb.ToArray();
+            }
+        }
+        public static byte[] CreateSignatureRedeemScript(string publicKeyString)
+        {
+            using (ScriptBuilder sb = new ScriptBuilder())
+            {
+                sb.EmitPush(publicKeyString.HexToBytes());
                 sb.Emit(OpCode.CHECKSIG);
                 return sb.ToArray();
             }

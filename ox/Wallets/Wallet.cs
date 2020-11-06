@@ -238,7 +238,6 @@ namespace OX.Wallets
         {
             if (!Blockchain.Singleton.VerifyBizValidator(bizScriptHash, out Fixed8 balance, out uint askFee)) return default;
             AskTransaction ct = txWrapper.Get();
-            ct = MakeTransaction<AskTransaction>(ct, txWrapper.From, txWrapper.From);
             ct.EdgeVersion = edgeVersion;
             ct.DataType = DataType;
             ct.Data = askItem.ToArray();
@@ -254,6 +253,7 @@ namespace OX.Wallets
                 list.Add(new TransactionOutput() { AssetId = Blockchain.OXC, ScriptHash = bizScriptHash, Value = Fixed8.OXU * askFee });
                 ct.Outputs = list.ToArray();
             }
+            ct = MakeTransaction<AskTransaction>(ct, txWrapper.From, txWrapper.From);
             return ct;
         }
         public T MakeTransaction<T>(T tx, UInt160 from = null, UInt160 change_address = null, Fixed8 fee = default(Fixed8)) where T : Transaction
