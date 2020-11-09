@@ -26,9 +26,14 @@ namespace OX.Bapps
         {
             MessageType = 0;
         }
+        /// <summary>
+        /// 0:message
+        /// -1:transfer
+        /// </summary>
         public int MessageType { get; set; }
         public string Content { get; set; }
         public byte[] MessageData { get; set; }
+        public object Attachment { get; set; }
         public Bapp From { get; set; }
         public Bapp To { get; set; }
     }
