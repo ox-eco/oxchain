@@ -62,7 +62,7 @@ namespace OX.Network.P2P.Payloads
                 model = this.Data.AsSerializable<T>();
                 return true;
             }
-            catch
+            catch (Exception e)
             {
                 model = default;
                 return false;

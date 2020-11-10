@@ -7,6 +7,8 @@ namespace OX.Bapps
     {
         Wallet Wallet { get; set; }
         void OnBlock(Block block);
+        void BeforeOnBlock(Block block);
+        void AfterOnBlock(Block block);
         void OnRebuild(Wallet wallet = null);
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);

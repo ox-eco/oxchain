@@ -100,12 +100,7 @@ namespace OX.Bapps
         public abstract IBappProvider BuildBappProvider();
         public abstract IBappApi BuildBappApi();
         public abstract IBappUi BuildBappUi();
-        public abstract void BeforeBlockPersistence(Block block);
-        public abstract void AfterBlockPersistence(Block block);
-        public abstract void BeforeBlockShow(Block block);
-        public abstract void AfterBlockShow(Block block);
-        public abstract void BeforeBlockApi(Block block);
-        public abstract void AfterBlockApi(Block block);
+       
 
         static Bapp()
         {
@@ -365,24 +360,18 @@ namespace OX.Bapps
             {
                 setBappState();
             }
-            if (this.BappProvider.IsNotNull())
-            {
-                BeforeBlockPersistence(block);
-                this.BappProvider.OnBlock(block);
-                AfterBlockPersistence(block);
-            }
-            if (this.BappApi.IsNotNull())
-            {
-                BeforeBlockApi(block);
-                this.BappApi.OnBlock(block);
-                AfterBlockApi(block);
-            }
-            if (this.BappUi.IsNotNull())
-            {
-                BeforeBlockShow(block);
-                this.BappUi.OnBlock(block);
-                AfterBlockShow(block);
-            }
+            if (this.BappProvider.IsNotNull()) this.BappProvider.BeforeOnBlock(block);
+            if (this.BappApi.IsNotNull()) this.BappApi.BeforeOnBlock(block);
+            if (this.BappUi.IsNotNull()) this.BappUi.BeforeOnBlock(block);
+
+            if (this.BappProvider.IsNotNull()) this.BappProvider.OnBlock(block);
+            if (this.BappApi.IsNotNull()) this.BappApi.OnBlock(block);
+            if (this.BappUi.IsNotNull()) this.BappUi.OnBlock(block);
+
+            if (this.BappProvider.IsNotNull()) this.BappProvider.AfterOnBlock(block);
+            if (this.BappApi.IsNotNull()) this.BappApi.AfterOnBlock(block);
+            if (this.BappUi.IsNotNull()) this.BappUi.AfterOnBlock(block);
+
         }
         void OnRebuild()
         {

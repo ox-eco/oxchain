@@ -6,6 +6,8 @@ namespace OX.Bapps
     {
         IUIModule[] Modules { get; }
         void OnBlock(Block block);
+        void BeforeOnBlock(Block block);
+        void AfterOnBlock(Block block);
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);
     }
