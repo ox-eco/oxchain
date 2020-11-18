@@ -9,8 +9,8 @@ namespace OX.Network.P2P.Payloads
     public class ContractTransaction : Transaction
     {
         public override Fixed8 SystemFee => TransferFee + AttributesFee;
-        public Fixed8 TransferFee => Fixed8.Satoshi * 1_000_000 * (Math.Min(Blockchain.Singleton.Height / 2_000_000, 10));
-        public Fixed8 AttributesFee => Fixed8.Satoshi * 10_000_000 * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage <= TransactionAttributeUsage.Tip10 && m.Data.GetVarSize() > 8).Count();
+        public Fixed8 TransferFee => Fixed8.OXU * (Math.Min(Blockchain.Singleton.Height / 2_000_000, 10));
+        public Fixed8 AttributesFee => Fixed8.OXU * 10* this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage <= TransactionAttributeUsage.Tip10 && m.Data.GetVarSize() > 8).Count();
 
         public ContractTransaction()
             : base(TransactionType.ContractTransaction)

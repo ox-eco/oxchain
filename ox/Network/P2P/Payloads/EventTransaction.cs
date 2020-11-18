@@ -24,11 +24,11 @@ namespace OX.Network.P2P.Payloads
                 switch (EventType)
                 {
                     case EventType.Board:
-                        return Fixed8.FromDecimal(100);
+                        return Fixed8.One * 100;
                     case EventType.Engrave:
-                        return Fixed8.FromDecimal(1);
+                        return Fixed8.One;
                     default:
-                        return Fixed8.Satoshi * 1_000_000;
+                        return Fixed8.OXU;
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace OX.Network.P2P.Payloads
                     {
                         var pts = this.Outputs.Where(m => m.ScriptHash == et.ScriptHash);
                         if (pts.IsNullOrEmpty()) return false;
-                        if (pts.Sum(m => m.Value) < Fixed8.Satoshi * 9_000_000) return false;
+                        if (pts.Sum(m => m.Value) < Fixed8.OXU * 9) return false;
                     }
                     if (et.EventType != EventType.Engrave)
                         return false;
