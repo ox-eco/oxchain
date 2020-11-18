@@ -33,14 +33,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.4.10" />
+    <PackageReference Include="Akka" Version="1.4.12" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.2.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0-rc.2.20475.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0-rc.2.20475.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0-rc.2.20475.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
