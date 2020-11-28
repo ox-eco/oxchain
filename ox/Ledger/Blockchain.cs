@@ -126,7 +126,7 @@ namespace OX.Ledger
         private readonly Dictionary<uint, LinkedList<Block>> block_cache_unverified = new Dictionary<uint, LinkedList<Block>>();
         internal readonly RelayCache RelayCache = new RelayCache(100);
         private Snapshot currentSnapshot;
-
+        public Snapshot CurrentSnapshot { get { return currentSnapshot; } }
         public Store Store { get; }
         public MemoryPool MemPool { get; }
         public uint Height => currentSnapshot.Height;
