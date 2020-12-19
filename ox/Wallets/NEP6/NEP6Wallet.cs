@@ -35,6 +35,13 @@ namespace OX.Wallets.NEP6
         {
             this.indexer = indexer;
             this.path = path;
+            this.name = name;
+            this.version = Version.Parse("1.0");
+            this.Scrypt = ScryptParameters.Default;
+            this.accounts = new Dictionary<UInt160, NEP6Account>();
+            this.Partners = new Dictionary<string, NEP6Partner>();
+            this.Stones = new Dictionary<string, NEP6Stone>();
+            this.extra = JObject.Null;
             if (File.Exists(path))
             {
                 using (StreamReader reader = new StreamReader(path))
@@ -56,26 +63,19 @@ namespace OX.Wallets.NEP6
                     this.Stones = ((JArray)sts).Select(p => NEP6Stone.FromJson(p)).ToDictionary(p => $"{p.Type}#{p.Key}");
                 }
                 this.extra = wallet["extra"];
-
+                LoadWallet();
                 indexer?.RegisterAccounts(accounts.Keys);
             }
-            else
-            {
-                this.name = name;
-                this.version = Version.Parse("1.0");
-                this.Scrypt = ScryptParameters.Default;
-                this.accounts = new Dictionary<UInt160, NEP6Account>();
-                this.Partners = new Dictionary<string, NEP6Partner>();
-                this.Stones = new Dictionary<string, NEP6Stone>();
-                this.extra = JObject.Null;
-            }
-
             if (indexer != null)
             {
                 indexer.WalletTransaction += WalletIndexer_WalletTransaction;
             }
         }
-        private  void AddAccount(NEP6Account account, bool is_import)
+        protected virtual void LoadWallet()
+        {
+
+        }
+        private void AddAccount(NEP6Account account, bool is_import)
         {
             lock (accounts)
             {
@@ -500,9 +500,10 @@ namespace OX.Wallets.NEP6
             if (Stones != default && Stones.Count > 0)
                 wallet["stones"] = new JArray(Stones.Values.Select(p => p.ToJson()));
             wallet["extra"] = extra;
+            OnSave();
             File.WriteAllText(path, wallet.ToString());
         }
-
+        public virtual void OnSave() { }
         public virtual IDisposable Unlock(string password)
         {
             if (!VerifyPassword(password))
