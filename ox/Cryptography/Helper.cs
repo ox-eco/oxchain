@@ -16,7 +16,7 @@ namespace OX.Cryptography
         private static ThreadLocal<SHA256> _sha256 = new ThreadLocal<SHA256>(() => SHA256.Create());
         private static ThreadLocal<RIPEMD160Managed> _ripemd160 = new ThreadLocal<RIPEMD160Managed>(() => new RIPEMD160Managed());
 
-        internal static byte[] AES256Decrypt(this byte[] block, byte[] key)
+        public static byte[] AES256Decrypt(this byte[] block, byte[] key)
         {
             using (Aes aes = Aes.Create())
             {
@@ -30,7 +30,7 @@ namespace OX.Cryptography
             }
         }
 
-        internal static byte[] AES256Encrypt(this byte[] block, byte[] key)
+        public static byte[] AES256Encrypt(this byte[] block, byte[] key)
         {
             using (Aes aes = Aes.Create())
             {
