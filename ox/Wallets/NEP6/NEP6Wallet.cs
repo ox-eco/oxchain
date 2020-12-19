@@ -15,29 +15,28 @@ namespace OX.Wallets.NEP6
     public class NEP6Wallet : Wallet
     {
         public override event EventHandler<WalletTransactionEventArgs> WalletTransaction;
-        private readonly WalletIndexer indexer;
-        private readonly string path;
-        private string password;
-        private string name;
-        private Version version;
+        protected readonly WalletIndexer indexer;
+        protected readonly string path;
+        protected string password;
+        protected string name;
+        protected Version version;
         public readonly ScryptParameters Scrypt;
-        private readonly Dictionary<UInt160, NEP6Account> accounts;
-        private Dictionary<string, NEP6Partner> Partners;
-        private Dictionary<string, NEP6Stone> Stones;
-        private readonly JObject extra;
-        private readonly Dictionary<UInt256, Transaction> unconfirmed = new Dictionary<UInt256, Transaction>();
+        protected readonly Dictionary<UInt160, NEP6Account> accounts;
+        protected Dictionary<string, NEP6Partner> Partners;
+        protected Dictionary<string, NEP6Stone> Stones;
+        protected readonly JObject extra;
+        protected readonly Dictionary<UInt256, Transaction> unconfirmed = new Dictionary<UInt256, Transaction>();
 
         public override string Name => name;
         public override Version Version => version;
         public override uint WalletHeight => indexer != null ? indexer.IndexHeight : default;
-
+        protected JObject wallet;
         public NEP6Wallet(WalletIndexer indexer, string path, string name = null)
         {
             this.indexer = indexer;
             this.path = path;
             if (File.Exists(path))
             {
-                JObject wallet;
                 using (StreamReader reader = new StreamReader(path))
                 {
                     wallet = JObject.Parse(reader);
@@ -76,7 +75,7 @@ namespace OX.Wallets.NEP6
                 indexer.WalletTransaction += WalletIndexer_WalletTransaction;
             }
         }
-        private void AddAccount(NEP6Account account, bool is_import)
+        private  void AddAccount(NEP6Account account, bool is_import)
         {
             lock (accounts)
             {
@@ -160,7 +159,7 @@ namespace OX.Wallets.NEP6
             AddAccount(account, false);
             return account;
         }
-        public NEP6Partner AddPartner(string address, string name, string mobile, string remark)
+        public virtual NEP6Partner AddPartner(string address, string name, string mobile, string remark)
         {
             if (string.IsNullOrWhiteSpace(address))
                 return default;
@@ -186,7 +185,7 @@ namespace OX.Wallets.NEP6
             }
             return parter;
         }
-        public NEP6Stone AddStone(string type, string key, string value)
+        public virtual NEP6Stone AddStone(string type, string key, string value)
         {
             if (string.IsNullOrWhiteSpace(type))
                 return default;
@@ -206,7 +205,7 @@ namespace OX.Wallets.NEP6
             }
             return stone;
         }
-        public bool DeletePartner(string address)
+        public virtual bool DeletePartner(string address)
         {
             if (string.IsNullOrWhiteSpace(address))
                 return false;
@@ -220,7 +219,7 @@ namespace OX.Wallets.NEP6
             }
             return Partners.Remove(address);
         }
-        public bool DeleteStone(string type, string key)
+        public virtual bool DeleteStone(string type, string key)
         {
             if (string.IsNullOrWhiteSpace(key))
                 return false;
@@ -259,7 +258,7 @@ namespace OX.Wallets.NEP6
             return account;
         }
 
-        public KeyPair DecryptKey(string nep2key)
+        public virtual KeyPair DecryptKey(string nep2key)
         {
             return new KeyPair(GetPrivateKeyFromNEP2(nep2key, password, Scrypt.N, Scrypt.R, Scrypt.P));
         }
@@ -489,9 +488,9 @@ namespace OX.Wallets.NEP6
             }
         }
 
-        public void Save()
+        public virtual void Save()
         {
-            JObject wallet = new JObject();
+            wallet = new JObject();
             wallet["name"] = name;
             wallet["version"] = version.ToString();
             wallet["scrypt"] = Scrypt.ToJson();
@@ -504,7 +503,7 @@ namespace OX.Wallets.NEP6
             File.WriteAllText(path, wallet.ToString());
         }
 
-        public IDisposable Unlock(string password)
+        public virtual IDisposable Unlock(string password)
         {
             if (!VerifyPassword(password))
                 throw new CryptographicException();
