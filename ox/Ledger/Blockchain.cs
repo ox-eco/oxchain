@@ -770,10 +770,10 @@ namespace OX.Ledger
         {
             Interlocked.Exchange(ref currentSnapshot, GetSnapshot())?.Dispose();
         }
-        public bool VerifyBizValidator(UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out uint AskFee)
+        public bool VerifyBizValidator(UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
             OXSBalance = Fixed8.Zero;
-            AskFee = 0;
+            AskFee = Fixed8.Zero;
             var acts = currentSnapshot.Accounts.GetAndChange(bizValidatorScriptHash, () => null);
             if (acts.IsNull()) return false;
             var balance = acts.GetBalance(OXS);

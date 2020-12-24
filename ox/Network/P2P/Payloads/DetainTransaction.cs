@@ -13,10 +13,10 @@ namespace OX.Network.P2P.Payloads
         public UInt160 ScriptHash;
         public DetainStatus DetainState;
         public uint DetainDuration;
-        public uint AskFee;
+        public Fixed8 AskFee;
         public byte[] Data;
 
-        public override int Size => base.Size + ScriptHash.Size + sizeof(DetainStatus) + sizeof(uint) + sizeof(uint) + Data.GetVarSize();
+        public override int Size => base.Size + ScriptHash.Size + sizeof(DetainStatus) + sizeof(uint) + AskFee.Size + Data.GetVarSize();
         public override Fixed8 SystemFee
         {
             get
@@ -36,7 +36,7 @@ namespace OX.Network.P2P.Payloads
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
-            AskFee = 0;
+            AskFee = Fixed8.Zero;
             Data = new byte[] { 0x00 };
         }
         public DetainTransaction(UInt160 scriptHash)
@@ -59,7 +59,7 @@ namespace OX.Network.P2P.Payloads
             ScriptHash = reader.ReadSerializable<UInt160>();
             DetainState = (DetainStatus)reader.ReadByte();
             DetainDuration = reader.ReadUInt32();
-            AskFee = reader.ReadUInt32();
+            AskFee = reader.ReadSerializable<Fixed8>();
             Data = reader.ReadVarBytes();
         }
 
@@ -85,7 +85,7 @@ namespace OX.Network.P2P.Payloads
 
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
-            if (this.AskFee > 1000) return false;
+            if (this.AskFee > Fixed8.One * 10) return false;
             if (this.DetainState == DetainStatus.Freeze && this.DetainDuration < 100) return false;
             return base.Verify(snapshot, mempool);
         }

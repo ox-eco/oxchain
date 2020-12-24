@@ -100,7 +100,7 @@ namespace OX.Bapps
         public abstract IBappProvider BuildBappProvider();
         public abstract IBappApi BuildBappApi();
         public abstract IBappUi BuildBappUi();
-       
+
 
         static Bapp()
         {
@@ -325,7 +325,7 @@ namespace OX.Bapps
             foreach (var ad in BizScriptHashStates)
             {
                 var sh = ad.Key;
-                BizScriptHashStates[sh] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out uint askFee);
+                BizScriptHashStates[sh] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
             }
         }
         void OnBlock(Block block)

@@ -44,7 +44,7 @@ namespace OX.Network.P2P.Payloads
         {
             if (!base.Verify(snapshot, mempool))
                 return false;
-            return Blockchain.Singleton.VerifyBizValidator(this.BizScriptHash, out Fixed8 balance, out uint askFee);
+            return Blockchain.Singleton.VerifyBizValidator(this.BizScriptHash, out Fixed8 balance, out Fixed8 askFee);
         }
     }
 }

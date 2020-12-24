@@ -13,11 +13,11 @@ namespace OX.Ledger
         public UInt160 ScriptHash;
         public DetainStatus DetainState;
         public uint DetainExpire;
-        public uint AskFee;
+        public Fixed8 AskFee;
         public ECPoint[] Votes;
         public Dictionary<UInt256, Fixed8> Balances;
 
-        public override int Size => base.Size + ScriptHash.Size + sizeof(DetainStatus) + sizeof(uint) + sizeof(uint) + Votes.GetVarSize()
+        public override int Size => base.Size + ScriptHash.Size + sizeof(DetainStatus) + sizeof(uint) + AskFee.Size + Votes.GetVarSize()
             + IO.Helper.GetVarSize(Balances.Count) + Balances.Count * (32 + 8);
 
         public AccountState() { }
@@ -27,7 +27,7 @@ namespace OX.Ledger
             this.ScriptHash = hash;
             this.DetainState = DetainStatus.UnFreeze;
             this.DetainExpire = 0;
-            this.AskFee = 0;
+            this.AskFee = Fixed8.Zero;
             this.Votes = new ECPoint[0];
             this.Balances = new Dictionary<UInt256, Fixed8>();
         }
@@ -51,7 +51,7 @@ namespace OX.Ledger
             ScriptHash = reader.ReadSerializable<UInt160>();
             DetainState = (DetainStatus)reader.ReadByte();
             DetainExpire = reader.ReadUInt32();
-            AskFee = reader.ReadUInt32();
+            AskFee = reader.ReadSerializable<Fixed8>();
             Votes = new ECPoint[reader.ReadVarInt()];
             for (int i = 0; i < Votes.Length; i++)
                 Votes[i] = ECPoint.DeserializeFrom(reader, ECCurve.Secp256r1);

@@ -52,7 +52,7 @@ namespace OX
             foreach (var ad in BizAddresses)
             {
                 var sh = ad.ToScriptHash();
-                if (Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out uint askFee))
+                if (Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee))
                 {
                     this.Permits.Add(sh);
                 }
