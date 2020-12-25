@@ -28,7 +28,7 @@ namespace OX.Network.P2P.Payloads
                     case EventType.Engrave:
                         return Fixed8.One;
                     default:
-                        return Fixed8.OXU;
+                        return Fixed8.One;
                 }
             }
         }
@@ -159,11 +159,11 @@ namespace OX.Network.P2P.Payloads
                 if (tx.IsNull()) return false;
                 if (tx is EventTransaction et)
                 {
-                    if (!this.ScriptHash.Equals(et.ScriptHash) && Blockchain.Singleton.Height > 192000)
+                    if (!this.ScriptHash.Equals(et.ScriptHash))
                     {
                         var pts = this.Outputs.Where(m => m.ScriptHash == et.ScriptHash);
                         if (pts.IsNullOrEmpty()) return false;
-                        if (pts.Sum(m => m.Value) < Fixed8.OXU * 9) return false;
+                        if (pts.Sum(m => m.Value) < Fixed8.One) return false;
                     }
                     if (et.EventType != EventType.Engrave)
                         return false;
