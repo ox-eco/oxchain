@@ -47,13 +47,21 @@ namespace OX.UI
                     this.button1.Enabled = false;
                     return false;
                 }
+                var f = uint.Parse(this.textBox2.Text);
+                if (d > 1000)
+                {
+                    tx = null;
+                    this.button1.Enabled = false;
+                    return false;
+                }
                 var address = comboBox1.SelectedItem as string;
                 var s = comboBox2.SelectedItem as string;
                 var state = Enum.Parse<DetainStatus>(s);
                 tx = new DetainTransaction(address.ToScriptHash())
                 {
                     DetainDuration = d,
-                    DetainState = state
+                    DetainState = state,
+                    AskFee = Fixed8.OXU * f
                 };
                 label3.Text = $"{tx.SystemFee} OXC";
                 this.button1.Enabled = true;
@@ -87,6 +95,25 @@ namespace OX.UI
             }
         }
 
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            var s = textBox2.Text;
+            if (!uint.TryParse(s, out uint v) && v > 1000)
+            {
+                if (s.Length > 0)
+                {
+                    s = s.Substring(0, s.Length - 1);
+                    this.textBox2.Clear();
+                    this.textBox2.AppendText(s);
+                }
+            }
+            else
+            {
+                if (!BuildTransaction(out transaction))
+                {
 
+                }
+            }
+        }
     }
 }
