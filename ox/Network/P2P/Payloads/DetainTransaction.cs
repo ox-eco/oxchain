@@ -24,9 +24,9 @@ namespace OX.Network.P2P.Payloads
                 switch (DetainState)
                 {
                     case DetainStatus.Freeze:
-                        return Fixed8.FromDecimal((decimal)DetainDuration);
+                        return Fixed8.One * DetainDuration;
                     default:
-                        return Fixed8.FromDecimal(100);
+                        return Fixed8.One * 100;
                 }
             }
         }
