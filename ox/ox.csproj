@@ -28,18 +28,8 @@
     <OutputPath>c:\ox</OutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="BizSystems\**" />
-    <EmbeddedResource Remove="BizSystems\**" />
-    <None Remove="BizSystems\**" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Extensions\TransactionTip.cs" />
-    <Compile Remove="Extensions\TransactionTipHelper.cs" />
-    <Compile Remove="Plugins\IBizPlugin.cs" />
-  </ItemGroup>
-
+ 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
@@ -49,11 +39,7 @@
     <PackageReference Include="K4os.Compression.LZ4" Version="1.2.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1" />
   </ItemGroup>
-
-
-
   <ItemGroup>
     <ProjectReference Include="..\ox.vm\ox.vm.csproj" />
   </ItemGroup>
-
 </Project>
