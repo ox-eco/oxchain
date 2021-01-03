@@ -51,6 +51,7 @@ namespace OX
                 [TransactionType.BillTransaction] = Fixed8.One,
                 [TransactionType.ReplyTransaction] = Fixed8.One,
                 [TransactionType.AskTransaction] = Fixed8.One,
+                [TransactionType.TreatyTransaction] = Fixed8.One * 10,
                 [TransactionType.EnrollmentTransaction] = Fixed8.FromDecimal(1000),
                 [TransactionType.IssueTransaction] = Fixed8.FromDecimal(5000),
                 [TransactionType.PublishTransaction] = Fixed8.FromDecimal(500),
