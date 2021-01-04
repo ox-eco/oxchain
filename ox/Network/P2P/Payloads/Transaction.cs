@@ -64,7 +64,7 @@ namespace OX.Network.P2P.Payloads
 
         InventoryType IInventory.InventoryType => InventoryType.TX;
 
-        public bool IsLowPriority => NetworkFee < ProtocolSettings.Default.LowPriorityThreshold;
+        public bool IsLowPriority => NetworkFee < ProtocolSettings.Default.LowPriorityThreshold || SystemFee < Fixed8.One;
 
         private Fixed8 _network_fee = -Fixed8.Satoshi;
         public virtual Fixed8 NetworkFee
