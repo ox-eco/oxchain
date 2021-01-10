@@ -85,8 +85,11 @@ namespace OX.Network.P2P.Payloads
 
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
-            if (this.AskFee < Fixed8.OXU) return false;
-            if (this.AskFee > Fixed8.One * 10) return false;
+            if (this.AskFee > Fixed8.Zero)
+            {
+                if (this.AskFee < Fixed8.OXU) return false;
+                if (this.AskFee > Fixed8.One * 10) return false;
+            }
             if (this.DetainState == DetainStatus.Freeze && this.DetainDuration < 100) return false;
             return base.Verify(snapshot, mempool);
         }
