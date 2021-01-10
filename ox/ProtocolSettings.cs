@@ -52,16 +52,16 @@ namespace OX
                 [TransactionType.ReplyTransaction] = Fixed8.One,
                 [TransactionType.AskTransaction] = Fixed8.One,
                 [TransactionType.TreatyTransaction] = Fixed8.One * 10,
-                [TransactionType.EnrollmentTransaction] = Fixed8.FromDecimal(1000),
-                [TransactionType.IssueTransaction] = Fixed8.FromDecimal(5000),
-                [TransactionType.PublishTransaction] = Fixed8.FromDecimal(500),
-                [TransactionType.RegisterTransaction] = Fixed8.FromDecimal(10000)
+                [TransactionType.EnrollmentTransaction] = Fixed8.One * 1000,
+                [TransactionType.IssueTransaction] = Fixed8.One * 5000,
+                [TransactionType.PublishTransaction] = Fixed8.One * 500,
+                [TransactionType.RegisterTransaction] = Fixed8.One * 10000
             };
 
             this.SystemFee = sys_fee;
             this.SecondsPerBlock = 15;
-            this.BappDetainOXS = Fixed8.FromDecimal(100_000);
-            this.LowPriorityThreshold = Fixed8.Parse("0.001");
+            this.BappDetainOXS = Fixed8.One * 100_000;
+            this.LowPriorityThreshold = Fixed8.Satoshi * 100_000;
         }
         public IEnumerable<IPEndPoint> GetSeedIPs()
         {
