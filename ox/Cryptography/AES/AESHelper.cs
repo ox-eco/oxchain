@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using OX.Cryptography.ECC;
+using Org.BouncyCastle.Math.EC;
+using OX.IO;
 
 namespace OX.Cryptography.AES
 {
@@ -24,6 +26,13 @@ namespace OX.Cryptography.AES
             ICryptoTransform transform = aes.CreateEncryptor();
             return transform.TransformFinalBlock(data, 0, data.Length);
         }
+        public static T Encrypt<T>(this ISerializable item, OX.Cryptography.ECC.ECPoint shareKey, byte[] salt = default) where T : AESEncryptData, new()
+        {
+            return new T()
+            {
+                Data = item.ToArray().Encrypt(shareKey, salt)
+            };
+        }
         public static byte[] Decrypt(this byte[] encryptedData, OX.Cryptography.ECC.ECPoint shareKey, byte[] salt = default)
         {
             var ks = shareKey.EncodePoint(true).ToHexString();
@@ -37,6 +46,19 @@ namespace OX.Cryptography.AES
             aes.IV = deriver.GetBytes(16);
             ICryptoTransform transform = aes.CreateDecryptor();
             return transform.TransformFinalBlock(encryptedData, 0, encryptedData.Length);
+        }
+        public static T Decrypt<T>(this AESEncryptData data, OX.Cryptography.ECC.ECPoint shareKey, byte[] salt = default) where T : ISerializable, new()
+        {
+            byte[] bs = data.Data.Decrypt(shareKey, salt);
+            if (bs.IsNullOrEmpty()) return default;
+            try
+            {
+                return bs.AsSerializable<T>();
+            }
+            catch
+            {
+                return default;
+            }
         }
     }
 }
