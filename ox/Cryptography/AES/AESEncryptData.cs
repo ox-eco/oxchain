@@ -12,11 +12,11 @@ namespace OX.Cryptography.AES
     {
         public byte[] Data;
         public virtual int Size => Data.GetVarSize();
-        public void Serialize(BinaryWriter writer)
+        public virtual void Serialize(BinaryWriter writer)
         {
             writer.WriteVarBytes(Data);
         }
-        public void Deserialize(BinaryReader reader)
+        public virtual void Deserialize(BinaryReader reader)
         {
             Data = reader.ReadVarBytes();
         }
