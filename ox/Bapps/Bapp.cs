@@ -2,15 +2,22 @@
 using OX.Network.P2P.Payloads;
 using OX.Plugins;
 using OX.Wallets;
+using OX.Cryptography.ECC;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using OX.SmartContract;
 
 
 namespace OX.Bapps
 {
+    //public class BizAccount
+    //{
+    //    public string Address;
+    //    public ECPoint PublicKey;
+    //}
     public abstract class Bapp
     {
         public static event BappEventHandler<BappEvent> BappEvent;
@@ -69,24 +76,24 @@ namespace OX.Bapps
         public bool IsActive => BizAddresses.IsNullOrEmpty() || BizScriptHashStates.ContainsValue(true);
         public bool IsValid => IsMatchKernel && IsActive;
 
-        Dictionary<UInt160, bool> _bizScriptHashState;
-        public Dictionary<UInt160, bool> BizScriptHashStates
+        Dictionary<ECPoint, bool> _bizScriptHashState;
+        public Dictionary<ECPoint, bool> BizScriptHashStates
         {
             get
             {
                 if (_bizScriptHashState.IsNullOrEmpty())
                 {
-                    _bizScriptHashState = new Dictionary<UInt160, bool>(); // BizAddresses.Select(m => m.ToScriptHash()).ToDictionary();
+                    _bizScriptHashState = new Dictionary<ECPoint, bool>(); // BizAddresses.Select(m => m.ToScriptHash()).ToDictionary();
                     if (BizAddresses.IsNotNullAndEmpty())
-                        foreach (var address in BizAddresses)
+                        foreach (var address in BizPublicKeys)
                         {
-                            _bizScriptHashState[address.ToScriptHash()] = false;
+                            _bizScriptHashState[address] = false;
                         }
                 }
                 return _bizScriptHashState;
             }
         }
-        public UInt160[] ValidBizScriptHashs
+        public ECPoint[] ValidBizScriptHashs
         {
             get
             {
@@ -95,7 +102,8 @@ namespace OX.Bapps
                 return bs.Select(m => m.Key).ToArray();
             }
         }
-        public abstract string[] BizAddresses { get; }
+        public abstract ECPoint[] BizPublicKeys { get; }
+        public UInt160[] BizAddresses => BizPublicKeys.IsNullOrEmpty() ? default : BizPublicKeys.Select(m => Contract.CreateSignatureRedeemScript(m).ToScriptHash()).ToArray();
         public abstract string MatchKernelVersion { get; }
         public abstract IBappProvider BuildBappProvider();
         public abstract IBappApi BuildBappApi();
@@ -219,13 +227,13 @@ namespace OX.Bapps
         {
             var sys = Bapp.GetBapp<T>();
             if (sys.IsNull()) return false;
-            return sys.BizAddresses.Contains(scriptHash.ToAddress());
+            return sys.BizAddresses.Contains(scriptHash);
         }
         public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
         {
             if (tx is BizTransaction bt)
             {
-                if (this.BizScriptHashStates.ContainsKey(bt.BizScriptHash))
+                if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(bt.BizScriptHash))
                 {
                     BT = bt;
                     return true;
@@ -243,7 +251,7 @@ namespace OX.Bapps
             {
                 if (tx is BizTransaction bt)
                 {
-                    if (this.BizScriptHashStates.ContainsKey(bt.BizScriptHash))
+                    if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(bt.BizScriptHash))
                     {
                         find = true;
                         list.Add(bt);
@@ -324,8 +332,9 @@ namespace OX.Bapps
         {
             foreach (var ad in BizScriptHashStates)
             {
-                var sh = ad.Key;
-                BizScriptHashStates[sh] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
+                var pubkey = ad.Key;
+                var sh = Contract.CreateSignatureRedeemScript(pubkey).ToScriptHash();
+                BizScriptHashStates[pubkey] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
             }
         }
         void OnBlock(Block block)
@@ -336,7 +345,7 @@ namespace OX.Bapps
                 bool ok2 = false;
                 foreach (var reference in tx.References)
                 {
-                    if (this.BizScriptHashStates.ContainsKey(reference.Value.ScriptHash) && reference.Value.AssetId == Blockchain.OXS)
+                    if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(reference.Value.ScriptHash) && reference.Value.AssetId == Blockchain.OXS)
                     {
                         ok2 = true;
                         break;
@@ -344,7 +353,7 @@ namespace OX.Bapps
                 }
                 foreach (var output in tx.Outputs)
                 {
-                    if (this.BizScriptHashStates.ContainsKey(output.ScriptHash) && output.AssetId == Blockchain.OXS)
+                    if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(output.ScriptHash) && output.AssetId == Blockchain.OXS)
                     {
                         ok2 = true;
                         break;
