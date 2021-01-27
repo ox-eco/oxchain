@@ -236,11 +236,16 @@ namespace OX.Wallets
         }
         public AskTransaction MakeSingleAskTransaction(SingleAskTransactionWrapper txWrapper, UInt160 bizScriptHash, byte DataType, ISerializable askItem, uint maxindex = 0x00, uint minindex = 0x00, byte edgeVersion = 0x00)
         {
+            var data = askItem.ToArray();
+            return MakeSingleAskTransaction(txWrapper, bizScriptHash, DataType, data, maxindex, minindex, edgeVersion);
+        }
+        public AskTransaction MakeSingleAskTransaction(SingleAskTransactionWrapper txWrapper, UInt160 bizScriptHash, byte DataType, byte[] data, uint maxindex = 0x00, uint minindex = 0x00, byte edgeVersion = 0x00)
+        {
             if (!Blockchain.Singleton.VerifyBizValidator(bizScriptHash, out Fixed8 balance, out Fixed8 askFee)) return default;
             AskTransaction ct = txWrapper.Get();
             ct.EdgeVersion = edgeVersion;
             ct.DataType = DataType;
-            ct.Data = askItem.ToArray();
+            ct.Data = data;
             ct.From = txWrapper.Account.GetKey().PublicKey;
             ct.BizScriptHash = bizScriptHash;
             ct.MaxIndex = maxindex;
