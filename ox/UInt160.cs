@@ -10,7 +10,7 @@ namespace OX
     public class UInt160 : UIntBase, IComparable<UInt160>, IEquatable<UInt160>
     {
         public static readonly UInt160 Zero = new UInt160();
-
+        
         /// <summary>
         /// The empty constructor stores a null byte array
         /// </summary>
@@ -26,7 +26,7 @@ namespace OX
             : base(20, value)
         {
         }
-
+       
         /// <summary>
         /// Method CompareTo returns 1 if this UInt160 is bigger than other UInt160; -1 if it's smaller; 0 if it's equals
         /// Example: assume this is 01ff00ff00ff00ff00ff00ff00ff00ff00ff00a4, this.CompareTo(02ff00ff00ff00ff00ff00ff00ff00ff00ff00a3) returns 1

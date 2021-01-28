@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using OX.Cryptography;
 namespace OX
 {
     /// <summary>
@@ -21,7 +22,18 @@ namespace OX
         /// Currently, inherited classes use 20-bytes (UInt160) or 32-bytes (UInt256)
         /// </summary>
         public int Size => data_bytes.Length;
-
+        private UInt256 _hash = null;
+        public UInt256 Hash
+        {
+            get
+            {
+                if (_hash == null)
+                {
+                    _hash = new UInt256(Crypto.Default.Hash256(data_bytes));
+                }
+                return _hash;
+            }
+        }
         /// <summary>
         /// Base constructor receives the intended number of bytes and a byte array. 
         /// If byte array is null, it's automatically initialized with given size.

@@ -49,7 +49,8 @@ namespace OX.Network.P2P.Payloads
         private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator()
         {
             yield return Contract.CreateSignatureRedeemScript(this.From).ToScriptHash();
-        }
+        }    
+
         public bool GetDataModel<T>(UInt160[] bizScriptHashs, byte dataType, out T model) where T : ISerializable, new()
         {
             if (bizScriptHashs.IsNullOrEmpty() || !bizScriptHashs.Contains(this.BizScriptHash) || this.DataType != dataType)
