@@ -63,11 +63,11 @@ namespace OX.Network.P2P.Payloads
         {
 
         }
-        public static Record BuildRecord<Model>(Model recordSubModel, UInt160 scriptHash, byte[] key) where Model : BizModel, new()
+        public static Record BuildRecord<Model>(Model recordSubModel, /*UInt160 scriptHash, */byte[] key) where Model : BizModel, new()
         {
             return new Record()
             {
-                ScriptHash = scriptHash,
+                //ScriptHash = scriptHash,
                 Prefix = recordSubModel.Prefix,
                 Key = key,
                 Data = recordSubModel.ToArray()
@@ -76,7 +76,7 @@ namespace OX.Network.P2P.Payloads
         public static BizRecordModel BuildModel(Record record)
         {
             BizRecordModel model = new BizRecordModel();
-            model.ScriptHash = record.ScriptHash;
+            //model.ScriptHash = record.ScriptHash;
             model.Key = record.Key;
             if (PrefixReflectionCache.GetCachedType(record.Prefix, out Type tp))
             {

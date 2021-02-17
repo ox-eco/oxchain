@@ -26,7 +26,7 @@ namespace OX.Network.P2P.Payloads
     }
     public sealed class BizRecordModel
     {
-        public UInt160 ScriptHash { get; set; }
+        //public UInt160 ScriptHash { get; set; }
         public byte[] Key { get; set; }
         public BizModel Model { get; set; }
     }
