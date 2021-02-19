@@ -8,7 +8,7 @@ namespace OX.Network.P2P.Payloads
 
     public sealed class Record : ISerializable
     {
-        //public UInt160 ScriptHash;
+        public UInt160 ScriptHash;
         public byte Prefix;
         public byte[] Key;
         public byte[] Data;
@@ -24,18 +24,18 @@ namespace OX.Network.P2P.Payloads
                 return _hash;
             }
         }
-        public int Size => /*ScriptHash.Size +*/ sizeof(byte) + Key.GetVarSize() + Data.GetVarSize();
+        public int Size => ScriptHash.Size + sizeof(byte) + Key.GetVarSize() + Data.GetVarSize();
 
         public Record()
         { }
         public Record(UInt160 scriptHash, byte prefix) : this()
         {
-            //this.ScriptHash = scriptHash;
+            this.ScriptHash = scriptHash;
             this.Prefix = prefix;
         }
         void ISerializable.Deserialize(BinaryReader reader)
         {
-            //ScriptHash = reader.ReadSerializable<UInt160>();
+            ScriptHash = reader.ReadSerializable<UInt160>();
             Prefix = reader.ReadByte();
             Key = reader.ReadVarBytes();
             Data = reader.ReadVarBytes();
@@ -44,7 +44,7 @@ namespace OX.Network.P2P.Payloads
 
         void ISerializable.Serialize(BinaryWriter writer)
         {
-            //writer.Write(ScriptHash);
+            writer.Write(ScriptHash);
             writer.Write(Prefix);
             writer.WriteVarBytes(Key);
             writer.WriteVarBytes(Data);
