@@ -76,7 +76,7 @@ namespace OX.Network.P2P.Payloads
         public static BizRecordModel BuildModel(Record record)
         {
             BizRecordModel model = new BizRecordModel();
-            //model.ScriptHash = record.ScriptHash;
+            model.ScriptHash = record.ScriptHash;
             model.Key = record.Key;
             if (PrefixReflectionCache.GetCachedType(record.Prefix, out Type tp))
             {
