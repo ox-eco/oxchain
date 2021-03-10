@@ -1,4 +1,5 @@
 ﻿using OX.Network.P2P.Payloads;
+using OX.Wallets;
 
 namespace OX.Bapps
 {
@@ -10,6 +11,7 @@ namespace OX.Bapps
         void AfterOnBlock(Block block);
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);
+        void OnRebuild();
     }
 
 }

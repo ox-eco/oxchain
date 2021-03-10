@@ -385,6 +385,7 @@ namespace OX.Bapps
         void OnRebuild()
         {
             this.BappProvider?.OnRebuild();
+            if (this.BappUi.IsNotNull()) this.BappUi.OnRebuild();
         }
         public void PushEvent(BappEvent bappEvent)
         {
