@@ -192,6 +192,13 @@ namespace OX.Bapps
             }
             BappRebuildIndex?.Invoke();
         }
+        public static void OnRebuildUI()
+        {
+            foreach (var bapp in bapps)
+            {
+                bapp.OnUiRebuild();
+            }
+        }
         public static T GetBapp<T>() where T : Bapp
         {
             var instance = bapps.Where(m => m is T)?.FirstOrDefault();
@@ -385,7 +392,11 @@ namespace OX.Bapps
         void OnRebuild()
         {
             this.BappProvider?.OnRebuild();
-            if (this.BappUi.IsNotNull()) this.BappUi.OnRebuild();
+            this.BappUi?.OnRebuild();
+        }
+        void OnUiRebuild()
+        {
+            this.BappUi?.OnRebuild();
         }
         public void PushEvent(BappEvent bappEvent)
         {
