@@ -29,6 +29,7 @@ namespace OX.Bapps
         /// <summary>
         /// 0:message
         /// -1:transfer
+        /// 1:open event board
         /// </summary>
         public int MessageType { get; set; }
         public string Content { get; set; }
