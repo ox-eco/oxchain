@@ -98,6 +98,7 @@ namespace OX.Plugins
 
         internal protected bool VerifySizeLimits(Transaction tx)
         {
+            if (tx is CenterTransaction) return true;
             if (InHigherLowPriorityList(tx)) return true;
 
             // Not Allow free TX bigger than MaxFreeTransactionSize
