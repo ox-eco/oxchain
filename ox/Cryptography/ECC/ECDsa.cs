@@ -27,7 +27,7 @@ namespace OX.Cryptography.ECC
         {
             int messageBitLength = message.Length * 8;
             BigInteger trunc = new BigInteger(message.Reverse().Concat(new byte[1]).ToArray());
-            if (n.GetBitLength() < messageBitLength)
+            if (n.OXGetBitLength() < messageBitLength)
             {
                 trunc >>= messageBitLength - n.OXGetBitLength();
             }

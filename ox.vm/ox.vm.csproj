@@ -6,7 +6,7 @@
     <Description>OX.VM</Description>
     <Version>1.0.2</Version>
     <Authors>OX</Authors>
-	  <TargetFramework>net5.0</TargetFramework>
+	  <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>ox.vm</AssemblyName>
     <PackageId>OX.VM</PackageId>
     <PackageTags></PackageTags>
@@ -18,7 +18,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Nullable>warnings</Nullable>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>C:\ox</OutputPath>
   </PropertyGroup>

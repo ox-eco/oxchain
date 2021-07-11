@@ -347,7 +347,7 @@ namespace OX.Cryptography.ECC
 
         private static sbyte[] WindowNaf(sbyte width, BigInteger k)
         {
-            sbyte[] wnaf = new sbyte[k.GetBitLength() + 1];
+            sbyte[] wnaf = new sbyte[k.OXGetBitLength() + 1];
             short pow2wB = (short)(1 << width);
             int i = 0;
             int length = 0;
