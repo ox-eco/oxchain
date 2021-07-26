@@ -470,7 +470,7 @@ namespace OX.Wallets
         }
         public abstract bool VerifyPassword(string password);
 
-        private static byte[] XOR(byte[] x, byte[] y)
+        protected static byte[] XOR(byte[] x, byte[] y)
         {
             if (x.Length != y.Length) throw new ArgumentException();
             return x.Zip(y, (a, b) => (byte)(a ^ b)).ToArray();
