@@ -185,6 +185,12 @@ namespace OX.Wallets.NEP6
             }
             return parter;
         }
+        public virtual bool ContainStone(string type, string key)
+        {
+            if (this.Stones == default)
+                this.Stones = new Dictionary<string, NEP6Stone>();
+            return this.Stones.ContainsKey($"{type}#{key}");
+        }
         public virtual NEP6Stone AddStone(string type, string key, string value)
         {
             if (string.IsNullOrWhiteSpace(type))
