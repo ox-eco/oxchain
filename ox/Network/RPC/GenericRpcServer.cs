@@ -28,15 +28,12 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
 namespace OX.Network.RPC
 {
     public abstract class GenericRpcServer : IDisposable
     {
 
         private IWebHost host;
-
         public GenericRpcServer()
         {
 
