@@ -62,18 +62,35 @@ namespace OX.Network.RPC
             }
             if (PreProcessAsync(context.Request.GetEncodedPathAndQuery(), dic, out string resp))
             {
+                context.Response.ContentType = "application/json-rpc";
                 await context.Response.WriteAsync(resp, Encoding.UTF8);
             }
         }
-
-
-
-        public void Start(int port, string sslCert = null, string password = null)
+        public void Start(IPAddress bindAddress, int port, string sslCert = null, string password = null, string[] trustedAuthorities = null)
         {
-            host = new WebHostBuilder().UseKestrel(options => options.Listen(IPAddress.Any, port, listenOptions =>
+            host = new WebHostBuilder().UseKestrel(options => options.Listen(bindAddress, port, listenOptions =>
             {
-                if (!string.IsNullOrEmpty(sslCert))
-                    listenOptions.UseHttps(sslCert, password);
+                // Default value is unlimited
+                options.Limits.MaxConcurrentConnections = 40;
+                // Default value is 2 minutes
+                options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(1);
+                // Default value is 30 seconds
+                options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(15);
+
+                if (string.IsNullOrEmpty(sslCert)) return;
+                listenOptions.UseHttps(sslCert, password, httpsConnectionAdapterOptions =>
+                {
+                    if (trustedAuthorities is null || trustedAuthorities.Length == 0)
+                        return;
+                    httpsConnectionAdapterOptions.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+                    httpsConnectionAdapterOptions.ClientCertificateValidation = (cert, chain, err) =>
+                    {
+                        if (err != SslPolicyErrors.None)
+                            return false;
+                        X509Certificate2 authority = chain.ChainElements[chain.ChainElements.Count - 1].Certificate;
+                        return trustedAuthorities.Contains(authority.Thumbprint);
+                    };
+                });
             }))
             .Configure(app =>
             {
@@ -98,5 +115,9 @@ namespace OX.Network.RPC
 
             host.Start();
         }
+
+
+
+
     }
 }
