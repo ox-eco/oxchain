@@ -2,6 +2,7 @@
 using OX.Network.P2P.Payloads;
 using OX.Plugins;
 using OX.Wallets;
+using OX.IO.Json;
 using OX.Cryptography.ECC;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace OX.Bapps
         public static event BappEventHandler<Block> BappBlockEvent;
         public static event BappEventHandler BappRebuildIndex;
         static readonly List<Bapp> bapps = new List<Bapp>();
+        public static IEnumerable<Bapp> AllBapps { get { return bapps.AsEnumerable(); } }
 
         static readonly string BappsRootPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "bapps");
         public static string KernelVersion => System.GetType().Assembly.GetVersion();
@@ -120,8 +122,10 @@ namespace OX.Bapps
 
         protected Bapp()
         {
+            InitBapp();
             bapps.Add(this);
         }
+        protected abstract void InitBapp();      
         #region static
         public static void PushCrossBappMessage(CrossBappMessage message)
         {
