@@ -11,7 +11,6 @@ namespace OX.Bapps
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);
         bool ProcessAsync(Microsoft.AspNetCore.Http.HttpContext context, string path, Dictionary<string, string> query, out string resp);
+        bool GetHomeHtml(Microsoft.AspNetCore.Http.HttpContext context, string path, Dictionary<string, string> query, out string resp);
     }
-
-
 }
