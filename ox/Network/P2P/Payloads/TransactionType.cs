@@ -42,6 +42,8 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(AskTransaction))]
         AskTransaction = 0xc8,
         [ReflectionCache(typeof(TreatyTransaction))]
-        TreatyTransaction =0xc9
+        TreatyTransaction = 0xc9,
+        [ReflectionCache(typeof(RewardTransaction))]
+        RewardTransaction = 0xcA
     }
 }
