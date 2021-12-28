@@ -64,7 +64,7 @@ namespace OX.Network.P2P.Payloads
 
         InventoryType IInventory.InventoryType => InventoryType.TX;
 
-        public bool IsLowPriority => NetworkFee < ProtocolSettings.Default.LowPriorityThreshold &&SystemFee < Fixed8.One;
+        public bool IsLowPriority => NetworkFee < ProtocolSettings.Default.LowPriorityThreshold && SystemFee < Fixed8.One;
 
         private Fixed8 _network_fee = -Fixed8.Satoshi;
         public virtual Fixed8 NetworkFee
@@ -110,7 +110,9 @@ namespace OX.Network.P2P.Payloads
 
         public virtual int Size => sizeof(TransactionType) + sizeof(byte) + Attributes.GetVarSize() + Inputs.GetVarSize() + Outputs.GetVarSize() + Witnesses.GetVarSize();
 
-        public virtual Fixed8 SystemFee => ProtocolSettings.Default.SystemFee.TryGetValue(Type, out Fixed8 fee) ? fee : Fixed8.Zero;
+        public Fixed8 RewardSystemFee { get; set; } = Fixed8.Zero;
+        Fixed8 defaultSystemFee => ProtocolSettings.Default.SystemFee.TryGetValue(Type, out Fixed8 fee) ? fee : Fixed8.Zero;
+        public virtual Fixed8 SystemFee => RewardSystemFee > defaultSystemFee ? RewardSystemFee : defaultSystemFee;
 
         protected Transaction(TransactionType type)
         {
