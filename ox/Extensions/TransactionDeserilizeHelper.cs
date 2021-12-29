@@ -51,6 +51,8 @@ namespace OX
                         return TxData.AsSerializable<AskTransaction>();
                     case TransactionType.TreatyTransaction:
                         return TxData.AsSerializable<TreatyTransaction>();
+                    case TransactionType.RewardTransaction:
+                        return TxData.AsSerializable<RewardTransaction>();
                 }
                 return default;
 

@@ -9,16 +9,41 @@ using System.Linq;
 
 namespace OX.Network.P2P.Payloads
 {
+    public enum RewardAmount : byte
+    {
+        _10000 = 0x01,
+        _100000 = 0x02,
+        _1000000 = 0x04,
+        _10000000 = 0x08
+    }
     public class RewardTransaction : Transaction
     {
+        public RewardAmount RewardAmount;
         public byte[] Data;
 
-        public override int Size => base.Size + Data.GetVarSize();
-
-        public RewardTransaction(Fixed8 rewardFee)
+        public override int Size => base.Size + sizeof(RewardAmount) + Data.GetVarSize();
+        public override Fixed8 SystemFee
+        {
+            get
+            {
+                switch (RewardAmount)
+                {
+                    case RewardAmount._10000:
+                        return Fixed8.One * 10000;
+                    case RewardAmount._100000:
+                        return Fixed8.One * 100000;
+                    case RewardAmount._1000000:
+                        return Fixed8.One * 1000000;
+                    case RewardAmount._10000000:
+                        return Fixed8.One * 10000000;
+                    default:
+                        return Fixed8.One * 10000;
+                }
+            }
+        }
+        public RewardTransaction()
           : base(TransactionType.RewardTransaction)
         {
-            this.RewardSystemFee = rewardFee;
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
@@ -28,13 +53,13 @@ namespace OX.Network.P2P.Payloads
 
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
-
+            RewardAmount = (RewardAmount)reader.ReadByte();
             Data = reader.ReadVarBytes();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
-
+            writer.Write((byte)RewardAmount);
             writer.WriteVarBytes(Data);
         }
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
