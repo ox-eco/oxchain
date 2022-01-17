@@ -232,6 +232,7 @@ namespace OX.Wallets
 
         private void ProcessBlocks()
         {
+            Thread.Sleep(10000);
             while (!disposed)
             {
                 while (!disposed)
