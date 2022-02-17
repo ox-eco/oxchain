@@ -16,7 +16,7 @@ namespace OX.Network.P2P.Payloads
             if (output.IsNotNull())
                 tx.Outputs = new TransactionOutput[] { output };
         }
-        public SingleTransactionWrapper(UInt160 from, TransactionOutput[] outputs = default) : base()
+        public SingleTransactionWrapper(UInt160 from, TransactionOutput[] outputs) : base()
         {
             this.From = from;
             tx = new T();
@@ -40,7 +40,7 @@ namespace OX.Network.P2P.Payloads
         {
             this.Account = account;
         }
-        public SingleAskTransactionWrapper(WalletAccount account, TransactionOutput[] outputs = default) : base(account.ScriptHash, outputs)
+        public SingleAskTransactionWrapper(WalletAccount account, TransactionOutput[] outputs) : base(account.ScriptHash, outputs)
         {
             this.Account = account;
         }
