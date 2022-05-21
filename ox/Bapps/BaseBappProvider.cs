@@ -18,6 +18,7 @@ namespace OX.Bapps
     {
         public Bapp Bapp { get; set; }
         public abstract Wallet Wallet { get; set; }
+        public abstract string WalletPath { get; set; }
         public DB Db { get; protected set; }
 
         public BaseBappProvider(Bapp bapp)
