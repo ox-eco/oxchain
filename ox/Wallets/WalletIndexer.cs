@@ -41,7 +41,8 @@ namespace OX.Wallets
         public WalletIndexer(string path)
         {
             path = Path.GetFullPath(path);
-            Directory.CreateDirectory(path);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
             db = DB.Open(path, new Options { CreateIfMissing = true });
             if (db.TryGet(ReadOptions.Default, SliceBuilder.Begin(DataEntryPrefix.SYS_Version), out Slice value) && Version.TryParse(value.ToString(), out Version version) && version >= Version.Parse("1.0.0"))
             {

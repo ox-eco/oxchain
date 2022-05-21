@@ -8,7 +8,6 @@ namespace OX.Bapps
     public interface IBappProvider : IBappPort
     {
         Wallet Wallet { get; set; }
-        string WalletPath { get; set; }
         void OnBlock(Block block);
         void BeforeOnBlock(Block block);
         void AfterOnBlock(Block block);
