@@ -18,7 +18,7 @@ namespace OX.Network.P2P
 {
     public abstract class Peer : UntypedActor
     {
-        public class Start { public int Port; public int WsPort; public int MinDesiredConnections; public int MaxConnections; public int MaxConnectionsPerAddress; }
+        public class Start { public int Port; public int WsPort; public int WebPort; public int MinDesiredConnections; public int MaxConnections; public int MaxConnectionsPerAddress; }
         public class Peers { public IEnumerable<IPEndPoint> EndPoints; }
         public class Connect { public IPEndPoint EndPoint; public bool IsTrusted = false; }
         private class Timer { }
@@ -117,7 +117,7 @@ namespace OX.Network.P2P
             switch (message)
             {
                 case Start start:
-                    OnStart(start.Port, start.WsPort, start.MinDesiredConnections, start.MaxConnections, start.MaxConnectionsPerAddress);
+                    OnStart(start.Port, start.WsPort, start.WebPort, start.MinDesiredConnections, start.MaxConnections, start.MaxConnectionsPerAddress);
                     break;
                 case Timer _:
                     OnTimer();
@@ -146,7 +146,7 @@ namespace OX.Network.P2P
             }
         }
 
-        private void OnStart(int port, int wsPort, int minDesiredConnections, int maxConnections, int maxConnectionsPerAddress)
+        private void OnStart(int port, int wsPort, int webPort, int minDesiredConnections, int maxConnections, int maxConnectionsPerAddress)
         {
             ListenerPort = port;
             MinDesiredConnections = minDesiredConnections;
@@ -165,6 +165,8 @@ namespace OX.Network.P2P
                         UPnP.ForwardPort(port, ProtocolType.Tcp, "OX");
                     if (wsPort > 0)
                         UPnP.ForwardPort(wsPort, ProtocolType.Tcp, "OX WebSocket");
+                    if (webPort > 0)
+                        UPnP.ForwardPort(webPort, ProtocolType.Tcp, "OX WebApi");
                 }
                 catch
                 {

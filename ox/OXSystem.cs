@@ -75,13 +75,14 @@ namespace OX
             Consensus.Tell(new ConsensusService.Start { IgnoreRecoveryLogs = ignoreRecoveryLogs }, Blockchain);
         }
 
-        public void StartNode(int port = 0, int wsPort = 0, int minDesiredConnections = Peer.DefaultMinDesiredConnections,
+        public void StartNode(int port = 0, int wsPort = 0, int webPort=0, int minDesiredConnections = Peer.DefaultMinDesiredConnections,
             int maxConnections = Peer.DefaultMaxConnections, int maxConnectionsPerAddress = 3)
         {
             start_message = new Peer.Start
             {
                 Port = port,
                 WsPort = wsPort,
+                WebPort = webPort,
                 MinDesiredConnections = minDesiredConnections,
                 MaxConnections = maxConnections,
                 MaxConnectionsPerAddress = maxConnectionsPerAddress
