@@ -466,7 +466,6 @@ namespace OX.Ledger
                     SystemFeeAmount = snapshot.GetSysFeeAmount(block.PrevHash) + (long)block.Transactions.Sum(p => p.SystemFee),
                     TrimmedBlock = block.Trim()
                 });
-                ushort m = 0;
                 foreach (Transaction tx in block.Transactions)
                 {
                     snapshot.Transactions.Add(tx.Hash, new TransactionState
@@ -612,7 +611,6 @@ namespace OX.Ledger
                             break;
 
                         case DetainTransaction tx_detain:
-                            m++;
                             switch (tx_detain.DetainState)
                             {
                                 case DetainStatus.Freeze:
