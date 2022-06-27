@@ -1,5 +1,6 @@
 ﻿using OX.Cryptography;
 using OX.Cryptography.ECC;
+using OX.Network.P2P.Payloads;
 using OX.IO;
 using System.IO;
 using System.Linq;
@@ -40,6 +41,32 @@ namespace OX.Network.P2P
         public bool Verify()
         {
             return Crypto.Default.VerifySignature(Target.ToArray(), Signature, Target.PublicKey.EncodePoint(true));
+        }
+    }
+
+    public class NFTDonateAuthentication : ISignatureTarget
+    {
+        public ECPoint PublicKey { get; set; }
+        public NFTDonateType NFTDonateType;
+        public UInt256 PreHash;
+        public UInt160 NewOwner;
+        public virtual int Size => PublicKey.Size + sizeof(NFTDonateType) + PreHash.Size + NewOwner.Size;
+        public NFTDonateAuthentication()
+        {
+        }
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write(PublicKey);
+            writer.Write((byte)NFTDonateType);
+            writer.Write(PreHash);
+            writer.Write(NewOwner);           
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            PublicKey = reader.ReadSerializable<ECPoint>();
+            NFTDonateType = (NFTDonateType)reader.ReadByte();
+            PreHash = reader.ReadSerializable<UInt256>();
+            NewOwner = reader.ReadSerializable<UInt160>();
         }
     }
 }

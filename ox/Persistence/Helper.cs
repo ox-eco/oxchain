@@ -77,7 +77,14 @@ namespace OX.Persistence
         {
             return persistence.Transactions.TryGet(hash)?.Transaction;
         }
-
+        public static NFTState GetNFTState(this IPersistence persistence, UInt256 hash)
+        {
+            return persistence.NFTs.TryGet(hash);
+        }
+        public static NFTDonateState GetNFTDonateState(this IPersistence persistence, NFTDonateStateKey key)
+        {
+            return persistence.NFTDonates.TryGet(key);
+        }
         public static TransactionOutput GetUnspent(this IPersistence persistence, UInt256 hash, ushort index)
         {
             UnspentCoinState state = persistence.UnspentCoins.TryGet(hash);

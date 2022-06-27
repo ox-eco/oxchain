@@ -53,6 +53,10 @@ namespace OX
                         return TxData.AsSerializable<TreatyTransaction>();
                     case TransactionType.RewardTransaction:
                         return TxData.AsSerializable<RewardTransaction>();
+                    case TransactionType.NFTCoinTransaction:
+                        return TxData.AsSerializable<NFTCoinTransaction>();
+                    case TransactionType.NFTDonateTransaction:
+                        return TxData.AsSerializable<NFTDonateTransaction>();
                 }
                 return default;
 

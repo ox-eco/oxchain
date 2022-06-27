@@ -9,6 +9,8 @@ namespace OX.Persistence
     {
         DataCache<UInt256, BlockState> IPersistence.Blocks => GetBlocks();
         DataCache<UInt256, TransactionState> IPersistence.Transactions => GetTransactions();
+        DataCache<UInt256, NFTState> IPersistence.NFTs => GetNFTs();
+        DataCache<NFTDonateStateKey, NFTDonateState> IPersistence.NFTDonates => GetNFTDonates();
         DataCache<UInt160, AccountState> IPersistence.Accounts => GetAccounts();
         DataCache<UInt256, UnspentCoinState> IPersistence.UnspentCoins => GetUnspentCoins();
         DataCache<UInt256, SpentCoinState> IPersistence.SpentCoins => GetSpentCoins();
@@ -24,6 +26,8 @@ namespace OX.Persistence
         public abstract byte[] Get(byte prefix, byte[] key);
         public abstract DataCache<UInt256, BlockState> GetBlocks();
         public abstract DataCache<UInt256, TransactionState> GetTransactions();
+        public abstract DataCache<UInt256, NFTState> GetNFTs();
+        public abstract DataCache<NFTDonateStateKey, NFTDonateState> GetNFTDonates();
         public abstract DataCache<UInt160, AccountState> GetAccounts();
         public abstract DataCache<UInt256, UnspentCoinState> GetUnspentCoins();
         public abstract DataCache<UInt256, SpentCoinState> GetSpentCoins();

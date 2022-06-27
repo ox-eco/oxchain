@@ -15,6 +15,8 @@ namespace OX.Persistence
         public Block PersistingBlock { get; internal set; }
         public abstract DataCache<UInt256, BlockState> Blocks { get; }
         public abstract DataCache<UInt256, TransactionState> Transactions { get; }
+        public abstract DataCache<UInt256, NFTState> NFTs { get; }
+        public abstract DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
         public abstract DataCache<UInt160, AccountState> Accounts { get; }
         public abstract DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
         public abstract DataCache<UInt256, SpentCoinState> SpentCoins { get; }
@@ -127,6 +129,8 @@ namespace OX.Persistence
             SpentCoins.DeleteWhere((k, v) => v.Items.Count == 0);
             Blocks.Commit();
             Transactions.Commit();
+            NFTs.Commit();
+            NFTDonates.Commit();
             Accounts.Commit();
             UnspentCoins.Commit();
             SpentCoins.Commit();

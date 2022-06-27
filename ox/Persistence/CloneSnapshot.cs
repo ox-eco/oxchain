@@ -9,6 +9,8 @@ namespace OX.Persistence
     {
         public override DataCache<UInt256, BlockState> Blocks { get; }
         public override DataCache<UInt256, TransactionState> Transactions { get; }
+        public override DataCache<UInt256, NFTState> NFTs { get; }
+        public override DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
         public override DataCache<UInt256, SpentCoinState> SpentCoins { get; }
@@ -26,6 +28,8 @@ namespace OX.Persistence
             this.PersistingBlock = snapshot.PersistingBlock;
             this.Blocks = snapshot.Blocks.CreateSnapshot();
             this.Transactions = snapshot.Transactions.CreateSnapshot();
+            this.NFTs = snapshot.NFTs.CreateSnapshot();
+            this.NFTDonates = snapshot.NFTDonates.CreateSnapshot();
             this.Accounts = snapshot.Accounts.CreateSnapshot();
             this.UnspentCoins = snapshot.UnspentCoins.CreateSnapshot();
             this.SpentCoins = snapshot.SpentCoins.CreateSnapshot();

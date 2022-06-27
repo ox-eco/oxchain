@@ -466,6 +466,7 @@ namespace OX.Ledger
                     SystemFeeAmount = snapshot.GetSysFeeAmount(block.PrevHash) + (long)block.Transactions.Sum(p => p.SystemFee),
                     TrimmedBlock = block.Trim()
                 });
+                ushort n = 0;
                 foreach (Transaction tx in block.Transactions)
                 {
                     snapshot.Transactions.Add(tx.Hash, new TransactionState
@@ -639,6 +640,29 @@ namespace OX.Ledger
                                     break;
                             }
                             break;
+                        case NFTCoinTransaction tx_nftcoin:
+                            snapshot.NFTs.Add(tx.Hash, new NFTState { NFTCoin = tx_nftcoin, BlockIndex = block.Index, N = n, DataHash = tx_nftcoin.DataHash });
+                            break;
+                        case NFTDonateTransaction tx_nftdonate:
+                            switch (tx_nftdonate.DonateAuthentication.Target.NFTDonateType)
+                            {
+                                case NFTDonateType.Issue:
+                                    NFTDonateStateKey donateKey = new NFTDonateStateKey { NFTCoinHash = tx_nftdonate.NFTDonateStateKey.NFTCoinHash, IssueBlockIndex = block.Index, IssueN = n, IssueDonateHash = tx.Hash };
+                                    snapshot.NFTDonates.Add(donateKey, new NFTDonateState { IssueTx = tx_nftdonate, TransferBlockIndex = 0, TransferN = 0, TransferTx = default });
+                                    break;
+                                case NFTDonateType.Transfer:
+                                    var donateState = snapshot.NFTDonates.TryGet(tx_nftdonate.NFTDonateStateKey);
+                                    if (donateState.IsNotNull())
+                                    {
+                                        donateState.TransferBlockIndex = block.Index;
+                                        donateState.TransferN = n;
+                                        donateState.TransferTx = tx_nftdonate;
+                                        snapshot.NFTDonates.GetAndChange(tx_nftdonate.NFTDonateStateKey, () => donateState);
+                                    }
+
+                                    break;
+                            }
+                            break;
                     }
                     if (execution_results.Count > 0)
                     {
@@ -650,6 +674,7 @@ namespace OX.Ledger
                         Context.System.EventStream.Publish(application_executed);
                         all_application_executed.Add(application_executed);
                     }
+                    n++;
                 }
                 snapshot.BlockHashIndex.GetAndChange().Hash = block.Hash;
                 snapshot.BlockHashIndex.GetAndChange().Index = block.Index;

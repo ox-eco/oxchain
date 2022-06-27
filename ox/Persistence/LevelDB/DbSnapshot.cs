@@ -15,6 +15,8 @@ namespace OX.Persistence.LevelDB
 
         public override DataCache<UInt256, BlockState> Blocks { get; }
         public override DataCache<UInt256, TransactionState> Transactions { get; }
+        public override DataCache<UInt256, NFTState> NFTs { get; }
+        public override DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
         public override DataCache<UInt256, SpentCoinState> SpentCoins { get; }
@@ -35,6 +37,8 @@ namespace OX.Persistence.LevelDB
             ReadOptions options = new ReadOptions { FillCache = false, Snapshot = snapshot };
             Blocks = new DbCache<UInt256, BlockState>(db, options, batch, Prefixes.DATA_Block);
             Transactions = new DbCache<UInt256, TransactionState>(db, options, batch, Prefixes.DATA_Transaction);
+            NFTs = new DbCache<UInt256, NFTState>(db, options, batch, Prefixes.DATA_NFT);
+            NFTDonates = new DbCache<NFTDonateStateKey, NFTDonateState>(db, options, batch, Prefixes.DATA_NFTDONATE);
             Accounts = new DbCache<UInt160, AccountState>(db, options, batch, Prefixes.ST_Account);
             UnspentCoins = new DbCache<UInt256, UnspentCoinState>(db, options, batch, Prefixes.ST_Coin);
             SpentCoins = new DbCache<UInt256, SpentCoinState>(db, options, batch, Prefixes.ST_SpentCoin);
