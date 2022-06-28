@@ -14,7 +14,7 @@ namespace OX.Ledger
         public uint IssueBlockIndex;
         public ushort IssueN;
         public UInt256 IssueDonateHash;
-        public int Size => NFTCoinHash.Size + sizeof(uint) + sizeof(ushort) + sizeof(byte) + IssueDonateHash.Size;
+        public int Size => NFTCoinHash.Size + sizeof(uint) + sizeof(ushort) + sizeof(byte) + (IssueDonateHash.IsNotNull() ? IssueDonateHash.Size : 0);
         private UInt256 _hash = null;
         public UInt256 Hash
         {
@@ -128,7 +128,7 @@ namespace OX.Ledger
         public ushort TransferN;
         public NFTDonateTransaction TransferTx;
 
-        public override int Size => base.Size + IssueTx.Size + sizeof(uint) + sizeof(ushort) + sizeof(byte) + TransferTx.Size;
+        public override int Size => base.Size + IssueTx.Size + sizeof(uint) + sizeof(ushort) + sizeof(byte) + (TransferTx.IsNotNull() ? TransferTx.Size : 0);
 
         NFTDonateState ICloneable<NFTDonateState>.Clone()
         {
