@@ -196,4 +196,20 @@ namespace OX.Ledger
             return json;
         }
     }
+    public class NFTDonateValidator : ISerializable
+    {
+        public NFTDonateStateKey NFTDonateStateKey;
+        public SignatureValidator<NFTDonateAuthentication> Validator;
+        public int Size => NFTDonateStateKey.Size + Validator.Size;
+        public void Deserialize(BinaryReader reader)
+        {
+            NFTDonateStateKey = reader.ReadSerializable<NFTDonateStateKey>();
+            Validator = reader.ReadSerializable<SignatureValidator<NFTDonateAuthentication>>();
+        }
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write(NFTDonateStateKey);
+            writer.Write(Validator);
+        }
+    }
 }
