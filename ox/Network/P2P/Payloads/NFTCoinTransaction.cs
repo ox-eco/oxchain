@@ -242,7 +242,6 @@ namespace OX.Network.P2P.Payloads
                 if (this.NFTDonateStateKey.IssueN == 0) return false;
                 var donateState = Blockchain.Singleton.Store.GetNFTDonateState(this.NFTDonateStateKey);
                 if (donateState.IsNull()) return false;
-                if (!donateState.IssueTx.NFTDonateStateKey.Equals(this.NFTDonateStateKey)) return false;
                 var sh = Contract.CreateSignatureRedeemScript(this.DonateAuthentication.Target.PublicKey).ToScriptHash();
                 if (donateState.TransferTx.IsNotNull())
                 {
