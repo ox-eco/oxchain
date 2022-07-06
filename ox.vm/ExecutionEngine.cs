@@ -225,7 +225,8 @@ namespace OX.VM
             {
                 if (!CheckMaxItemSize(instruction.Operand.Length)) return false;
                 context.EvaluationStack.Push(instruction.Operand);
-                if (!CheckStackSize(true)) return false;
+                if (!CheckStackSize(true))
+                    return false;
             }
             else switch (instruction.OpCode)
                 {
@@ -233,7 +234,8 @@ namespace OX.VM
                     case OpCode.PUSH0:
                         {
                             context.EvaluationStack.Push(EmptyBytes);
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
                     case OpCode.PUSHM1:
@@ -255,7 +257,8 @@ namespace OX.VM
                     case OpCode.PUSH16:
                         {
                             context.EvaluationStack.Push((int)instruction.OpCode - (int)OpCode.PUSH1 + 1);
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
 
@@ -266,7 +269,8 @@ namespace OX.VM
                     case OpCode.JMPIFNOT:
                         {
                             int offset = context.InstructionPointer + instruction.TokenI16;
-                            if (offset < 0 || offset > context.Script.Length) return false;
+                            if (offset < 0 || offset > context.Script.Length) 
+                                return false;
                             bool fValue = true;
                             if (instruction.OpCode > OpCode.JMP)
                             {
@@ -284,10 +288,12 @@ namespace OX.VM
                         }
                     case OpCode.CALL:
                         {
-                            if (!CheckMaxInvocationStack()) return false;
+                            if (!CheckMaxInvocationStack()) 
+                                return false;
                             ExecutionContext context_call = LoadScript(context.Script);
                             context_call.InstructionPointer = context.InstructionPointer + instruction.TokenI16;
-                            if (context_call.InstructionPointer < 0 || context_call.InstructionPointer > context_call.Script.Length) return false;
+                            if (context_call.InstructionPointer < 0 || context_call.InstructionPointer > context_call.Script.Length) 
+                                return false;
                             context.EvaluationStack.CopyTo(context_call.EvaluationStack);
                             context.EvaluationStack.Clear();
                             break;
@@ -299,7 +305,8 @@ namespace OX.VM
                             if (rvcount == -1) rvcount = context_pop.EvaluationStack.Count;
                             if (rvcount > 0)
                             {
-                                if (context_pop.EvaluationStack.Count < rvcount) return false;
+                                if (context_pop.EvaluationStack.Count < rvcount) 
+                                    return false;
                                 RandomAccessStack<StackItem> stack_eval;
                                 if (InvocationStack.Count == 0)
                                     stack_eval = ResultStack;
@@ -329,7 +336,8 @@ namespace OX.VM
                                 script_hash = context.EvaluationStack.Pop().GetByteArray();
                             }
                             ExecutionContext context_new = LoadScriptByHash(script_hash);
-                            if (context_new == null) return false;
+                            if (context_new == null) 
+                                return false;
                             context.EvaluationStack.CopyTo(context_new.EvaluationStack);
                             if (instruction.OpCode == OpCode.TAILCALL)
                                 InvocationStack.Remove(1);
@@ -340,7 +348,8 @@ namespace OX.VM
                         }
                     case OpCode.SYSCALL:
                         {
-                            if (instruction.Operand.Length > 252) return false;
+                            if (instruction.Operand.Length > 252) 
+                                return false;
                             if (Service?.Invoke(instruction.Operand, this) != true || !CheckStackSize(false, int.MaxValue))
                                 return false;
                             break;
@@ -350,7 +359,8 @@ namespace OX.VM
                     case OpCode.DUPFROMALTSTACK:
                         {
                             context.EvaluationStack.Push(context.AltStack.Peek());
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
                     case OpCode.TOALTSTACK:
@@ -366,7 +376,8 @@ namespace OX.VM
                     case OpCode.XDROP:
                         {
                             int n = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (n < 0) return false;
+                            if (n < 0) 
+                                return false;
                             context.EvaluationStack.Remove(n);
                             CheckStackSize(false, -2);
                             break;
@@ -374,7 +385,8 @@ namespace OX.VM
                     case OpCode.XSWAP:
                         {
                             int n = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (n < 0) return false;
+                            if (n < 0) 
+                                return false;
                             CheckStackSize(true, -1);
                             if (n == 0) break;
                             StackItem xn = context.EvaluationStack.Peek(n);
@@ -385,14 +397,16 @@ namespace OX.VM
                     case OpCode.XTUCK:
                         {
                             int n = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (n <= 0) return false;
+                            if (n <= 0) 
+                                return false;
                             context.EvaluationStack.Insert(n, context.EvaluationStack.Peek());
                             break;
                         }
                     case OpCode.DEPTH:
                         {
                             context.EvaluationStack.Push(context.EvaluationStack.Count);
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
                     case OpCode.DROP:
@@ -404,7 +418,8 @@ namespace OX.VM
                     case OpCode.DUP:
                         {
                             context.EvaluationStack.Push(context.EvaluationStack.Peek());
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
                     case OpCode.NIP:
@@ -416,20 +431,23 @@ namespace OX.VM
                     case OpCode.OVER:
                         {
                             context.EvaluationStack.Push(context.EvaluationStack.Peek(1));
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
                     case OpCode.PICK:
                         {
                             int n = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (n < 0) return false;
+                            if (n < 0) 
+                                return false;
                             context.EvaluationStack.Push(context.EvaluationStack.Peek(n));
                             break;
                         }
                     case OpCode.ROLL:
                         {
                             int n = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (n < 0) return false;
+                            if (n < 0) 
+                                return false;
                             CheckStackSize(true, -1);
                             if (n == 0) break;
                             context.EvaluationStack.Push(context.EvaluationStack.Remove(n));
@@ -448,7 +466,8 @@ namespace OX.VM
                     case OpCode.TUCK:
                         {
                             context.EvaluationStack.Insert(2, context.EvaluationStack.Peek());
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
                     case OpCode.CAT:
@@ -467,7 +486,8 @@ namespace OX.VM
                             else
                             {
                                 int length = x1.Length + x2.Length;
-                                if (!CheckMaxItemSize(length)) return false;
+                                if (!CheckMaxItemSize(length)) 
+                                    return false;
                                 byte[] buffer = new byte[length];
                                 Unsafe.MemoryCopy(x1, 0, buffer, 0, x1.Length);
                                 Unsafe.MemoryCopy(x2, 0, buffer, x1.Length, x2.Length);
@@ -480,9 +500,11 @@ namespace OX.VM
                     case OpCode.SUBSTR:
                         {
                             int count = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (count < 0) return false;
+                            if (count < 0) 
+                                return false;
                             int index = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (index < 0) return false;
+                            if (index < 0) 
+                                return false;
                             byte[] x = context.EvaluationStack.Pop().GetByteArray();
                             context.EvaluationStack.Push(x.Skip(index).Take(count).ToArray());
                             CheckStackSize(true, -2);
@@ -491,7 +513,8 @@ namespace OX.VM
                     case OpCode.LEFT:
                         {
                             int count = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (count < 0) return false;
+                            if (count < 0) 
+                                return false;
                             byte[] x = context.EvaluationStack.Pop().GetByteArray();
                             byte[] buffer;
                             if (count >= x.Length)
@@ -510,9 +533,11 @@ namespace OX.VM
                     case OpCode.RIGHT:
                         {
                             int count = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (count < 0) return false;
+                            if (count < 0) 
+                                return false;
                             byte[] x = context.EvaluationStack.Pop().GetByteArray();
-                            if (count > x.Length) return false;
+                            if (count > x.Length) 
+                                return false;
                             byte[] buffer;
                             if (count == x.Length)
                             {
@@ -578,18 +603,22 @@ namespace OX.VM
                     case OpCode.INC:
                         {
                             BigInteger x = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x)) 
+                                return false;
                             x += 1;
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x)) 
+                                return false;
                             context.EvaluationStack.Push(x);
                             break;
                         }
                     case OpCode.DEC:
                         {
                             BigInteger x = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x)) 
+                                return false;
                             x -= 1;
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x)) 
+                                return false;
                             context.EvaluationStack.Push(x);
                             break;
                         }
@@ -627,11 +656,14 @@ namespace OX.VM
                     case OpCode.ADD:
                         {
                             BigInteger x2 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x2)) return false;
+                            if (!CheckBigInteger(x2)) 
+                                return false;
                             BigInteger x1 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x1)) return false;
+                            if (!CheckBigInteger(x1)) 
+                                return false;
                             BigInteger result = x1 + x2;
-                            if (!CheckBigInteger(result)) return false;
+                            if (!CheckBigInteger(result)) 
+                                return false;
                             context.EvaluationStack.Push(result);
                             CheckStackSize(true, -1);
                             break;
@@ -639,11 +671,14 @@ namespace OX.VM
                     case OpCode.SUB:
                         {
                             BigInteger x2 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x2)) return false;
+                            if (!CheckBigInteger(x2)) 
+                                return false;
                             BigInteger x1 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x1)) return false;
+                            if (!CheckBigInteger(x1)) 
+                                return false;
                             BigInteger result = x1 - x2;
-                            if (!CheckBigInteger(result)) return false;
+                            if (!CheckBigInteger(result)) 
+                                return false;
                             context.EvaluationStack.Push(result);
                             CheckStackSize(true, -1);
                             break;
@@ -651,11 +686,14 @@ namespace OX.VM
                     case OpCode.MUL:
                         {
                             BigInteger x2 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x2)) return false;
+                            if (!CheckBigInteger(x2)) 
+                                return false;
                             BigInteger x1 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x1)) return false;
+                            if (!CheckBigInteger(x1))
+                                return false;
                             BigInteger result = x1 * x2;
-                            if (!CheckBigInteger(result)) return false;
+                            if (!CheckBigInteger(result))
+                                return false;
                             context.EvaluationStack.Push(result);
                             CheckStackSize(true, -1);
                             break;
@@ -663,9 +701,11 @@ namespace OX.VM
                     case OpCode.DIV:
                         {
                             BigInteger x2 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x2)) return false;
+                            if (!CheckBigInteger(x2)) 
+                                return false;
                             BigInteger x1 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x1)) return false;
+                            if (!CheckBigInteger(x1)) 
+                                return false;
                             context.EvaluationStack.Push(x1 / x2);
                             CheckStackSize(true, -1);
                             break;
@@ -673,9 +713,11 @@ namespace OX.VM
                     case OpCode.MOD:
                         {
                             BigInteger x2 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x2)) return false;
+                            if (!CheckBigInteger(x2))
+                                return false;
                             BigInteger x1 = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x1)) return false;
+                            if (!CheckBigInteger(x1))
+                                return false;
                             context.EvaluationStack.Push(x1 % x2);
                             CheckStackSize(true, -1);
                             break;
@@ -683,11 +725,14 @@ namespace OX.VM
                     case OpCode.SHL:
                         {
                             int shift = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckShift(shift)) return false;
+                            if (!CheckShift(shift)) 
+                                return false;
                             BigInteger x = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x)) 
+                                return false;
                             x <<= shift;
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x))
+                                return false;
                             context.EvaluationStack.Push(x);
                             CheckStackSize(true, -1);
                             break;
@@ -695,11 +740,14 @@ namespace OX.VM
                     case OpCode.SHR:
                         {
                             int shift = (int)context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckShift(shift)) return false;
+                            if (!CheckShift(shift)) 
+                                return false;
                             BigInteger x = context.EvaluationStack.Pop().GetBigInteger();
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x)) 
+                                return false;
                             x >>= shift;
-                            if (!CheckBigInteger(x)) return false;
+                            if (!CheckBigInteger(x))
+                                return false;
                             context.EvaluationStack.Push(x);
                             CheckStackSize(true, -1);
                             break;
@@ -870,7 +918,8 @@ namespace OX.VM
                             else
                             {
                                 n = (int)item.GetBigInteger();
-                                if (n < 1 || n > context.EvaluationStack.Count) return false;
+                                if (n < 1 || n > context.EvaluationStack.Count) 
+                                    return false;
                                 pubkeys = new byte[n][];
                                 for (int i = 0; i < n; i++)
                                     pubkeys[i] = context.EvaluationStack.Pop().GetByteArray();
@@ -884,13 +933,15 @@ namespace OX.VM
                             {
                                 signatures = array2.Select(p => p.GetByteArray()).ToArray();
                                 m = signatures.Length;
-                                if (m == 0 || m > n) return false;
+                                if (m == 0 || m > n) 
+                                    return false;
                                 CheckStackSize(false, -1);
                             }
                             else
                             {
                                 m = (int)item.GetBigInteger();
-                                if (m < 1 || m > n || m > context.EvaluationStack.Count) return false;
+                                if (m < 1 || m > n || m > context.EvaluationStack.Count) 
+                                    return false;
                                 signatures = new byte[m][];
                                 for (int i = 0; i < m; i++)
                                     signatures[i] = context.EvaluationStack.Pop().GetByteArray();
@@ -951,27 +1002,31 @@ namespace OX.VM
                             for (int i = array.Count - 1; i >= 0; i--)
                                 context.EvaluationStack.Push(array[i]);
                             context.EvaluationStack.Push(array.Count);
-                            if (!CheckStackSize(false, array.Count)) return false;
+                            if (!CheckStackSize(false, array.Count)) 
+                                return false;
                             break;
                         }
                     case OpCode.PICKITEM:
                         {
                             StackItem key = context.EvaluationStack.Pop();
-                            if (key is ICollection) return false;
+                            if (key is ICollection) 
+                                return false;
                             StackItem item = context.EvaluationStack.Pop();
                             switch (item)
                             {
                                 case VMArray array:
                                     {
                                         int index = (int)key.GetBigInteger();
-                                        if (index < 0 || index >= array.Count) return false;
+                                        if (index < 0 || index >= array.Count) 
+                                            return false;
                                         context.EvaluationStack.Push(array[index]);
                                         CheckStackSize(false, -1);
                                         break;
                                     }
                                 case Map map:
                                     {
-                                        if (!map.TryGetValue(key, out StackItem value)) return false;
+                                        if (!map.TryGetValue(key, out StackItem value)) 
+                                            return false;
                                         context.EvaluationStack.Push(value);
                                         CheckStackSize(false, -1);
                                         break;
@@ -988,13 +1043,15 @@ namespace OX.VM
                             StackItem value = context.EvaluationStack.Pop();
                             if (value is Struct s) value = s.Clone();
                             StackItem key = context.EvaluationStack.Pop();
-                            if (key is ICollection) return false;
+                            if (key is ICollection) 
+                                return false;
                             switch (context.EvaluationStack.Pop())
                             {
                                 case VMArray array:
                                     {
                                         int index = (int)key.GetBigInteger();
-                                        if (index < 0 || index >= array.Count) return false;
+                                        if (index < 0 || index >= array.Count) 
+                                            return false;
                                         array[index] = value;
                                         break;
                                     }
@@ -1047,7 +1104,8 @@ namespace OX.VM
                             {
                                 int count = (int)item.GetBigInteger();
 
-                                if (count < 0 || !CheckArraySize(count)) return false;
+                                if (count < 0 || !CheckArraySize(count)) 
+                                    return false;
 
                                 List<StackItem> items = new List<StackItem>(count);
 
@@ -1062,14 +1120,16 @@ namespace OX.VM
 
                                 context.EvaluationStack.Push(result);
 
-                                if (!CheckStackSize(true, count)) return false;
+                                if (!CheckStackSize(true, count)) 
+                                    return false;
                             }
                             break;
                         }
                     case OpCode.NEWMAP:
                         {
                             context.EvaluationStack.Push(new Map());
-                            if (!CheckStackSize(true)) return false;
+                            if (!CheckStackSize(true)) 
+                                return false;
                             break;
                         }
                     case OpCode.APPEND:
@@ -1077,31 +1137,37 @@ namespace OX.VM
                             StackItem newItem = context.EvaluationStack.Pop();
                             if (newItem is Struct s) newItem = s.Clone();
                             StackItem arrItem = context.EvaluationStack.Pop();
-                            if (!(arrItem is VMArray array)) return false;
-                            if (!CheckArraySize(array.Count + 1)) return false;
+                            if (!(arrItem is VMArray array)) 
+                                return false;
+                            if (!CheckArraySize(array.Count + 1)) 
+                                return false;
                             array.Add(newItem);
-                            if (!CheckStackSize(false, int.MaxValue)) return false;
+                            if (!CheckStackSize(false, int.MaxValue)) 
+                                return false;
                             break;
                         }
                     case OpCode.REVERSE:
                         {
                             StackItem arrItem = context.EvaluationStack.Pop();
                             CheckStackSize(false, -1);
-                            if (!(arrItem is VMArray array)) return false;
+                            if (!(arrItem is VMArray array)) 
+                                return false;
                             array.Reverse();
                             break;
                         }
                     case OpCode.REMOVE:
                         {
                             StackItem key = context.EvaluationStack.Pop();
-                            if (key is ICollection) return false;
+                            if (key is ICollection) 
+                                return false;
                             StackItem value = context.EvaluationStack.Pop();
                             CheckStackSize(false, -2);
                             switch (value)
                             {
                                 case VMArray array:
                                     int index = (int)key.GetBigInteger();
-                                    if (index < 0 || index >= array.Count) return false;
+                                    if (index < 0 || index >= array.Count) 
+                                        return false;
                                     array.RemoveAt(index);
                                     break;
                                 case Map map:
@@ -1115,12 +1181,14 @@ namespace OX.VM
                     case OpCode.HASKEY:
                         {
                             StackItem key = context.EvaluationStack.Pop();
-                            if (key is ICollection) return false;
+                            if (key is ICollection) 
+                                return false;
                             switch (context.EvaluationStack.Pop())
                             {
                                 case VMArray array:
                                     int index = (int)key.GetBigInteger();
-                                    if (index < 0) return false;
+                                    if (index < 0) 
+                                        return false;
                                     context.EvaluationStack.Push(index < array.Count);
                                     break;
                                 case Map map:
@@ -1134,9 +1202,11 @@ namespace OX.VM
                         }
                     case OpCode.KEYS:
                         {
-                            if (!(context.EvaluationStack.Pop() is Map map)) return false;
+                            if (!(context.EvaluationStack.Pop() is Map map)) 
+                                return false;
                             context.EvaluationStack.Push(new VMArray(map.Keys));
-                            if (!CheckStackSize(false, map.Count)) return false;
+                            if (!CheckStackSize(false, map.Count)) 
+                                return false;
                             break;
                         }
                     case OpCode.VALUES:
@@ -1160,17 +1230,20 @@ namespace OX.VM
                                 else
                                     newArray.Add(item);
                             context.EvaluationStack.Push(new VMArray(newArray));
-                            if (!CheckStackSize(false, int.MaxValue)) return false;
+                            if (!CheckStackSize(false, int.MaxValue)) 
+                                return false;
                             break;
                         }
 
                     // Stack isolation
                     case OpCode.CALL_I:
                         {
-                            if (!CheckMaxInvocationStack()) return false;
+                            if (!CheckMaxInvocationStack()) 
+                                return false;
                             int rvcount = instruction.Operand[0];
                             int pcount = instruction.Operand[1];
-                            if (context.EvaluationStack.Count < pcount) return false;
+                            if (context.EvaluationStack.Count < pcount) 
+                                return false;
                             ExecutionContext context_call = LoadScript(context.Script, rvcount);
                             context_call.InstructionPointer = context.InstructionPointer + instruction.TokenI16_1 + 2;
                             if (context_call.InstructionPointer < 0 || context_call.InstructionPointer > context_call.Script.Length) return false;
@@ -1184,17 +1257,21 @@ namespace OX.VM
                     case OpCode.CALL_ET:
                     case OpCode.CALL_EDT:
                         {
-                            if (table == null) return false;
+                            if (table == null) 
+                                return false;
                             int rvcount = instruction.Operand[0];
                             int pcount = instruction.Operand[1];
-                            if (context.EvaluationStack.Count < pcount) return false;
+                            if (context.EvaluationStack.Count < pcount) 
+                                return false;
                             if (instruction.OpCode == OpCode.CALL_ET || instruction.OpCode == OpCode.CALL_EDT)
                             {
-                                if (context.RVCount != rvcount) return false;
+                                if (context.RVCount != rvcount) 
+                                    return false;
                             }
                             else
                             {
-                                if (!CheckMaxInvocationStack()) return false;
+                                if (!CheckMaxInvocationStack()) 
+                                    return false;
                             }
 
                             byte[] script_hash;
@@ -1209,7 +1286,8 @@ namespace OX.VM
                             }
 
                             ExecutionContext context_new = LoadScriptByHash(script_hash, rvcount);
-                            if (context_new == null) return false;
+                            if (context_new == null) 
+                                return false;
                             context.EvaluationStack.CopyTo(context_new.EvaluationStack, pcount);
                             if (instruction.OpCode == OpCode.CALL_ET || instruction.OpCode == OpCode.CALL_EDT)
                                 InvocationStack.Remove(1);

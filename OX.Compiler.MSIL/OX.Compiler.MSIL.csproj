@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Copyright>2015-2019 The OX Project</Copyright>
+    <AssemblyTitle>OX.Compiler.MSIL</AssemblyTitle>
+    <Version>2.6.2</Version>
+    <Authors>The OX Project</Authors>
+    <AssemblyName>oxn</AssemblyName>
+    <PackageTags>OX;Blockchain;Smart Contract;Compiler</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <RootNamespace>OX.Compiler</RootNamespace>
+    <Company>The OX Project</Company>
+    <Product>OX.Compiler.MSIL</Product>
+    <Description>OX Compiler for .NET</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <!--
+    https://johan-v-r.github.io/2018/09/05/NET-Core-Global-Tools-Configuration/
+      `dotnet pack` to build .NET Core 3.1 global tool
+      `dotnet pack /p:SharedLibrary=true` to build .NET Standard 2.0 library package
+  -->
+
+  <PropertyGroup Condition="'$(SharedLibrary)' != true">
+    <OutputType>Exe</OutputType>
+    <PackageId>OX.OXN</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SharedLibrary)' == true">
+    <PackageId>OX.Compiler.MSIL</PackageId>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="3.3.1" />
+    <PackageReference Include="Mono.Cecil" Version="0.11.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OX.Compiler.Framework\OX.SmartContract.Framework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ox.vm">
+      <HintPath>C:\ox\net6.0\ox.vm.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
