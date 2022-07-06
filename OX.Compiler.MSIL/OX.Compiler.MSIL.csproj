@@ -16,6 +16,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <TargetFramework>net6.0</TargetFramework>
+    <BaseOutputPath>C:\ox</BaseOutputPath>
   </PropertyGroup>
 
   <!--
