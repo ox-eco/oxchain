@@ -48,6 +48,8 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(NFTCoinTransaction))]
         NFTCoinTransaction = 0xcb,
         [ReflectionCache(typeof(NFTDonateTransaction))]
-        NFTDonateTransaction = 0xcc
+        NFTDonateTransaction = 0xcc,
+        [ReflectionCache(typeof(LockAssetTransaction))]
+        LockAssetTransaction =0xcd,
     }
 }

@@ -181,9 +181,9 @@ namespace OX.UI
 
         private void button2_Click(object sender, EventArgs e)
         {
-            button2.Visible = false;
+            //button2.Visible = false;
             groupBox1.Visible = true;
-            this.Height = 570;
+
         }
     }
 }

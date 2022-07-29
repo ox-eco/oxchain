@@ -22,8 +22,9 @@ namespace OX.UI
             {
                 sb.EmitPush(GetKey().PublicKey);
                 sb.EmitPush(timestamp);
-                // Lock 2.0 in mainnet tx:4e84015258880ced0387f34842b1d96f605b9cc78b308e1f0d876933c2c9134b
-                sb.EmitAppCall(UInt160.Parse("d3cce84d0800172d09c88ccad61130611bd047a4"));
+                sb.EmitPush(true);
+                var sh = UInt160.Parse("0x334b191cca29463a62ef69b790e015b2f7467383");
+                sb.EmitAppCall(sh);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }
         }
