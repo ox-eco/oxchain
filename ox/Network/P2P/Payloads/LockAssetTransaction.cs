@@ -73,9 +73,8 @@ namespace OX.Network.P2P.Payloads
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
             if (this.Outputs.Length > 2) return false;
-
             var contract = GetContract();
-            if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
+            if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && (m.AssetId.Equals(Blockchain.OXC) || m.AssetId.Equals(Blockchain.OXS))).IsNull()) return false;
             return base.Verify(snapshot, mempool);
         }
     }
