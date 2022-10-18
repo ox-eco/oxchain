@@ -9,6 +9,7 @@ using OX.Cryptography;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -272,7 +273,16 @@ namespace OX.Network.P2P.Payloads
                     if (this.Outputs.IsNullOrEmpty()) return false;
                     var outputs = this.Outputs.Where(m => m.AssetId.Equals(Blockchain.OXC) && m.ScriptHash.Equals(oldOwner));
                     if (outputs.IsNullOrEmpty()) return false;
-                    if (outputs.Sum(m => m.Value) < this.DonateAuthentication.Target.Amount) return false;
+                    var NFTDonateSell=this.DonateAuthentication.Target.NFTDonateSell;
+                    if (outputs.Sum(m => m.Value) < NFTDonateSell.Amount) return false;
+                    if (NFTDonateSell.MaxIndex > 0)
+                    {
+                        if (NFTDonateSell.MaxIndex <= snapshot.Height) return false;
+                    }
+                    if (NFTDonateSell.MinIndex > 0)
+                    {
+                        if (NFTDonateSell.MinIndex > snapshot.Height + 1) return false;
+                    }
                 }
             }
             return base.Verify(snapshot, mempool);
