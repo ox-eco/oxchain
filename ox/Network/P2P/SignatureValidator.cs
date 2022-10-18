@@ -71,9 +71,7 @@ namespace OX.Network.P2P
         public UInt160 NewOwner;
         public NFTDonateSell NFTDonateSell;
         public virtual int Size => PublicKey.Size + sizeof(NFTDonateType) + PreHash.Size + (NFTDonateType == NFTDonateType.Sell ? NFTDonateSell.Size : NewOwner.Size);
-        public NFTDonateAuthentication()
-        {
-        }
+        
         public void Serialize(BinaryWriter writer)
         {
             writer.Write(PublicKey);
