@@ -50,7 +50,8 @@ namespace OX.Network.P2P
         public NFTDonateType NFTDonateType;
         public UInt256 PreHash;
         public UInt160 NewOwner;
-        public virtual int Size => PublicKey.Size + sizeof(NFTDonateType) + PreHash.Size + NewOwner.Size;
+        public Fixed8 Amount;
+        public virtual int Size => PublicKey.Size + sizeof(NFTDonateType) + PreHash.Size  + (NFTDonateType == NFTDonateType.Sell ? Amount.Size : NewOwner.Size);
         public NFTDonateAuthentication()
         {
         }
@@ -59,14 +60,20 @@ namespace OX.Network.P2P
             writer.Write(PublicKey);
             writer.Write((byte)NFTDonateType);
             writer.Write(PreHash);
-            writer.Write(NewOwner);           
+            if (NFTDonateType == NFTDonateType.Sell)
+                writer.Write(Amount);
+            else
+                writer.Write(NewOwner);
         }
         public void Deserialize(BinaryReader reader)
         {
             PublicKey = reader.ReadSerializable<ECPoint>();
             NFTDonateType = (NFTDonateType)reader.ReadByte();
             PreHash = reader.ReadSerializable<UInt256>();
-            NewOwner = reader.ReadSerializable<UInt160>();
+            if (NFTDonateType == NFTDonateType.Sell)
+                Amount = reader.ReadSerializable<Fixed8>();
+            else
+                NewOwner = reader.ReadSerializable<UInt160>();
         }
     }
 }

@@ -26,7 +26,8 @@ namespace OX.Network.P2P.Payloads
     public enum NFTDonateType : byte
     {
         Issue = 1 << 0,
-        Transfer = 1 << 1
+        Transfer = 1 << 1,
+        Sell = 1 << 2
     }
     public class NFTCopyright : ISerializable
     {
@@ -167,12 +168,20 @@ namespace OX.Network.P2P.Payloads
     }
     public class NFTDonateTransaction : Transaction
     {
-        public NFTCopyright CopyRight { get; private set; }
-        public NFTDonateStateKey NFTDonateStateKey { get; private set; }
-        public SignatureValidator<NFTDonateAuthentication> DonateAuthentication { get; private set; }
+        public NFTCopyright CopyRight;
+        public NFTDonateStateKey NFTDonateStateKey;
+        public SignatureValidator<NFTDonateAuthentication> DonateAuthentication;
         public uint SN;
+        public UInt160 NewOwner;
+        public UInt160 NFTOwner
+        {
+            get
+            {
+                return this.DonateAuthentication.Target.NFTDonateType == NFTDonateType.Sell ? this.NewOwner : this.DonateAuthentication.Target.NewOwner;
+            }
+        }
 
-        public override int Size => base.Size + CopyRight.Size + NFTDonateStateKey.Size + DonateAuthentication.Size + sizeof(uint);
+        public override int Size => base.Size + CopyRight.Size + NFTDonateStateKey.Size + DonateAuthentication.Size + sizeof(uint) + (DonateAuthentication.Target.NFTDonateType == NFTDonateType.Sell ? this.NewOwner.Size : 0);
 
         public NFTDonateTransaction()
           : base(TransactionType.NFTDonateTransaction)
@@ -196,7 +205,8 @@ namespace OX.Network.P2P.Payloads
         }
         private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator()
         {
-            yield return this.DonateAuthentication.Target.NewOwner;
+            if (this.DonateAuthentication.Target.NFTDonateType != NFTDonateType.Sell)
+                yield return this.DonateAuthentication.Target.NewOwner;
         }
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
@@ -204,6 +214,8 @@ namespace OX.Network.P2P.Payloads
             NFTDonateStateKey = reader.ReadSerializable<NFTDonateStateKey>();
             DonateAuthentication = reader.ReadSerializable<SignatureValidator<NFTDonateAuthentication>>();
             SN = reader.ReadUInt32();
+            if (DonateAuthentication.Target.NFTDonateType == NFTDonateType.Sell)
+                NewOwner = reader.ReadSerializable<UInt160>();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
@@ -212,6 +224,8 @@ namespace OX.Network.P2P.Payloads
             writer.Write(NFTDonateStateKey);
             writer.Write(DonateAuthentication);
             writer.Write(SN);
+            if (DonateAuthentication.Target.NFTDonateType == NFTDonateType.Sell)
+                writer.Write(NewOwner);
         }
 
         public override JObject ToJson()
@@ -221,6 +235,8 @@ namespace OX.Network.P2P.Payloads
             json["nftdonatestatekey"] = "0";
             json["donateauthentication"] = "0";
             json["sn"] = SN.ToString();
+            if (DonateAuthentication.Target.NFTDonateType == NFTDonateType.Sell)
+                json["newowner"] = NewOwner.ToAddress();
             return json;
         }
 
@@ -235,30 +251,30 @@ namespace OX.Network.P2P.Payloads
                 if (!this.NFTDonateStateKey.NFTCoinHash.Equals(nftstate.NFTCoin.Hash)) return false;
                 if (!nftstate.NFTCoin.Author.Equals(this.DonateAuthentication.Target.PublicKey)) return false;
             }
-            else if (this.DonateAuthentication.Target.NFTDonateType == NFTDonateType.Transfer)
+            else
             {
                 if (this.NFTDonateStateKey.IssueDonateHash.IsNull()) return false;
                 if (this.NFTDonateStateKey.IssueBlockIndex == 0) return false;
                 if (this.NFTDonateStateKey.IssueN == 0) return false;
                 var donateState = Blockchain.Singleton.Store.GetNFTDonateState(this.NFTDonateStateKey);
                 if (donateState.IsNull()) return false;
-                var sh = Contract.CreateSignatureRedeemScript(this.DonateAuthentication.Target.PublicKey).ToScriptHash();
-                if (donateState.TransferTx.IsNotNull())
-                {
-                    if (!donateState.TransferTx.DonateAuthentication.Target.NewOwner.Equals(sh)) return false;
-                    if (!donateState.TransferTx.Hash.Equals(this.DonateAuthentication.Target.PreHash)) return false;
-                }
-                else
-                {
-                    if (!donateState.IssueTx.DonateAuthentication.Target.NewOwner.Equals(sh)) return false;
-                    if (!donateState.IssueTx.Hash.Equals(this.DonateAuthentication.Target.PreHash)) return false;
-                }
                 var nftState = Blockchain.Singleton.Store.GetNFTState(donateState.IssueTx.NFTDonateStateKey.NFTCoinHash);
                 if (nftState.IsNull()) return false;
                 if (nftState.NFTCoin.NFTDonatePermission == NFTDonatePermission.NoDonate) return false;
+                NFTDonateTransaction oldDonateTx = donateState.TransferTx.IsNotNull() ? donateState.TransferTx : donateState.IssueTx;
+                if (!oldDonateTx.Hash.Equals(this.DonateAuthentication.Target.PreHash)) return false;
+                UInt160 oldOwner = oldDonateTx.NFTOwner;
+                var sh = Contract.CreateSignatureRedeemScript(this.DonateAuthentication.Target.PublicKey).ToScriptHash();
+                if (!oldOwner.Equals(sh)) return false;
+                if (this.DonateAuthentication.Target.NFTDonateType == NFTDonateType.Sell)
+                {
+                    if (this.NewOwner.IsNull()) return false;
+                    if (this.Outputs.IsNullOrEmpty()) return false;
+                    var outputs = this.Outputs.Where(m => m.AssetId.Equals(Blockchain.OXC) && m.ScriptHash.Equals(oldOwner));
+                    if (outputs.IsNullOrEmpty()) return false;
+                    if (outputs.Sum(m => m.Value) < this.DonateAuthentication.Target.Amount) return false;
+                }
             }
-            else return false;
-
             return base.Verify(snapshot, mempool);
         }
     }
