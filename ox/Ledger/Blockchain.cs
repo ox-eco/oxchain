@@ -651,6 +651,7 @@ namespace OX.Ledger
                                     snapshot.NFTDonates.Add(donateKey, new NFTDonateState { IssueTx = tx_nftdonate, TransferBlockIndex = 0, TransferN = 0, TransferTx = default });
                                     break;
                                 case NFTDonateType.Transfer:
+                                case NFTDonateType.Sell:
                                     var donateState = snapshot.NFTDonates.TryGet(tx_nftdonate.NFTDonateStateKey);
                                     if (donateState.IsNotNull())
                                     {
