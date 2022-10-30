@@ -26,8 +26,6 @@ namespace OX
             Application.Run(MainForm = new MainForm());
             Application.Run(new MainForm());
         }
-
-
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             using (FileStream fs = new FileStream("error.log", FileMode.Create, FileAccess.Write, FileShare.None))
