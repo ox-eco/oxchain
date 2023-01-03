@@ -244,6 +244,7 @@ namespace OX.Network.P2P.Payloads
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
             if (!this.DonateAuthentication.Verify()) return false;
+            if (this.NFTDonateStateKey.IsNull()) return false;
             if (this.DonateAuthentication.Target.NFTDonateType == NFTDonateType.Issue)
             {
                 if (!this.NFTDonateStateKey.NFTCoinHash.Equals(this.DonateAuthentication.Target.PreHash)) return false;
@@ -273,7 +274,7 @@ namespace OX.Network.P2P.Payloads
                     if (this.Outputs.IsNullOrEmpty()) return false;
                     var outputs = this.Outputs.Where(m => m.AssetId.Equals(Blockchain.OXC) && m.ScriptHash.Equals(oldOwner));
                     if (outputs.IsNullOrEmpty()) return false;
-                    var NFTDonateSell=this.DonateAuthentication.Target.NFTDonateSell;
+                    var NFTDonateSell = this.DonateAuthentication.Target.NFTDonateSell;
                     if (outputs.Sum(m => m.Value) < NFTDonateSell.Amount) return false;
                     if (NFTDonateSell.MaxIndex > 0)
                     {

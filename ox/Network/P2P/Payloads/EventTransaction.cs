@@ -155,7 +155,11 @@ namespace OX.Network.P2P.Payloads
                 if (digg.Message.IsNullOrEmpty()) return false;
                 if (digg.Message.GetVarSize() > 256) return false;
                 if (this.Outputs.IsNullOrEmpty()) return false;
-                var tx = Blockchain.Singleton.GetTransaction(digg.EngraveId);
+                Transaction tx = default;
+                using (var snapshot = Blockchain.Singleton.GetSnapshot())
+                {
+                    tx = snapshot.GetTransaction(digg.EngraveId);
+                }
                 if (tx.IsNull()) return false;
                 if (tx is EventTransaction et)
                 {
@@ -178,7 +182,10 @@ namespace OX.Network.P2P.Payloads
                 {
                     if (!digg.AtDiggId.Equals(UInt256.Zero))
                     {
-                        tx = Blockchain.Singleton.GetTransaction(digg.AtDiggId);
+                        using (var snapshot = Blockchain.Singleton.GetSnapshot())
+                        {
+                            tx = snapshot.GetTransaction(digg.AtDiggId);
+                        }
                         if (tx.IsNull()) return false;
                         if (tx is EventTransaction tt)
                         {

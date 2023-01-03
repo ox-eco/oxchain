@@ -17,6 +17,7 @@ namespace OX.Persistence.LevelDB
         public override DataCache<UInt256, TransactionState> Transactions { get; }
         public override DataCache<UInt256, NFTState> NFTs { get; }
         public override DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
+        public override DataCache<UInt256, BookState> Books { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
         public override DataCache<UInt256, SpentCoinState> SpentCoins { get; }

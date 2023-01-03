@@ -51,5 +51,9 @@ namespace OX.Network.P2P.Payloads
         NFTDonateTransaction = 0xcc,
         [ReflectionCache(typeof(LockAssetTransaction))]
         LockAssetTransaction =0xcd,
+        [ReflectionCache(typeof(BookTransaction))]
+        BookTransaction = 0xce,
+        [ReflectionCache(typeof(BookSectionTransaction))]
+        BookSectionTransaction = 0xcf,
     }
 }

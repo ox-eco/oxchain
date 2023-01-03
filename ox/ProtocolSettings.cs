@@ -52,6 +52,8 @@ namespace OX
                 [TransactionType.ReplyTransaction] = Fixed8.One,
                 [TransactionType.AskTransaction] = Fixed8.One,
                 [TransactionType.NFTDonateTransaction] = Fixed8.One,
+                [TransactionType.BookSectionTransaction] = Fixed8.One * 10,
+                [TransactionType.BookTransaction] = Fixed8.One * 100,
                 [TransactionType.TreatyTransaction] = Fixed8.One * 10,
                 [TransactionType.NFTCoinTransaction] = Fixed8.One * 10,
                 [TransactionType.EnrollmentTransaction] = Fixed8.One * 1000,

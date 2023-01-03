@@ -85,6 +85,29 @@ namespace OX.Persistence
         {
             return persistence.NFTDonates.TryGet(key);
         }
+        public static BookState GetBookState(this IPersistence persistence, UInt256 bookId)
+        {
+            return persistence.Books.TryGet(bookId);
+        }
+        public static BookState GetBookState(this IPersistence persistence, uint index, ushort n)
+        {
+            var block = persistence.GetBlock(index);
+            if (block.IsNull()) return default;
+            if (block.Transactions.Length < n + 1) return default;
+            return persistence.GetBookState(block.Transactions[n].Hash);
+        }
+        public static IEnumerable<BookSectionTransaction> GetBookSectionsState(this IPersistence persistence, UInt256 bookId)
+        {
+            var bookState = persistence.Books.TryGet(bookId);
+            if (bookState.IsNull()) yield return default;
+            if (bookState.Sections.IsNullOrEmpty()) yield return default;
+            foreach (var section in bookState.Sections.OrderBy(m => m.Key))
+            {
+                var tx = persistence.GetTransaction(section.Value.Hash);
+                if (tx is BookSectionTransaction bst)
+                    yield return bst;
+            }
+        }
         public static TransactionOutput GetUnspent(this IPersistence persistence, UInt256 hash, ushort index)
         {
             UnspentCoinState state = persistence.UnspentCoins.TryGet(hash);

@@ -59,6 +59,10 @@ namespace OX
                         return TxData.AsSerializable<NFTDonateTransaction>();
                     case TransactionType.LockAssetTransaction:
                         return TxData.AsSerializable<LockAssetTransaction>();
+                    case TransactionType.BookTransaction:
+                        return TxData.AsSerializable<BookTransaction>();
+                    case TransactionType.BookSectionTransaction:
+                        return TxData.AsSerializable<BookSectionTransaction>();
                 }
                 return default;
 

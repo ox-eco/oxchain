@@ -664,6 +664,16 @@ namespace OX.Ledger
                                     break;
                             }
                             break;
+                        case BookTransaction tx_book:
+                            snapshot.Books.Add(tx.Hash, new BookState { Book = tx_book, BlockIndex = block.Index, N = n, DataHash = tx_book.Hash });
+                            break;
+                        case BookSectionTransaction tx_booksection:
+                            BookState bookState = snapshot.Books.GetAndChange(tx_booksection.BookId, () => null);
+                            if (bookState.IsNotNull())
+                            {
+                                bookState.Sections[tx_booksection.FixedSerial] = tx_booksection.Hash;
+                            }
+                            break;
                     }
                     if (execution_results.Count > 0)
                     {

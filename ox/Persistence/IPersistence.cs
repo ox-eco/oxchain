@@ -11,6 +11,7 @@ namespace OX.Persistence
         DataCache<UInt256, TransactionState> Transactions { get; }
         DataCache<UInt256, NFTState> NFTs { get; }
         DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
+        DataCache<UInt256, BookState> Books { get; }
         DataCache<UInt160, AccountState> Accounts { get; }
         DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
         DataCache<UInt256, SpentCoinState> SpentCoins { get; }
