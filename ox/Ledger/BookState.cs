@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using OX.Cryptography.ECC;
 
 namespace OX.Ledger
 {
@@ -14,12 +15,13 @@ namespace OX.Ledger
     public class BookState : StateBase, ICloneable<BookState>
     {
         public BookTransaction Book;
+        public ECPoint CopyrightOwner;
         public uint BlockIndex;
         public ushort N;
         public UInt256 DataHash;
         public Dictionary<Fixed8, UInt256> Sections;
 
-        public override int Size => base.Size + Book.Size + sizeof(uint) + sizeof(ushort) + DataHash.Size + IO.Helper.GetVarSize(Sections.Count) + Sections.Count * (8 + 32);
+        public override int Size => base.Size + Book.Size + CopyrightOwner.Size + sizeof(uint) + sizeof(ushort) + DataHash.Size + IO.Helper.GetVarSize(Sections.Count) + Sections.Count * (8 + 32);
         public BookState()
         {
             this.Sections = new Dictionary<Fixed8, UInt256>();
@@ -29,6 +31,7 @@ namespace OX.Ledger
             return new BookState
             {
                 Book = Book,
+                CopyrightOwner = CopyrightOwner,
                 BlockIndex = BlockIndex,
                 N = N,
                 DataHash = DataHash,
@@ -42,6 +45,7 @@ namespace OX.Ledger
             var tx = Transaction.DeserializeFrom(reader);
             if (tx.IsNotNull() && tx is BookTransaction book)
                 this.Book = book;
+            this.CopyrightOwner = reader.ReadSerializable<ECPoint>();
             this.BlockIndex = reader.ReadUInt32();
             this.N = reader.ReadUInt16();
             this.DataHash = reader.ReadSerializable<UInt256>();
@@ -58,6 +62,7 @@ namespace OX.Ledger
         void ICloneable<BookState>.FromReplica(BookState replica)
         {
             this.Book = replica.Book;
+            this.CopyrightOwner = replica.CopyrightOwner;
             this.BlockIndex = replica.BlockIndex;
             this.N = replica.N;
             this.DataHash = replica.DataHash;
@@ -68,6 +73,7 @@ namespace OX.Ledger
         {
             base.Serialize(writer);
             writer.Write(Book);
+            writer.Write(CopyrightOwner);
             writer.Write(BlockIndex);
             writer.Write(N);
             writer.Write(DataHash);
@@ -86,6 +92,7 @@ namespace OX.Ledger
             {
                 json["book"] = Book.ToJson();
             }
+            json["copyrightowner"] = CopyrightOwner.ToString();
             json["blockindex"] = BlockIndex.ToString();
             json["n"] = N.ToString();
             json["datahash"] = DataHash.ToString();

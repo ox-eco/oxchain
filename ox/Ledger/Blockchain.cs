@@ -665,7 +665,7 @@ namespace OX.Ledger
                             }
                             break;
                         case BookTransaction tx_book:
-                            snapshot.Books.Add(tx.Hash, new BookState { Book = tx_book, BlockIndex = block.Index, N = n, DataHash = tx_book.Hash });
+                            snapshot.Books.Add(tx.Hash, new BookState { Book = tx_book, CopyrightOwner = tx_book.Author, BlockIndex = block.Index, N = n, DataHash = tx_book.Hash });
                             break;
                         case BookSectionTransaction tx_booksection:
                             BookState bookState = snapshot.Books.GetAndChange(tx_booksection.BookId, () => null);

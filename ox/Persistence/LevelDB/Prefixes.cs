@@ -28,6 +28,7 @@
         public const byte ST_BizValidator = 0xf1;
         public const byte DATA_NFT = 0xf2;
         public const byte DATA_NFTDONATE = 0xf3;
-        public const byte DATA_Book = 0xf4;
+        public const byte DATA_Book = 0xf5;
+        public const byte DATA_Book_Copyright = 0xf6;
     }
 }
