@@ -91,7 +91,7 @@ namespace OX.Persistence.LevelDB
         }
         public override DataCache<UInt256, BookState> GetBooks()
         {
-            return new DbCache<UInt256, BookState>(db, null, null, Prefixes.DATA_Block);
+            return new DbCache<UInt256, BookState>(db, null, null, Prefixes.DATA_Book);
         }
         public override DataCache<UInt256, UnspentCoinState> GetUnspentCoins()
         {
