@@ -124,7 +124,7 @@ namespace OX.Network.P2P.Payloads
         private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator()
         {
             var bookState = Blockchain.Singleton.Store.GetBookState(this.BookId);
-            yield return Contract.CreateSignatureRedeemScript(bookState.Book.Author).ToScriptHash();
+            yield return Contract.CreateSignatureRedeemScript(bookState.CopyrightOwner).ToScriptHash();
         }
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
