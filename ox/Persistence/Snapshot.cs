@@ -132,6 +132,7 @@ namespace OX.Persistence
             Transactions.Commit();
             NFTs.Commit();
             NFTDonates.Commit();
+            Books.Commit();
             Accounts.Commit();
             UnspentCoins.Commit();
             SpentCoins.Commit();

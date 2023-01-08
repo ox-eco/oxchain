@@ -32,6 +32,7 @@ namespace OX.Persistence
             this.NFTs = snapshot.NFTs.CreateSnapshot();
             this.NFTDonates = snapshot.NFTDonates.CreateSnapshot();
             this.Accounts = snapshot.Accounts.CreateSnapshot();
+            this.Books = snapshot.Books.CreateSnapshot();
             this.UnspentCoins = snapshot.UnspentCoins.CreateSnapshot();
             this.SpentCoins = snapshot.SpentCoins.CreateSnapshot();
             this.Validators = snapshot.Validators.CreateSnapshot();

@@ -41,6 +41,7 @@ namespace OX.Persistence.LevelDB
             NFTs = new DbCache<UInt256, NFTState>(db, options, batch, Prefixes.DATA_NFT);
             NFTDonates = new DbCache<NFTDonateStateKey, NFTDonateState>(db, options, batch, Prefixes.DATA_NFTDONATE);
             Accounts = new DbCache<UInt160, AccountState>(db, options, batch, Prefixes.ST_Account);
+            Books = new DbCache<UInt256, BookState>(db, options, batch, Prefixes.DATA_Book);
             UnspentCoins = new DbCache<UInt256, UnspentCoinState>(db, options, batch, Prefixes.ST_Coin);
             SpentCoins = new DbCache<UInt256, SpentCoinState>(db, options, batch, Prefixes.ST_SpentCoin);
             Validators = new DbCache<ECPoint, ValidatorState>(db, options, batch, Prefixes.ST_Validator);
