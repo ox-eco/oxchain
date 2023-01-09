@@ -243,6 +243,7 @@ namespace OX.Network.P2P.Payloads
 
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
+            if (this.DonateAuthentication.IsNull()) return false;
             if (!this.DonateAuthentication.Verify()) return false;
             if (this.NFTDonateStateKey.IsNull()) return false;
             if (this.DonateAuthentication.Target.NFTDonateType == NFTDonateType.Issue)

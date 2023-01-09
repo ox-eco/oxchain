@@ -665,13 +665,20 @@ namespace OX.Ledger
                             }
                             break;
                         case BookTransaction tx_book:
-                            snapshot.Books.Add(tx.Hash, new BookState { Book = tx_book, CopyrightOwner = tx_book.Author, BlockIndex = block.Index, N = n, DataHash = tx_book.Hash });
+                            snapshot.Books.Add(tx.Hash, new BookState { Book = tx_book, CopyrightOwner = Contract.CreateSignatureRedeemScript(tx_book.Author).ToScriptHash(), BlockIndex = block.Index, N = n, DataHash = tx_book.Hash });
                             break;
                         case BookSectionTransaction tx_booksection:
                             BookState bookState = snapshot.Books.GetAndChange(tx_booksection.BookId, () => null);
                             if (bookState.IsNotNull())
                             {
                                 bookState.Sections[tx_booksection.FixedSerial] = tx_booksection.Hash;
+                            }
+                            break;
+                        case BookTransferTransaction tx_booktransfer:
+                            BookState bookState2 = snapshot.Books.GetAndChange(tx_booktransfer.BookCopyrightAuthentication.Target.BookId, () => null);
+                            if (bookState2.IsNotNull())
+                            {
+                                bookState2.CopyrightOwner = tx_booktransfer.Owner;
                             }
                             break;
                     }

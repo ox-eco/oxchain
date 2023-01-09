@@ -8,6 +8,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using OX.Cryptography.ECC;
+using OX.Wallets;
 
 namespace OX.Ledger
 {
@@ -15,7 +16,7 @@ namespace OX.Ledger
     public class BookState : StateBase, ICloneable<BookState>
     {
         public BookTransaction Book;
-        public ECPoint CopyrightOwner;
+        public UInt160 CopyrightOwner;
         public uint BlockIndex;
         public ushort N;
         public UInt256 DataHash;
@@ -45,7 +46,7 @@ namespace OX.Ledger
             var tx = Transaction.DeserializeFrom(reader);
             if (tx.IsNotNull() && tx is BookTransaction book)
                 this.Book = book;
-            this.CopyrightOwner = reader.ReadSerializable<ECPoint>();
+            this.CopyrightOwner = reader.ReadSerializable<UInt160>();
             this.BlockIndex = reader.ReadUInt32();
             this.N = reader.ReadUInt16();
             this.DataHash = reader.ReadSerializable<UInt256>();
@@ -92,7 +93,7 @@ namespace OX.Ledger
             {
                 json["book"] = Book.ToJson();
             }
-            json["copyrightowner"] = CopyrightOwner.ToString();
+            json["copyrightowner"] = CopyrightOwner.ToAddress();
             json["blockindex"] = BlockIndex.ToString();
             json["n"] = N.ToString();
             json["datahash"] = DataHash.ToString();
