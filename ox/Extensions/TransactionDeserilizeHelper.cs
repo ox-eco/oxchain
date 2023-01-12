@@ -65,6 +65,8 @@ namespace OX
                         return TxData.AsSerializable<BookSectionTransaction>();
                     case TransactionType.BookTransferTransaction:
                         return TxData.AsSerializable<BookTransferTransaction>();
+                    case TransactionType.SideTransaction:
+                        return TxData.AsSerializable<SideTransaction>();
                 }
                 return default;
 

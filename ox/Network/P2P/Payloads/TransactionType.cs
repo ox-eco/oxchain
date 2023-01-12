@@ -57,5 +57,7 @@ namespace OX.Network.P2P.Payloads
         BookSectionTransaction = 0xcf,
         [ReflectionCache(typeof(BookTransferTransaction))]
         BookTransferTransaction = 0xb0,
+        [ReflectionCache(typeof(SideTransaction))]
+        SideTransaction = 0xb1,
     }
 }
