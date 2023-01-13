@@ -28,10 +28,12 @@ namespace OX.Network.P2P.Payloads
         public ECPoint Recipient;
         public SideType SideType;
         public byte[] Data;
+        public byte Flag;
         public UInt160 LockContract;
+        public byte[] Attach;
 
-        public override int Size => base.Size + Recipient.Size + sizeof(SideType) + Data.GetVarSize() + LockContract.Size;
-        public override Fixed8 SystemFee => AttributesFee;
+        public override int Size => base.Size + Recipient.Size + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + LockContract.Size + Attach.GetVarSize();
+        public override Fixed8 SystemFee => Attach.Length > 0 ? Fixed8.One : Fixed8.Zero + AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage <= TransactionAttributeUsage.Tip10 && m.Data.GetVarSize() > 8).Count();
 
         public SideTransaction()
@@ -40,6 +42,7 @@ namespace OX.Network.P2P.Payloads
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
+            this.Attach = new byte[0];
         }
 
 
@@ -48,7 +51,9 @@ namespace OX.Network.P2P.Payloads
             Recipient = reader.ReadSerializable<ECPoint>();
             SideType = (SideType)reader.ReadByte();
             Data = reader.ReadVarBytes();
+            Flag = reader.ReadByte();
             LockContract = reader.ReadSerializable<UInt160>();
+            Attach = reader.ReadVarBytes();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
@@ -56,7 +61,9 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Recipient);
             writer.Write((byte)SideType);
             writer.WriteVarBytes(Data);
+            writer.Write(Flag);
             writer.Write(LockContract);
+            writer.WriteVarBytes(Attach);
         }
 
         public override JObject ToJson()
@@ -65,7 +72,9 @@ namespace OX.Network.P2P.Payloads
             json["recipient"] = Recipient.ToString();
             json["sidetype"] = SideType.ToString();
             json["data"] = Data.ToHexString();
+            json["flag"] = Flag.ToString();
             json["lockcontract"] = LockContract.ToString();
+            json["attach"] = Attach.ToHexString();
             return json;
         }
         public Contract GetContract()
@@ -73,6 +82,7 @@ namespace OX.Network.P2P.Payloads
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitPush(this.Recipient);
+                sb.EmitPush(this.Flag);
                 sb.EmitPush(this.Data);
                 sb.EmitPush((byte)this.SideType);
                 sb.EmitAppCall(this.LockContract);
@@ -85,6 +95,11 @@ namespace OX.Network.P2P.Payloads
             if (this.Data.IsNullOrEmpty()) return false;
             if (this.Outputs.Length > 2) return false;
             if (!VerifyData()) return false;
+            if (SideType == SideType.AssetID)
+            {
+                var assetId = Data.AsSerializable<UInt256>();
+                if (Blockchain.Singleton.Store.GetAssets().TryGet(assetId).IsNull()) return false;
+            }
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
             return base.Verify(snapshot, mempool);
