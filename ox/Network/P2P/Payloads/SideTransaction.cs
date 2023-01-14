@@ -93,7 +93,7 @@ namespace OX.Network.P2P.Payloads
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
             if (this.Data.IsNullOrEmpty()) return false;
-            if (this.Outputs.Length > 2) return false;
+            //if (this.Outputs.Length > 2) return false;
             if (!VerifyData()) return false;
             if (SideType == SideType.AssetID)
             {
