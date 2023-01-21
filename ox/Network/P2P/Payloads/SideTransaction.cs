@@ -98,7 +98,7 @@ namespace OX.Network.P2P.Payloads
             if (SideType == SideType.AssetID)
             {
                 var assetId = Data.AsSerializable<UInt256>();
-                if (Blockchain.Singleton.Store.GetAssets().TryGet(assetId).IsNull()) return false;
+                if (snapshot.Assets.TryGet(assetId).IsNull()) return false;
             }
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;

@@ -249,7 +249,7 @@ namespace OX.Network.P2P.Payloads
             if (this.DonateAuthentication.Target.NFTDonateType == NFTDonateType.Issue)
             {
                 if (!this.NFTDonateStateKey.NFTCoinHash.Equals(this.DonateAuthentication.Target.PreHash)) return false;
-                var nftstate = Blockchain.Singleton.Store.GetNFTState(this.DonateAuthentication.Target.PreHash);
+                var nftstate = snapshot.GetNFTState(this.DonateAuthentication.Target.PreHash);
                 if (nftstate.IsNull()) return false;
                 if (!this.NFTDonateStateKey.NFTCoinHash.Equals(nftstate.NFTCoin.Hash)) return false;
                 if (!nftstate.NFTCoin.Author.Equals(this.DonateAuthentication.Target.PublicKey)) return false;
@@ -259,9 +259,9 @@ namespace OX.Network.P2P.Payloads
                 if (this.NFTDonateStateKey.IssueDonateHash.IsNull()) return false;
                 if (this.NFTDonateStateKey.IssueBlockIndex == 0) return false;
                 if (this.NFTDonateStateKey.IssueN == 0) return false;
-                var donateState = Blockchain.Singleton.Store.GetNFTDonateState(this.NFTDonateStateKey);
+                var donateState = snapshot.GetNFTDonateState(this.NFTDonateStateKey);
                 if (donateState.IsNull()) return false;
-                var nftState = Blockchain.Singleton.Store.GetNFTState(donateState.IssueTx.NFTDonateStateKey.NFTCoinHash);
+                var nftState = snapshot.GetNFTState(donateState.IssueTx.NFTDonateStateKey.NFTCoinHash);
                 if (nftState.IsNull()) return false;
                 if (nftState.NFTCoin.NFTDonatePermission == NFTDonatePermission.NoDonate) return false;
                 NFTDonateTransaction oldDonateTx = donateState.TransferTx.IsNotNull() ? donateState.TransferTx : donateState.IssueTx;

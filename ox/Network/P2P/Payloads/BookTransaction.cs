@@ -241,12 +241,12 @@ namespace OX.Network.P2P.Payloads
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
         {
             HashSet<UInt160> hashes = new HashSet<UInt160>(base.GetScriptHashesForVerifying(snapshot));
-            hashes.UnionWith(GetScriptHashesForVerifying_Validator());
+            hashes.UnionWith(GetScriptHashesForVerifying_Validator(snapshot));
             return hashes.OrderBy(p => p).ToArray();
         }
-        private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator()
+        private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator(Snapshot snapshot)
         {
-            var bookState = Blockchain.Singleton.Store.GetBookState(this.BookId);
+            var bookState = snapshot.GetBookState(this.BookId);
             yield return bookState.CopyrightOwner;
         }
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
@@ -255,7 +255,7 @@ namespace OX.Network.P2P.Payloads
             if (this.Data.IsNullOrEmpty()) return false;
             if (this.Mark.IsNullOrEmpty()) return false;
             if (this.SectionHash.IsNull()) return false;
-            var bookState = Blockchain.Singleton.Store.GetBookState(this.BookId);
+            var bookState = snapshot.GetBookState(this.BookId);
             if (bookState.IsNull()) return false;
             if (bookState.Book.BookStorageType == BookStorageType.OnChain && !this.SectionHash.Equals(this.DataHash)) return false;
             return base.Verify(snapshot, mempool);
@@ -330,7 +330,7 @@ namespace OX.Network.P2P.Payloads
             if (BookCopyrightAuthentication.IsNull()) return false;
             if (!BookCopyrightAuthentication.Verify()) return false;
             if (BookCopyrightAuthentication.Target.Amount <= Fixed8.Zero && BookCopyrightAuthentication.Target.NewOwner == UInt160.Zero) return false;
-            var bookState = Blockchain.Singleton.Store.GetBookState(this.BookCopyrightAuthentication.Target.BookId);
+            var bookState = snapshot.GetBookState(this.BookCopyrightAuthentication.Target.BookId);
             if (bookState.IsNull()) return false;
             var oldOwner = Contract.CreateSignatureRedeemScript(this.BookCopyrightAuthentication.Target.PublicKey).ToScriptHash();
             if (!bookState.CopyrightOwner.Equals(oldOwner)) return false;
