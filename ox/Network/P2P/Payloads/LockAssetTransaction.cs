@@ -24,7 +24,7 @@ namespace OX.Network.P2P.Payloads
         public override int Size => base.Size + Recipient.Size + sizeof(bool) + sizeof(uint) + LockContract.Size;
         public override Fixed8 SystemFee => AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage <= TransactionAttributeUsage.Tip10 && m.Data.GetVarSize() > 8).Count();
-
+        #region append for Issue
         public bool IsIssue
         {
             get
@@ -35,6 +35,7 @@ namespace OX.Network.P2P.Payloads
                 return true;
             }
         }
+        #endregion
         public LockAssetTransaction()
           : base(TransactionType.LockAssetTransaction)
         {
@@ -42,6 +43,7 @@ namespace OX.Network.P2P.Payloads
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
         }
+        #region append for Issue
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
         {
             HashSet<UInt160> hashes = new HashSet<UInt160>(base.GetScriptHashesForVerifying(snapshot));
@@ -53,7 +55,7 @@ namespace OX.Network.P2P.Payloads
             }
             return hashes.OrderBy(p => p).ToArray();
         }
-
+        #endregion
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             Recipient = reader.ReadSerializable<ECPoint>();
@@ -96,6 +98,8 @@ namespace OX.Network.P2P.Payloads
             if (this.Outputs.Length > 2) return false;
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
+            //return base.Verify(snapshot, mempool);
+            #region append for Issue
             if (!base.Verify(snapshot, mempool)) return false;
             if (IsIssue)
             {
@@ -111,6 +115,7 @@ namespace OX.Network.P2P.Payloads
                 }
             }
             return true;
+            #endregion
         }
     }
 
