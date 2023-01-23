@@ -550,6 +550,10 @@ namespace OX.Ledger
                             foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
                             break;
+                        case LockAssetTransaction _:
+                            foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
+                                snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
+                            break;
                         case ClaimTransaction _:
                             foreach (CoinReference input in ((ClaimTransaction)tx).Claims)
                             {

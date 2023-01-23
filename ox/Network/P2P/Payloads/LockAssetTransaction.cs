@@ -10,6 +10,7 @@ using OX.VM;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -24,6 +25,16 @@ namespace OX.Network.P2P.Payloads
         public override Fixed8 SystemFee => AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage <= TransactionAttributeUsage.Tip10 && m.Data.GetVarSize() > 8).Count();
 
+        public bool IsIssue
+        {
+            get
+            {
+                if (this.Inputs.IsNullOrEmpty() && this.Outputs.IsNotNullAndEmpty()) return true;
+                TransactionResult[] results = GetTransactionResults()?.Where(p => p.Amount < Fixed8.Zero).ToArray();
+                if (results.IsNullOrEmpty()) return false;
+                return true;
+            }
+        }
         public LockAssetTransaction()
           : base(TransactionType.LockAssetTransaction)
         {
@@ -31,7 +42,17 @@ namespace OX.Network.P2P.Payloads
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
         }
-
+        public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
+        {
+            HashSet<UInt160> hashes = new HashSet<UInt160>(base.GetScriptHashesForVerifying(snapshot));
+            foreach (TransactionResult result in GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
+            {
+                AssetState asset = snapshot.Assets.TryGet(result.AssetId);
+                if (asset == null) throw new InvalidOperationException();
+                hashes.Add(asset.Issuer);
+            }
+            return hashes.OrderBy(p => p).ToArray();
+        }
 
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
@@ -75,7 +96,21 @@ namespace OX.Network.P2P.Payloads
             if (this.Outputs.Length > 2) return false;
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
-            return base.Verify(snapshot, mempool);
+            if (!base.Verify(snapshot, mempool)) return false;
+            if (IsIssue)
+            {
+                TransactionResult[] results = GetTransactionResults()?.Where(p => p.Amount < Fixed8.Zero).ToArray();
+                if (results == null) return false;
+                foreach (TransactionResult r in results)
+                {
+                    AssetState asset = snapshot.Assets.TryGet(r.AssetId);
+                    if (asset == null) return false;
+                    if (asset.Amount < Fixed8.Zero) continue;
+                    Fixed8 quantity_issued = asset.Available + mempool.OfType<LockAssetTransaction>().Where(p => p != this && p.IsIssue).SelectMany(p => p.Outputs).Where(p => p.AssetId == r.AssetId).Sum(p => p.Value);
+                    if (asset.Amount - quantity_issued < -r.Amount) return false;
+                }
+            }
+            return true;
         }
     }
 
