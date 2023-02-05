@@ -57,6 +57,7 @@ namespace OX
                 [TransactionType.BookTransaction] = Fixed8.One * 100,
                 [TransactionType.TreatyTransaction] = Fixed8.One * 10,
                 [TransactionType.NFTCoinTransaction] = Fixed8.One * 10,
+                [TransactionType.SecretLetterTransaction] = Fixed8.One * 10,
                 [TransactionType.EnrollmentTransaction] = Fixed8.One * 1000,
                 [TransactionType.IssueTransaction] = Fixed8.One * 5000,
                 [TransactionType.PublishTransaction] = Fixed8.One * 500,
