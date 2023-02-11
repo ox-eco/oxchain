@@ -14,11 +14,11 @@ namespace OX.Network.P2P.Payloads
     public class SecretLetterTransaction : Transaction
     {
         public ECPoint From;
-        public UInt160 To;
+        public UInt256 ToHash;
         public byte Flag;
         public byte[] Data;
 
-        public override int Size => base.Size + From.Size + To.Size + sizeof(byte) + Data.GetVarSize();
+        public override int Size => base.Size + From.Size + ToHash.Size + sizeof(byte) + Data.GetVarSize();
 
         public SecretLetterTransaction()
             : base(TransactionType.SecretLetterTransaction)
@@ -42,14 +42,14 @@ namespace OX.Network.P2P.Payloads
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             From = reader.ReadSerializable<ECPoint>();
-            To = reader.ReadSerializable<UInt160>();
+            ToHash = reader.ReadSerializable<UInt256>();
             Flag = reader.ReadByte();
             Data = reader.ReadVarBytes();
         }
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
             writer.Write(From);
-            writer.Write(To);
+            writer.Write(ToHash);
             writer.Write(Flag);
             writer.WriteVarBytes(Data);
         }
@@ -58,7 +58,7 @@ namespace OX.Network.P2P.Payloads
         {
             JObject json = base.ToJson();
             json["from"] = this.From.ToString();
-            json["to"] = this.To.ToAddress();
+            json["tohash"] = this.ToHash.ToString();
             json["flag"] = this.Flag.ToString();
             json["data"] = this.Data.ToHexString();
             return json;
