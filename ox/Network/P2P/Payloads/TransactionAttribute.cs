@@ -19,6 +19,8 @@ namespace OX.Network.P2P.Payloads
                     return sizeof(TransactionAttributeUsage) + 32;
                 else if (Usage == TransactionAttributeUsage.Script)
                     return sizeof(TransactionAttributeUsage) + 20;
+                else if (Usage == TransactionAttributeUsage.RelatedPublicKey)
+                    return sizeof(TransactionAttributeUsage) + 33;
                 else if (Usage == TransactionAttributeUsage.DescriptionUrl)
                     return sizeof(TransactionAttributeUsage) + sizeof(byte) + Data.Length;
                 else
@@ -35,9 +37,11 @@ namespace OX.Network.P2P.Payloads
                 Data = new[] { (byte)Usage }.Concat(reader.ReadBytes(32)).ToArray();
             else if (Usage == TransactionAttributeUsage.Script)
                 Data = reader.ReadBytes(20);
+            else if (Usage == TransactionAttributeUsage.RelatedPublicKey)
+                Data = reader.ReadBytes(33);
             else if (Usage == TransactionAttributeUsage.DescriptionUrl)
                 Data = reader.ReadBytes(reader.ReadByte());
-            else if (Usage == TransactionAttributeUsage.Description || Usage >= TransactionAttributeUsage.Remark)
+            else if (Usage == TransactionAttributeUsage.Description || (Usage >= TransactionAttributeUsage.Remark && Usage < TransactionAttributeUsage.RelatedPublicKey))
                 Data = reader.ReadVarBytes(ushort.MaxValue);
             else
                 throw new FormatException();
@@ -48,7 +52,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write((byte)Usage);
             if (Usage == TransactionAttributeUsage.DescriptionUrl)
                 writer.Write((byte)Data.Length);
-            else if (Usage == TransactionAttributeUsage.Description || Usage >= TransactionAttributeUsage.Remark)
+            else if (Usage == TransactionAttributeUsage.Description || (Usage >= TransactionAttributeUsage.Remark && Usage < TransactionAttributeUsage.RelatedPublicKey))
                 writer.WriteVarInt(Data.Length);
             if (Usage == TransactionAttributeUsage.ECDH02 || Usage == TransactionAttributeUsage.ECDH03)
                 writer.Write(Data, 1, 32);

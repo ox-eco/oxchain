@@ -45,6 +45,6 @@
         Tip7 = 0xfc,
         Tip8 = 0xfd,
         Tip9 = 0xfe,
-        Tip10 = 0xff
+        RelatedPublicKey = 0xff
     }
 }

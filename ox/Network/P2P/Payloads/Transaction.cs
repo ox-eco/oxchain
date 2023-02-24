@@ -1,3 +1,4 @@
+//using Org.BouncyCastle.Math.EC;
 using OX.Cryptography;
 using OX.IO;
 using OX.IO.Caching;
@@ -11,6 +12,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using OX.Cryptography.ECC;
+using Org.BouncyCastle.Security.Certificates;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -61,7 +64,16 @@ namespace OX.Network.P2P.Payloads
                 return _hash;
             }
         }
-
+        public ECPoint[] RelatedPublicKeys
+        {
+            get
+            {
+                if (this.Attributes.IsNullOrEmpty()) return default;
+                var attrs = this.Attributes.Where(p => p.Usage == TransactionAttributeUsage.RelatedPublicKey);
+                if (attrs.IsNullOrEmpty()) return default;
+                return attrs.Select(p => ECPoint.DecodePoint(p.Data, ECCurve.Secp256r1)).ToArray();
+            }
+        }
         InventoryType IInventory.InventoryType => InventoryType.TX;
 
         public bool IsLowPriority => NetworkFee < ProtocolSettings.Default.LowPriorityThreshold && SystemFee < Fixed8.One;
@@ -321,6 +333,17 @@ namespace OX.Network.P2P.Payloads
             }
             if (Attributes.Count(p => p.Usage == TransactionAttributeUsage.ECDH02 || p.Usage == TransactionAttributeUsage.ECDH03) > 1)
                 return false;
+            foreach (var attr in Attributes.Where(p => p.Usage == TransactionAttributeUsage.RelatedPublicKey))
+            {
+                try
+                {
+                    ECPoint.DecodePoint(attr.Data, ECCurve.Secp256r1);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
             if (!VerifyReceivingScripts()) return false;
             return this.VerifyWitnesses(snapshot);
         }
