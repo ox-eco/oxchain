@@ -69,7 +69,7 @@ namespace OX.Network.P2P.Payloads
                 sb.EmitPush(this.Trustee);
                 sb.EmitPush(this.Truster);
                 byte[] data = new byte[0];
-                foreach (var target in this.Targets)
+                foreach (var target in this.Targets.OrderBy(p => p))
                 {
                     data = data.Concat(target.ToArray()).ToArray();
                 }
