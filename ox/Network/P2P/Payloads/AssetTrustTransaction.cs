@@ -85,7 +85,9 @@ namespace OX.Network.P2P.Payloads
             if (this.Targets.Length == 0) return false;
             if (this.Outputs.Length > 2) return false;
             var contract = GetContract();
-            if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
+            var output = this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash));
+            if (output.IsNull()) return false;
+            if (output.AssetId.Equals(Blockchain.OXS)) return false;
             return base.Verify(snapshot, mempool);
         }
     }
