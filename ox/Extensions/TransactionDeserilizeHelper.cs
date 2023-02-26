@@ -69,6 +69,8 @@ namespace OX
                         return TxData.AsSerializable<SideTransaction>();
                     case TransactionType.SecretLetterTransaction:
                         return TxData.AsSerializable<SecretLetterTransaction>();
+                    case TransactionType.AssetTrustTransaction:
+                        return TxData.AsSerializable<AssetTrustTransaction>();
                 }
                 return default;
 
