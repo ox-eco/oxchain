@@ -23,7 +23,7 @@ namespace OX.Network.P2P.Payloads
 
         public override int Size => base.Size + Recipient.Size + sizeof(bool) + sizeof(uint) + LockContract.Size;
         public override Fixed8 SystemFee => AttributesFee;
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.RelatedPublicKey && m.Data.GetVarSize() > 8).Count();
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.RelatedScriptHash && m.Data.GetVarSize() > 8).Count();
         #region append for Issue
         public bool IsIssue
         {

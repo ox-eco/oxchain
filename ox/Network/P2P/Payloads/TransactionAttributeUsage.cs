@@ -44,7 +44,7 @@
         Tip6 = 0xfb,
         Tip7 = 0xfc,
         Tip8 = 0xfd,
-        Tip9 = 0xfe,
+        RelatedScriptHash = 0xfe,
         RelatedPublicKey = 0xff
     }
 }

@@ -74,6 +74,16 @@ namespace OX.Network.P2P.Payloads
                 return attrs.Select(p => ECPoint.DecodePoint(p.Data, ECCurve.Secp256r1)).ToArray();
             }
         }
+        public UInt160[] RelatedScriptHashes
+        {
+            get
+            {
+                if (this.Attributes.IsNullOrEmpty()) return default;
+                var attrs = this.Attributes.Where(p => p.Usage == TransactionAttributeUsage.RelatedScriptHash);
+                if (attrs.IsNullOrEmpty()) return default;
+                return attrs.Select(p => new UInt160(p.Data)).ToArray();
+            }
+        }
         InventoryType IInventory.InventoryType => InventoryType.TX;
 
         public bool IsLowPriority => NetworkFee < ProtocolSettings.Default.LowPriorityThreshold && SystemFee < Fixed8.One;
@@ -338,6 +348,17 @@ namespace OX.Network.P2P.Payloads
                 try
                 {
                     ECPoint.DecodePoint(attr.Data, ECCurve.Secp256r1);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            foreach (var attr in Attributes.Where(p => p.Usage == TransactionAttributeUsage.RelatedScriptHash))
+            {
+                try
+                {
+                    new UInt160(attr.Data);
                 }
                 catch
                 {
