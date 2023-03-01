@@ -62,6 +62,8 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(SecretLetterTransaction))]
         SecretLetterTransaction =0xb2,
         [ReflectionCache(typeof(AssetTrustTransaction))]
-        AssetTrustTransaction =0xb3
+        AssetTrustTransaction =0xb3,
+        [ReflectionCache(typeof(RangeTransaction))]
+        RangeTransaction = 0xb4,
     }
 }

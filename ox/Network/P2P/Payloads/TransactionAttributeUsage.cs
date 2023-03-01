@@ -43,7 +43,7 @@
         Tip5 = 0xfa,
         Tip6 = 0xfb,
         Tip7 = 0xfc,
-        Tip8 = 0xfd,
+        RelatedData = 0xfd,
         RelatedScriptHash = 0xfe,
         RelatedPublicKey = 0xff
     }
