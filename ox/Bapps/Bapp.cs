@@ -25,6 +25,7 @@ namespace OX.Bapps
         public static event BappEventHandler<CrossBappMessage> CrossBappMessage;
         public static event BappEventHandler<Block> BappBlockEvent;
         public static event BappEventHandler BappRebuildIndex;
+        public static Dictionary<string, Assembly> Assemblies = new Dictionary<string, Assembly>();
         static readonly List<Bapp> bapps = new List<Bapp>();
         public static IEnumerable<Bapp> AllBapps { get { return bapps.AsEnumerable(); } }
 
@@ -125,7 +126,7 @@ namespace OX.Bapps
             InitBapp();
             bapps.Add(this);
         }
-        protected abstract void InitBapp();      
+        protected abstract void InitBapp();
         #region static
         public static void PushCrossBappMessage(CrossBappMessage message)
         {
@@ -293,6 +294,7 @@ namespace OX.Bapps
                 {
                     var file = File.ReadAllBytes(filename);
                     Assembly assembly = Assembly.Load(file);
+                    Assemblies[assembly.FullName] = assembly;
                     foreach (Type type in assembly.ExportedTypes)
                     {
                         if (!type.IsSubclassOf(typeof(Bapp))) continue;
