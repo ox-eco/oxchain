@@ -32,6 +32,6 @@ namespace OX.SmartContract.Framework.Services
         [Syscall("OX.Blockchain.GetContract")]
         public static extern Contract GetContract(byte[] script_hash);
         [Syscall("OX.Blockchain.GetSides")]
-        public static extern Account GetSides(byte[] script_hash);
+        public static extern byte[][] GetSides(byte[] script_hash, string contractScriptHash);
     }
 }

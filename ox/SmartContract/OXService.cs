@@ -6,7 +6,9 @@ using OX.SmartContract.Enumerators;
 using OX.SmartContract.Iterators;
 using OX.VM;
 using OX.VM.Types;
+using OX.Wallets;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -110,9 +112,12 @@ namespace OX.SmartContract
         private bool Blockchain_GetSides(ExecutionEngine engine)
         {
             UInt160 hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            string contractScriptHash = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
             SideSateList sideSateList = Snapshot.Sides.TryGet(hash);
-            if (sideSateList == null) return false;
-            engine.CurrentContext.EvaluationStack.Push(StackItem.FromInterface(sideSateList));
+            if (sideSateList.IsNull() || sideSateList.SideStateList.IsNullOrEmpty()) return false;
+            var sides = sideSateList.SideStateList.Where(m => m.SideTransaction.MergeContract.ToString() == contractScriptHash);
+            if (sides.IsNullOrEmpty()) return false;
+            engine.CurrentContext.EvaluationStack.Push(sides.Select(p => (StackItem)p.SideScriptHash.ToArray()).ToArray());
             return true;
         }
         private bool Blockchain_GetAccount(ExecutionEngine engine)
