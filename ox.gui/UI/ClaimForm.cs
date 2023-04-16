@@ -23,7 +23,7 @@ namespace OX.UI
         private void CalculateBonusUnavailable(uint height)
         {
             var unspent = Program.CurrentWallet.FindUnspentCoins()
-                .Where(p => p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash))
+                .Where(p => p.Output.AssetId.Equals(Blockchain.OXS_Token.Hash))
                 .Select(p => p.Reference);
 
             ICollection<CoinReference> references = new HashSet<CoinReference>();
@@ -90,7 +90,7 @@ namespace OX.UI
                         {
                         new TransactionOutput
                         {
-                            AssetId = Blockchain.UtilityToken.Hash,
+                            AssetId = Blockchain.OXC_Token.Hash,
                             Value = snapshot.CalculateBonus(claims),
                             ScriptHash = address.ToScriptHash()
                         }

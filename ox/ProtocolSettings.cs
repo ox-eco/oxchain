@@ -34,7 +34,7 @@ namespace OX
 
         private ProtocolSettings()
         {
-            this.Magic = 891205;
+            this.Magic = 10141116;
             this.AddressVersion = 23;
             this.StandbyValidators = new[]
             {
@@ -51,17 +51,17 @@ namespace OX
                 [TransactionType.BillTransaction] = Fixed8.One,
                 [TransactionType.ReplyTransaction] = Fixed8.One,
                 [TransactionType.AskTransaction] = Fixed8.One,
-                [TransactionType.NFTDonateTransaction] = Fixed8.One,
-                [TransactionType.BookTransferTransaction] = Fixed8.One,
-                [TransactionType.BookSectionTransaction] = Fixed8.One * 10,
-                [TransactionType.BookTransaction] = Fixed8.One * 100,
-                [TransactionType.TreatyTransaction] = Fixed8.One * 10,
-                [TransactionType.NFTCoinTransaction] = Fixed8.One * 10,
-                [TransactionType.SecretLetterTransaction] = Fixed8.One * 10,
+                [TransactionType.NFTDonateTransaction] = Fixed8.One*10,
+                [TransactionType.BookTransferTransaction] = Fixed8.One*10,
+                [TransactionType.BookSectionTransaction] = Fixed8.One * 100,
+                [TransactionType.BookTransaction] = Fixed8.One * 1000,
+                [TransactionType.TreatyTransaction] = Fixed8.One * 100,
+                [TransactionType.NFTCoinTransaction] = Fixed8.One * 100,
+                [TransactionType.SecretLetterTransaction] = Fixed8.One * 100,
                 //[TransactionType.EnrollmentTransaction] = Fixed8.One * 1000,
                 [TransactionType.IssueTransaction] = Fixed8.One * 5000,
                 //[TransactionType.PublishTransaction] = Fixed8.One * 500,
-                [TransactionType.RegisterTransaction] = Fixed8.One * 10000
+                [TransactionType.RegisterTransaction] = Fixed8.One * 100000
             };
 
             this.SystemFee = sys_fee;

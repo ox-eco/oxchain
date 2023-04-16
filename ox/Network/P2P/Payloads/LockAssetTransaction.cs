@@ -14,15 +14,45 @@ using System;
 
 namespace OX.Network.P2P.Payloads
 {
+    public class BlockBonusSetting : ISerializable
+    {
+        public uint Index;
+        public byte NumPerBlock;
+        public virtual int Size => sizeof(uint) + sizeof(byte);
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write(Index);
+            writer.Write(NumPerBlock);
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            Index = reader.ReadUInt32();
+            NumPerBlock = reader.ReadByte();
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is BlockBonusSetting bbs)
+            {
+                return bbs.Index == this.Index && bbs.NumPerBlock == this.NumPerBlock;
+            }
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return (Index + NumPerBlock).GetHashCode();
+        }
+    }
     public class LockAssetTransaction : Transaction
     {
         public ECPoint Recipient;
         public bool IsTimeLock;
         public uint LockExpiration;
+        public byte Flag;
         public UInt160 LockContract;
+        public byte[] Attach;
 
-        public override int Size => base.Size + Recipient.Size + sizeof(bool) + sizeof(uint) + LockContract.Size;
-        public override Fixed8 SystemFee => AttributesFee;
+        public override int Size => base.Size + Recipient.Size + sizeof(bool) + sizeof(uint) + sizeof(byte) + LockContract.Size + Attach.GetVarSize();
+        public override Fixed8 SystemFee => AttributesFee + (Flag == byte.MaxValue ? Fixed8.One * 1000 : Fixed8.Zero);
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.RelatedScriptHash && m.Data.GetVarSize() > 8).Count();
         #region append for Issue
         public bool IsIssue
@@ -35,6 +65,7 @@ namespace OX.Network.P2P.Payloads
                 return true;
             }
         }
+
         #endregion
         public LockAssetTransaction()
           : base(TransactionType.LockAssetTransaction)
@@ -42,6 +73,7 @@ namespace OX.Network.P2P.Payloads
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
+            this.Attach = new byte[0];
         }
         #region append for Issue
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
@@ -61,7 +93,9 @@ namespace OX.Network.P2P.Payloads
             Recipient = reader.ReadSerializable<ECPoint>();
             IsTimeLock = reader.ReadBoolean();
             LockExpiration = reader.ReadUInt32();
+            Flag = reader.ReadByte();
             LockContract = reader.ReadSerializable<UInt160>();
+            Attach = reader.ReadVarBytes();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
@@ -69,7 +103,9 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Recipient);
             writer.Write(IsTimeLock);
             writer.Write(LockExpiration);
+            writer.Write(Flag);
             writer.Write(LockContract);
+            writer.WriteVarBytes(Attach);
         }
 
         public override JObject ToJson()
@@ -86,6 +122,7 @@ namespace OX.Network.P2P.Payloads
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitPush(this.Recipient);
+                sb.EmitPush(this.Flag);
                 sb.EmitPush(this.LockExpiration);
                 sb.EmitPush(this.IsTimeLock);
                 sb.EmitAppCall(this.LockContract);
@@ -98,7 +135,27 @@ namespace OX.Network.P2P.Payloads
             if (this.Outputs.Length > 2) return false;
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
-            //return base.Verify(snapshot, mempool);
+            if (Flag == byte.MaxValue)
+            {
+                if (this.IsTimeLock) return false;
+                if (Attach.IsNullOrEmpty()) return false;
+                try
+                {
+                    var setting = Attach.AsSerializable<BlockBonusSetting>();
+                    if (setting.Index <= Blockchain.Singleton.HeaderHeight) return false;
+                    if (this.LockExpiration < setting.Index) return false;
+                    if (setting.Index % Blockchain.DecrementInterval > 0) return false;
+                    var rem = Blockchain.Singleton.HeaderHeight % Blockchain.DecrementInterval;
+                    var h = Blockchain.Singleton.HeaderHeight - rem + Blockchain.DecrementInterval;
+                    if (h != setting.Index) return false;
+                    if (setting.Index > (Blockchain.GenerationBonusAmount.Length - 1) * Blockchain.DecrementInterval) return false;
+                    if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).IsNull()) return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
             #region append for Issue
             if (!base.Verify(snapshot, mempool)) return false;
             if (IsIssue)
@@ -116,6 +173,19 @@ namespace OX.Network.P2P.Payloads
             }
             return true;
             #endregion
+        }
+        public bool ValidBlockBonusVote(out BlockBonusSetting setting, out Fixed8 amount)
+        {
+            setting = default;
+            amount = Fixed8.Zero;
+            if (this.Flag == byte.MaxValue)
+            {
+                var contract = GetContract();
+                setting = this.Attach.AsSerializable<BlockBonusSetting>();
+                amount = this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).Value;
+                return true;
+            }
+            return false;
         }
     }
 

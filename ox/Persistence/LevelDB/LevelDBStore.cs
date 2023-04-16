@@ -111,7 +111,10 @@ namespace OX.Persistence.LevelDB
         {
             return new DbCache<UInt32Wrapper, HeaderHashList>(db, null, null, Prefixes.IX_HeaderHashList);
         }
-
+        public override DataCache<UInt32Wrapper, BlockBonusVoteList> GetBlockBonusVoteList()
+        {
+            return new DbCache<UInt32Wrapper, BlockBonusVoteList>(db, null, null, Prefixes.IX_BlockBonusVoteList);
+        }
         public override MetaDataCache<ValidatorsCountState> GetValidatorsCount()
         {
             return new DbMetaDataCache<ValidatorsCountState>(db, null, null, Prefixes.IX_ValidatorsCount);

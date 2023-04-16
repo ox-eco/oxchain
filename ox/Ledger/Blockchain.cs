@@ -4,6 +4,7 @@ using OX.Cryptography.ECC;
 using OX.IO;
 using OX.IO.Actors;
 using OX.IO.Caching;
+using OX.IO.Wrappers;
 using OX.Network.P2P;
 using OX.Network.P2P.Payloads;
 using OX.Persistence;
@@ -20,8 +21,8 @@ namespace OX.Ledger
 {
     public sealed class Blockchain : UntypedActor
     {
-        public static UInt256 OXS => GoverningToken.Hash;
-        public static UInt256 OXC => UtilityToken.Hash;
+        public static UInt256 OXS => OXS_Token.Hash;
+        public static UInt256 OXC => OXC_Token.Hash;
         public class ApplicationExecuted { public Transaction Transaction; public ApplicationExecutionResult[] ExecutionResults; }
         public class PersistCompleted { public Block Block; }
         public class Import { public IEnumerable<Block> Blocks; }
@@ -33,16 +34,19 @@ namespace OX.Ledger
         public static readonly Fixed8 BappDetainOXS = ProtocolSettings.Default.BappDetainOXS;
         public const uint DecrementInterval = 2000000;
         public const int MaxValidators = 1024;
-        public static readonly uint[] GenerationAmount = { 800, 700, 600, 500, 400, 300, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
+        public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
+        public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0x1bb1483c8c1175b37062d7d586bd4b67abb255e2");
+        static readonly uint[] genesisGenerationAmount = { 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+        public static uint[] GenerationBonusAmount => genesisGenerationAmount;
         public static readonly TimeSpan TimePerBlock = TimeSpan.FromSeconds(SecondsPerBlock);
         public static readonly ECPoint[] StandbyValidators = ProtocolSettings.Default.StandbyValidators.OfType<string>().Select(p => ECPoint.DecodePoint(p.HexToBytes(), ECCurve.Secp256r1)).ToArray();
         public static string[] StandbyValidatorAddress { get; private set; } = StandbyValidators.Select(m => Contract.CreateSignatureContract(m).Address).ToArray();
 #pragma warning disable CS0612
-        public static readonly RegisterTransaction GoverningToken = new RegisterTransaction
+        public static readonly RegisterTransaction OXS_Token = new RegisterTransaction
         {
             AssetType = AssetType.GoverningToken,
-            Name = "[{\"lang\":\"zh-CN\",\"name\":\"ox股\"},{\"lang\":\"en\",\"name\":\"ox stock\"}]",
-            Amount = Fixed8.FromDecimal(100000000),
+            Name = "[{\"lang\":\"zh-CN\",\"name\":\"ox股\"},{\"lang\":\"en\",\"name\":\"ox share\"}]",
+            Amount = Fixed8.One * 100000000,
             Precision = 0,
             Owner = ECCurve.Secp256r1.Infinity,
             Admin = (new[] { (byte)OpCode.PUSHT }).ToScriptHash(),
@@ -52,11 +56,11 @@ namespace OX.Ledger
             Witnesses = new Witness[0]
         };
 
-        public static readonly RegisterTransaction UtilityToken = new RegisterTransaction
+        public static readonly RegisterTransaction OXC_Token = new RegisterTransaction
         {
             AssetType = AssetType.UtilityToken,
             Name = "[{\"lang\":\"zh-CN\",\"name\":\"ox币\"},{\"lang\":\"en\",\"name\":\"ox coin\"}]",
-            Amount = Fixed8.FromDecimal(GenerationAmount.Sum(p => p) * DecrementInterval),
+            Amount = -Fixed8.Satoshi,//Fixed8.FromDecimal(GenerationAmount.Sum(p => p) * DecrementInterval),
             Precision = 8,
             Owner = ECCurve.Secp256r1.Infinity,
             Admin = (new[] { (byte)OpCode.PUSHF }).ToScriptHash(),
@@ -72,7 +76,7 @@ namespace OX.Ledger
             PrevHash = UInt256.Zero,
             Timestamp = (new DateTime(2016, 7, 15, 15, 8, 21, DateTimeKind.Utc)).ToTimestamp(),
             Index = 0,
-            ConsensusData = 19781989, //for my love
+            ConsensusData = 201014021116, //for my love
             NextConsensus = GetConsensusAddress(StandbyValidators),
             Witness = new Witness
             {
@@ -83,14 +87,14 @@ namespace OX.Ledger
             {
                 new MinerTransaction
                 {
-                    Nonce = 19781989,
+                    Nonce = 788289,
                     Attributes = new TransactionAttribute[0],
                     Inputs = new CoinReference[0],
                     Outputs = new TransactionOutput[0],
                     Witnesses = new Witness[0]
                 },
-                GoverningToken,
-                UtilityToken,
+                OXS_Token,
+                OXC_Token,
                 new IssueTransaction
                 {
                     Attributes = new TransactionAttribute[0],
@@ -99,8 +103,14 @@ namespace OX.Ledger
                     {
                         new TransactionOutput
                         {
-                            AssetId = GoverningToken.Hash,
-                            Value = GoverningToken.Amount,
+                            AssetId = OXS_Token.Hash,
+                            Value = OXS_Token.Amount,
+                            ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
+                        },
+                        new TransactionOutput
+                        {
+                            AssetId = OXC_Token.Hash,
+                            Value = Fixed8.One* 20000000,
                             ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
                         }
                     },
@@ -485,7 +495,7 @@ namespace OX.Ledger
                             account.Balances[output.AssetId] += output.Value;
                         else
                             account.Balances[output.AssetId] = output.Value;
-                        if (output.AssetId.Equals(GoverningToken.Hash) && account.Votes.Length > 0)
+                        if (output.AssetId.Equals(OXS_Token.Hash) && account.Votes.Length > 0)
                         {
                             foreach (ECPoint pubkey in account.Votes)
                                 snapshot.Validators.GetAndChange(pubkey, () => new ValidatorState(pubkey)).Votes += output.Value;
@@ -500,7 +510,7 @@ namespace OX.Ledger
                             snapshot.UnspentCoins.GetAndChange(input.PrevHash).Items[input.PrevIndex] |= CoinState.Spent;
                             TransactionOutput out_prev = tx_prev.Transaction.Outputs[input.PrevIndex];
                             AccountState account = snapshot.Accounts.GetAndChange(out_prev.ScriptHash);
-                            if (out_prev.AssetId.Equals(GoverningToken.Hash))
+                            if (out_prev.AssetId.Equals(OXS_Token.Hash))
                             {
                                 snapshot.SpentCoins.GetAndChange(input.PrevHash, () => new SpentCoinState
                                 {
@@ -550,9 +560,25 @@ namespace OX.Ledger
                             foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
                             break;
-                        case LockAssetTransaction _:
-                            foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
+                        case LockAssetTransaction lat:
+                            foreach (TransactionResult result in lat.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
+                            if (lat.LockContract.Equals(LockAssetContractScriptHash) && lat.ValidBlockBonusVote(out BlockBonusSetting bonusSetting, out Fixed8 voteAmount))
+                            {
+                                var blockBonusVote = new BlockBonusVote { Amount = voteAmount, Voter = lat.Recipient, NumPerBlock = bonusSetting.NumPerBlock };
+                                var bonusVoteList = snapshot.BlockBonusVoteList.TryGet((UInt32Wrapper)bonusSetting.Index);
+                                if (bonusVoteList.IsNotNull())
+                                {
+                                    var list = bonusVoteList.Votes.ToList();
+                                    list.Add(blockBonusVote);
+                                    bonusVoteList.Votes = list.ToArray();
+                                }
+                                else
+                                {
+                                    BlockBonusVoteList blockBonusVoteList = new BlockBonusVoteList { Votes = new BlockBonusVote[] { blockBonusVote } };
+                                    snapshot.BlockBonusVoteList.Add((UInt32Wrapper)bonusSetting.Index, blockBonusVoteList);
+                                }
+                            }
                             break;
                         case ClaimTransaction _:
                             foreach (CoinReference input in ((ClaimTransaction)tx).Claims)
@@ -561,11 +587,11 @@ namespace OX.Ledger
                                     snapshot.SpentCoins.GetAndChange(input.PrevHash);
                             }
                             break;
-//#pragma warning disable CS0612
-//                        case EnrollmentTransaction tx_enrollment:
-//                            snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
-//                            break;
-//#pragma warning restore CS0612
+                        //#pragma warning disable CS0612
+                        //                        case EnrollmentTransaction tx_enrollment:
+                        //                            snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
+                        //                            break;
+                        //#pragma warning restore CS0612
                         case StateTransaction tx_state:
                             foreach (StateDescriptor descriptor in tx_state.Descriptors)
                                 switch (descriptor.Type)
@@ -578,22 +604,22 @@ namespace OX.Ledger
                                         break;
                                 }
                             break;
-//#pragma warning disable CS0612
-//                        case PublishTransaction tx_publish:
-//                            snapshot.Contracts.GetOrAdd(tx_publish.ScriptHash, () => new ContractState
-//                            {
-//                                Script = tx_publish.Script,
-//                                ParameterList = tx_publish.ParameterList,
-//                                ReturnType = tx_publish.ReturnType,
-//                                ContractProperties = (ContractPropertyState)Convert.ToByte(tx_publish.NeedStorage),
-//                                Name = tx_publish.Name,
-//                                CodeVersion = tx_publish.CodeVersion,
-//                                Author = tx_publish.Author,
-//                                Email = tx_publish.Email,
-//                                Description = tx_publish.Description
-//                            });
-//                            break;
-//#pragma warning restore CS0612
+                        //#pragma warning disable CS0612
+                        //                        case PublishTransaction tx_publish:
+                        //                            snapshot.Contracts.GetOrAdd(tx_publish.ScriptHash, () => new ContractState
+                        //                            {
+                        //                                Script = tx_publish.Script,
+                        //                                ParameterList = tx_publish.ParameterList,
+                        //                                ReturnType = tx_publish.ReturnType,
+                        //                                ContractProperties = (ContractPropertyState)Convert.ToByte(tx_publish.NeedStorage),
+                        //                                Name = tx_publish.Name,
+                        //                                CodeVersion = tx_publish.CodeVersion,
+                        //                                Author = tx_publish.Author,
+                        //                                Email = tx_publish.Email,
+                        //                                Description = tx_publish.Description
+                        //                            });
+                        //                            break;
+                        //#pragma warning restore CS0612
                         case InvocationTransaction tx_invocation:
                             using (ApplicationEngine engine = new ApplicationEngine(TriggerType.Application, tx_invocation, snapshot.Clone(), tx_invocation.Gas))
                             {
@@ -762,7 +788,7 @@ namespace OX.Ledger
             switch (descriptor.Field)
             {
                 case "Votes":
-                    Fixed8 balance = account.GetBalance(GoverningToken.Hash);
+                    Fixed8 balance = account.GetBalance(OXS_Token.Hash);
                     foreach (ECPoint pubkey in account.Votes)
                     {
                         ValidatorState validator = snapshot.Validators.GetAndChange(pubkey);

@@ -30,7 +30,7 @@ namespace OX.Network.P2P.Payloads
             base.OnDeserialized();
             if (Inputs.Length != 0)
                 throw new FormatException();
-            if (Outputs.Any(p => p.AssetId != Blockchain.UtilityToken.Hash))
+            if (Outputs.Any(p => p.AssetId != Blockchain.OXC_Token.Hash))
                 throw new FormatException();
         }
 

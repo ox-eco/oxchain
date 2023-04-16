@@ -375,7 +375,7 @@ namespace OX.Wallets.NEP6
                 {
                     if (inputs.Contains(coin.Reference))
                     {
-                        if (coin.Output.AssetId.Equals(Blockchain.GoverningToken.Hash))
+                        if (coin.Output.AssetId.Equals(Blockchain.OXS_Token.Hash))
                             yield return new Coin
                             {
                                 Reference = coin.Reference,

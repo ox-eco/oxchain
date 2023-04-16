@@ -30,5 +30,6 @@
         public const byte DATA_NFTDONATE = 0xf3;
         public const byte DATA_Book = 0xf5;
         public const byte DATA_SideList = 0xf6;
+        public const byte IX_BlockBonusVoteList = 0xf7;
     }
 }

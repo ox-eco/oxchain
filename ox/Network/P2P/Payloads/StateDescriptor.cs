@@ -128,7 +128,7 @@ namespace OX.Network.P2P.Payloads
                     if (account?.DetainState != DetainStatus.UnFreeze) return false;
                     if (pubkeys.Length > 0)
                     {
-                        if (account.GetBalance(Blockchain.GoverningToken.Hash).Equals(Fixed8.Zero)) return false;
+                        if (account.GetBalance(Blockchain.OXS_Token.Hash).Equals(Fixed8.Zero)) return false;
                         HashSet<ECPoint> sv = new HashSet<ECPoint>(Blockchain.StandbyValidators);
                         foreach (ECPoint pubkey in pubkeys)
                             if (!sv.Contains(pubkey) && snapshot.Validators.TryGet(pubkey)?.Registered != true)

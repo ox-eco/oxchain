@@ -27,6 +27,7 @@ namespace OX.Persistence.LevelDB
         public override DataCache<UInt160, ContractState> Contracts { get; }
         public override DataCache<StorageKey, StorageItem> Storages { get; }
         public override DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
+        public override DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
         public override MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         public override MetaDataCache<HashIndexState> BlockHashIndex { get; }
         public override MetaDataCache<HashIndexState> HeaderHashIndex { get; }
@@ -51,6 +52,7 @@ namespace OX.Persistence.LevelDB
             Contracts = new DbCache<UInt160, ContractState>(db, options, batch, Prefixes.ST_Contract);
             Storages = new DbCache<StorageKey, StorageItem>(db, options, batch, Prefixes.ST_Storage);
             HeaderHashList = new DbCache<UInt32Wrapper, HeaderHashList>(db, options, batch, Prefixes.IX_HeaderHashList);
+            BlockBonusVoteList = new DbCache<UInt32Wrapper, BlockBonusVoteList>(db, options, batch, Prefixes.IX_BlockBonusVoteList);
             ValidatorsCount = new DbMetaDataCache<ValidatorsCountState>(db, options, batch, Prefixes.IX_ValidatorsCount);
             BlockHashIndex = new DbMetaDataCache<HashIndexState>(db, options, batch, Prefixes.IX_CurrentBlock);
             HeaderHashIndex = new DbMetaDataCache<HashIndexState>(db, options, batch, Prefixes.IX_CurrentHeader);

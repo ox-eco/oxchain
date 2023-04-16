@@ -187,7 +187,7 @@ namespace OX.Plugins
                     {
                         new TransactionOutput
                         {
-                            AssetId = Blockchain.UtilityToken.Hash,
+                            AssetId = Blockchain.OXC_Token.Hash,
                             Value = snapshot.CalculateBonus(claims.Take(MAX_CLAIMS_AMOUNT)),
                             ScriptHash = to ?? Wallet.GetChangeAddress()
                         }
@@ -241,7 +241,7 @@ namespace OX.Plugins
                 Fixed8 unavailable;
                 try
                 {
-                    unavailable = snapshot.CalculateBonus(Wallet.FindUnspentCoins().Where(p => p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash)).Select(p => p.Reference), height);
+                    unavailable = snapshot.CalculateBonus(Wallet.FindUnspentCoins().Where(p => p.Output.AssetId.Equals(Blockchain.OXS_Token.Hash)).Select(p => p.Reference), height);
                 }
                 catch
                 {

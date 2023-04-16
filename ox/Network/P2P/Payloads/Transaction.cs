@@ -95,8 +95,8 @@ namespace OX.Network.P2P.Payloads
             {
                 if (_network_fee == -Fixed8.Satoshi)
                 {
-                    Fixed8 input = References.Values.Where(p => p.AssetId.Equals(Blockchain.UtilityToken.Hash)).Sum(p => p.Value);
-                    Fixed8 output = Outputs.Where(p => p.AssetId.Equals(Blockchain.UtilityToken.Hash)).Sum(p => p.Value);
+                    Fixed8 input = References.Values.Where(p => p.AssetId.Equals(Blockchain.OXC_Token.Hash)).Sum(p => p.Value);
+                    Fixed8 output = Outputs.Where(p => p.AssetId.Equals(Blockchain.OXC_Token.Hash)).Sum(p => p.Value);
                     _network_fee = input - output - SystemFee;
                 }
                 return _network_fee;
@@ -316,7 +316,7 @@ namespace OX.Network.P2P.Payloads
             if (results == null) return false;
             TransactionResult[] results_destroy = results.Where(p => p.Amount > Fixed8.Zero).ToArray();
             if (results_destroy.Length > 1) return false;
-            if (results_destroy.Length == 1 && results_destroy[0].AssetId != Blockchain.UtilityToken.Hash)
+            if (results_destroy.Length == 1 && results_destroy[0].AssetId != Blockchain.OXC_Token.Hash)
                 return false;
             if (SystemFee > Fixed8.Zero && (results_destroy.Length == 0 || results_destroy[0].Amount < SystemFee))
                 return false;
@@ -325,15 +325,15 @@ namespace OX.Network.P2P.Payloads
             {
                 case TransactionType.MinerTransaction:
                 case TransactionType.ClaimTransaction:
-                    if (results_issue.Any(p => p.AssetId != Blockchain.UtilityToken.Hash))
+                    if (results_issue.Any(p => p.AssetId != Blockchain.OXC_Token.Hash))
                         return false;
                     break;
                 case TransactionType.IssueTransaction:
-                    if (results_issue.Any(p => p.AssetId == Blockchain.UtilityToken.Hash))
+                    if (results_issue.Any(p => p.AssetId == Blockchain.OXC_Token.Hash))
                         return false;
                     break;
                 case TransactionType.LockAssetTransaction:
-                    if (results_issue.Any(p => p.AssetId == Blockchain.UtilityToken.Hash))
+                    if (results_issue.Any(p => p.AssetId == Blockchain.OXC_Token.Hash))
                         return false;
                     break;
                 default:

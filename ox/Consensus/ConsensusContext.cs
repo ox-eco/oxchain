@@ -368,7 +368,7 @@ namespace OX.Consensus
             Fixed8 amountNetFee = Block.CalculateNetFee(transactions);
             TransactionOutput[] outputs = amountNetFee == Fixed8.Zero ? new TransactionOutput[0] : new[] { new TransactionOutput
             {
-                AssetId = Blockchain.UtilityToken.Hash,
+                AssetId = Blockchain.OXC_Token.Hash,
                 Value = amountNetFee,
                 ScriptHash = wallet.GetChangeAddress()
             } };

@@ -982,10 +982,10 @@ namespace OX.Shell
             switch (args[1].ToLower())
             {
                 case "oxs":
-                    assetId = Blockchain.GoverningToken.Hash;
+                    assetId = Blockchain.OXS_Token.Hash;
                     break;
                 case "oxc":
-                    assetId = Blockchain.UtilityToken.Hash;
+                    assetId = Blockchain.OXC_Token.Hash;
                     break;
                 default:
                     assetId = UIntBase.Parse(args[1]);
@@ -1187,10 +1187,10 @@ namespace OX.Shell
                 switch (args[2].ToLower())
                 {
                     case "oxs":
-                        assetId = Blockchain.GoverningToken.Hash;
+                        assetId = Blockchain.OXS_Token.Hash;
                         break;
                     case "oxc":
-                        assetId = Blockchain.UtilityToken.Hash;
+                        assetId = Blockchain.OXC_Token.Hash;
                         break;
                     default:
                         assetId = UInt256.Parse(args[2]);

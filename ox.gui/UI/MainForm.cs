@@ -148,7 +148,7 @@ namespace OX.UI
             if (Program.CurrentWallet != null)
             {
                 check_nep5_balance = true;
-                if (Program.CurrentWallet.GetCoins().Any(p => !p.State.HasFlag(CoinState.Spent) && p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash)) == true)
+                if (Program.CurrentWallet.GetCoins().Any(p => !p.State.HasFlag(CoinState.Spent) && p.Output.AssetId.Equals(Blockchain.OXS_Token.Hash)) == true)
                     balance_changed = true;
             }
 
@@ -274,25 +274,25 @@ namespace OX.UI
                         {
                             IEnumerable<Coin> coins = Program.CurrentWallet?.GetCoins().Where(p => !p.State.HasFlag(CoinState.Spent)) ?? Enumerable.Empty<Coin>();
                             Fixed8 bonus_available = snapshot.CalculateBonus(Program.CurrentWallet.GetUnclaimedCoins().Select(p => p.Reference));
-                            Fixed8 bonus_unavailable = snapshot.CalculateBonus(coins.Where(p => p.State.HasFlag(CoinState.Confirmed) && p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash)).Select(p => p.Reference), snapshot.Height + 1);
+                            Fixed8 bonus_unavailable = snapshot.CalculateBonus(coins.Where(p => p.State.HasFlag(CoinState.Confirmed) && p.Output.AssetId.Equals(Blockchain.OXS_Token.Hash)).Select(p => p.Reference), snapshot.Height + 1);
                             Fixed8 bonus = bonus_available + bonus_unavailable;
                             var assets = coins.GroupBy(p => p.Output.AssetId, (k, g) => new
                             {
                                 Asset = snapshot.Assets.TryGet(k),
                                 Value = g.Sum(p => p.Output.Value),
-                                Claim = k.Equals(Blockchain.UtilityToken.Hash) ? bonus : Fixed8.Zero
+                                Claim = k.Equals(Blockchain.OXC_Token.Hash) ? bonus : Fixed8.Zero
                             }).ToDictionary(p => p.Asset.AssetId);
-                            if (bonus != Fixed8.Zero && !assets.ContainsKey(Blockchain.UtilityToken.Hash))
+                            if (bonus != Fixed8.Zero && !assets.ContainsKey(Blockchain.OXC_Token.Hash))
                             {
-                                assets[Blockchain.UtilityToken.Hash] = new
+                                assets[Blockchain.OXC_Token.Hash] = new
                                 {
-                                    Asset = snapshot.Assets.TryGet(Blockchain.UtilityToken.Hash),
+                                    Asset = snapshot.Assets.TryGet(Blockchain.OXC_Token.Hash),
                                     Value = Fixed8.Zero,
                                     Claim = bonus
                                 };
                             }
-                            var balance_ans = coins.Where(p => p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash)).GroupBy(p => p.Output.ScriptHash).ToDictionary(p => p.Key, p => p.Sum(i => i.Output.Value));
-                            var balance_anc = coins.Where(p => p.Output.AssetId.Equals(Blockchain.UtilityToken.Hash)).GroupBy(p => p.Output.ScriptHash).ToDictionary(p => p.Key, p => p.Sum(i => i.Output.Value));
+                            var balance_ans = coins.Where(p => p.Output.AssetId.Equals(Blockchain.OXS_Token.Hash)).GroupBy(p => p.Output.ScriptHash).ToDictionary(p => p.Key, p => p.Sum(i => i.Output.Value));
+                            var balance_anc = coins.Where(p => p.Output.AssetId.Equals(Blockchain.OXC_Token.Hash)).GroupBy(p => p.Output.ScriptHash).ToDictionary(p => p.Key, p => p.Sum(i => i.Output.Value));
                             foreach (ListViewItem item in listView1.Items)
                             {
                                 UInt160 script_hash = item.Name.ToScriptHash();
@@ -310,7 +310,7 @@ namespace OX.UI
                             }
                             foreach (var asset in assets.Values)
                             {
-                                string value_text = asset.Value.ToString() + (asset.Asset.AssetId.Equals(Blockchain.UtilityToken.Hash) ? $"+({asset.Claim})" : "");
+                                string value_text = asset.Value.ToString() + (asset.Asset.AssetId.Equals(Blockchain.OXC_Token.Hash) ? $"+({asset.Claim})" : "");
                                 if (listView2.Items.ContainsKey(asset.Asset.AssetId.ToString()))
                                 {
                                     listView2.Items[asset.Asset.AssetId.ToString()].SubItems["value"].Text = value_text;

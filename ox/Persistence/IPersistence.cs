@@ -21,6 +21,7 @@ namespace OX.Persistence
         DataCache<UInt160, ContractState> Contracts { get; }
         DataCache<StorageKey, StorageItem> Storages { get; }
         DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
+        DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
         MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         MetaDataCache<HashIndexState> BlockHashIndex { get; }
         MetaDataCache<HashIndexState> HeaderHashIndex { get; }

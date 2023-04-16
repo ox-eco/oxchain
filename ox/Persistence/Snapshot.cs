@@ -7,6 +7,7 @@ using OX.VM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks.Dataflow;
 
 namespace OX.Persistence
 {
@@ -27,6 +28,7 @@ namespace OX.Persistence
         public abstract DataCache<UInt160, ContractState> Contracts { get; }
         public abstract DataCache<StorageKey, StorageItem> Storages { get; }
         public abstract DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
+        public abstract DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
         public abstract MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         public abstract MetaDataCache<HashIndexState> BlockHashIndex { get; }
         public abstract MetaDataCache<HashIndexState> HeaderHashIndex { get; }
@@ -70,7 +72,7 @@ namespace OX.Persistence
                 if (tx_state.BlockIndex == height_end) continue;
                 foreach (CoinReference claim in group)
                 {
-                    if (claim.PrevIndex >= tx_state.Transaction.Outputs.Length || !tx_state.Transaction.Outputs[claim.PrevIndex].AssetId.Equals(Blockchain.GoverningToken.Hash))
+                    if (claim.PrevIndex >= tx_state.Transaction.Outputs.Length || !tx_state.Transaction.Outputs[claim.PrevIndex].AssetId.Equals(Blockchain.OXS_Token.Hash))
                         throw new ArgumentException();
                     unclaimed.Add(new SpentCoin
                     {
@@ -82,7 +84,24 @@ namespace OX.Persistence
             }
             return CalculateBonusInternal(unclaimed);
         }
-
+        public uint GetGenerationAmount(uint ustart)
+        {
+            var f = Blockchain.GenerationBonusAmount[ustart];
+            var list = BlockBonusVoteList.TryGet((UInt32Wrapper)(ustart * Blockchain.DecrementInterval));
+            if (list.IsNotNull() && list.Votes.IsNotNullAndEmpty())
+            {
+                foreach (var group in list.Votes.GroupBy(m => m.NumPerBlock))
+                {
+                    var total = group.Sum(p => p.Amount);
+                    if (total > Fixed8.One * 50000000)
+                    {
+                        f = (uint)group.Key;
+                        break;
+                    }
+                }
+            }
+            return f;
+        }
         private Fixed8 CalculateBonusInternal(IEnumerable<SpentCoin> unclaimed)
         {
             Fixed8 amount_claimed = Fixed8.Zero;
@@ -90,14 +109,14 @@ namespace OX.Persistence
             {
                 uint amount = 0;
                 uint ustart = group.Key.StartHeight / Blockchain.DecrementInterval;
-                if (ustart < Blockchain.GenerationAmount.Length)
+                if (ustart < Blockchain.GenerationBonusAmount.Length)
                 {
                     uint istart = group.Key.StartHeight % Blockchain.DecrementInterval;
                     uint uend = group.Key.EndHeight / Blockchain.DecrementInterval;
                     uint iend = group.Key.EndHeight % Blockchain.DecrementInterval;
-                    if (uend >= Blockchain.GenerationAmount.Length)
+                    if (uend >= Blockchain.GenerationBonusAmount.Length)
                     {
-                        uend = (uint)Blockchain.GenerationAmount.Length;
+                        uend = (uint)Blockchain.GenerationBonusAmount.Length;
                         iend = 0;
                     }
                     if (iend == 0)
@@ -107,11 +126,11 @@ namespace OX.Persistence
                     }
                     while (ustart < uend)
                     {
-                        amount += (Blockchain.DecrementInterval - istart) * Blockchain.GenerationAmount[ustart];
+                        amount += (Blockchain.DecrementInterval - istart) * GetGenerationAmount(ustart);
                         ustart++;
                         istart = 0;
                     }
-                    amount += (iend - istart) * Blockchain.GenerationAmount[ustart];
+                    amount += (iend - istart) * GetGenerationAmount(ustart);
                 }
                 amount += (uint)(this.GetSysFeeAmount(group.Key.EndHeight - 1) - (group.Key.StartHeight == 0 ? 0 : this.GetSysFeeAmount(group.Key.StartHeight - 1)));
                 amount_claimed += group.Sum(p => p.Value) / 100000000 * amount;
@@ -143,6 +162,7 @@ namespace OX.Persistence
             Contracts.Commit();
             Storages.Commit();
             HeaderHashList.Commit();
+            BlockBonusVoteList.Commit();
             ValidatorsCount.Commit();
             BlockHashIndex.Commit();
             HeaderHashIndex.Commit();
@@ -199,7 +219,7 @@ namespace OX.Persistence
                         account.Balances[output.AssetId] += output.Value;
                     else
                         account.Balances[output.AssetId] = output.Value;
-                    if (output.AssetId.Equals(Blockchain.GoverningToken.Hash) && account.Votes.Length > 0)
+                    if (output.AssetId.Equals(Blockchain.OXS_Token.Hash) && account.Votes.Length > 0)
                     {
                         foreach (ECPoint pubkey in account.Votes)
                             snapshot.Validators.GetAndChange(pubkey, () => new ValidatorState(pubkey)).Votes += output.Value;
@@ -213,7 +233,7 @@ namespace OX.Persistence
                     {
                         TransactionOutput out_prev = tx_prev.Outputs[input.PrevIndex];
                         AccountState account = snapshot.Accounts.GetAndChange(out_prev.ScriptHash);
-                        if (out_prev.AssetId.Equals(Blockchain.GoverningToken.Hash))
+                        if (out_prev.AssetId.Equals(Blockchain.OXS_Token.Hash))
                         {
                             if (account.Votes.Length > 0)
                             {
@@ -232,11 +252,11 @@ namespace OX.Persistence
                 }
                 switch (tx)
                 {
-//#pragma warning disable CS0612
-//                    case EnrollmentTransaction tx_enrollment:
-//                        snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
-//                        break;
-//#pragma warning restore CS0612
+                    //#pragma warning disable CS0612
+                    //                    case EnrollmentTransaction tx_enrollment:
+                    //                        snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
+                    //                        break;
+                    //#pragma warning restore CS0612
                     case StateTransaction tx_state:
                         foreach (StateDescriptor descriptor in tx_state.Descriptors)
                             switch (descriptor.Type)

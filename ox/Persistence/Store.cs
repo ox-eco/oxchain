@@ -21,6 +21,7 @@ namespace OX.Persistence
         DataCache<UInt160, ContractState> IPersistence.Contracts => GetContracts();
         DataCache<StorageKey, StorageItem> IPersistence.Storages => GetStorages();
         DataCache<UInt32Wrapper, HeaderHashList> IPersistence.HeaderHashList => GetHeaderHashList();
+        DataCache<UInt32Wrapper, BlockBonusVoteList> IPersistence.BlockBonusVoteList => GetBlockBonusVoteList();
         MetaDataCache<ValidatorsCountState> IPersistence.ValidatorsCount => GetValidatorsCount();
         MetaDataCache<HashIndexState> IPersistence.BlockHashIndex => GetBlockHashIndex();
         MetaDataCache<HashIndexState> IPersistence.HeaderHashIndex => GetHeaderHashIndex();
@@ -40,6 +41,7 @@ namespace OX.Persistence
         public abstract DataCache<UInt160, ContractState> GetContracts();
         public abstract DataCache<StorageKey, StorageItem> GetStorages();
         public abstract DataCache<UInt32Wrapper, HeaderHashList> GetHeaderHashList();
+        public abstract DataCache<UInt32Wrapper, BlockBonusVoteList> GetBlockBonusVoteList();
         public abstract MetaDataCache<ValidatorsCountState> GetValidatorsCount();
         public abstract MetaDataCache<HashIndexState> GetBlockHashIndex();
         public abstract MetaDataCache<HashIndexState> GetHeaderHashIndex();

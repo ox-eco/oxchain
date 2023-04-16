@@ -21,6 +21,7 @@ namespace OX.Persistence
         public override DataCache<UInt160, ContractState> Contracts { get; }
         public override DataCache<StorageKey, StorageItem> Storages { get; }
         public override DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
+        public override DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
         public override MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         public override MetaDataCache<HashIndexState> BlockHashIndex { get; }
         public override MetaDataCache<HashIndexState> HeaderHashIndex { get; }
@@ -42,6 +43,7 @@ namespace OX.Persistence
             this.Contracts = snapshot.Contracts.CreateSnapshot();
             this.Storages = snapshot.Storages.CreateSnapshot();
             this.HeaderHashList = snapshot.HeaderHashList.CreateSnapshot();
+            this.BlockBonusVoteList = snapshot.BlockBonusVoteList.CreateSnapshot();
             this.ValidatorsCount = snapshot.ValidatorsCount.CreateSnapshot();
             this.BlockHashIndex = snapshot.BlockHashIndex.CreateSnapshot();
             this.HeaderHashIndex = snapshot.HeaderHashIndex.CreateSnapshot();

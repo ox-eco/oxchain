@@ -64,7 +64,7 @@ namespace OX.Network.P2P.Payloads
                 return false;
             if (mempool.OfType<ClaimTransaction>().Where(p => p != this).SelectMany(p => p.Claims).Intersect(Claims).Count() > 0)
                 return false;
-            TransactionResult result = GetTransactionResults().FirstOrDefault(p => p.AssetId == Blockchain.UtilityToken.Hash);
+            TransactionResult result = GetTransactionResults().FirstOrDefault(p => p.AssetId == Blockchain.OXC_Token.Hash);
             if (result == null || result.Amount > Fixed8.Zero) return false;
             try
             {

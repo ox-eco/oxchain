@@ -74,9 +74,9 @@ namespace OX.Network.P2P.Payloads
         protected override void OnDeserialized()
         {
             base.OnDeserialized();
-            if (AssetType == AssetType.GoverningToken && !Hash.Equals(Blockchain.GoverningToken.Hash))
+            if (AssetType == AssetType.GoverningToken && !Hash.Equals(Blockchain.OXS_Token.Hash))
                 throw new FormatException();
-            if (AssetType == AssetType.UtilityToken && !Hash.Equals(Blockchain.UtilityToken.Hash))
+            if (AssetType == AssetType.UtilityToken && !Hash.Equals(Blockchain.OXC_Token.Hash))
                 throw new FormatException();
         }
 

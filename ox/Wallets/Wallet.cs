@@ -196,7 +196,7 @@ namespace OX.Wallets
         {
             IEnumerable<UInt160> accounts = GetAccounts().Where(p => !p.Lock && !p.WatchOnly).Select(p => p.ScriptHash);
             IEnumerable<Coin> coins = GetCoins(accounts);
-            coins = coins.Where(p => p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash));
+            coins = coins.Where(p => p.Output.AssetId.Equals(Blockchain.OXS_Token.Hash));
             coins = coins.Where(p => p.State.HasFlag(CoinState.Confirmed) && p.State.HasFlag(CoinState.Spent));
             coins = coins.Where(p => !p.State.HasFlag(CoinState.Claimed) && !p.State.HasFlag(CoinState.Frozen));
             return coins;
@@ -273,19 +273,19 @@ namespace OX.Wallets
             }).ToDictionary(p => p.AssetId);
             if (fee > Fixed8.Zero)
             {
-                if (pay_total.ContainsKey(Blockchain.UtilityToken.Hash))
+                if (pay_total.ContainsKey(Blockchain.OXC_Token.Hash))
                 {
-                    pay_total[Blockchain.UtilityToken.Hash] = new
+                    pay_total[Blockchain.OXC_Token.Hash] = new
                     {
-                        AssetId = Blockchain.UtilityToken.Hash,
-                        Value = pay_total[Blockchain.UtilityToken.Hash].Value + fee
+                        AssetId = Blockchain.OXC_Token.Hash,
+                        Value = pay_total[Blockchain.OXC_Token.Hash].Value + fee
                     };
                 }
                 else
                 {
-                    pay_total.Add(Blockchain.UtilityToken.Hash, new
+                    pay_total.Add(Blockchain.OXC_Token.Hash, new
                     {
-                        AssetId = Blockchain.UtilityToken.Hash,
+                        AssetId = Blockchain.OXC_Token.Hash,
                         Value = fee
                     });
                 }
