@@ -188,9 +188,9 @@ namespace OX.Wallets
                     case MinerTransaction _:
                     case ContractTransaction _:
                     case RangeTransaction _:
-#pragma warning disable CS0612
-                    case PublishTransaction _:
-#pragma warning restore CS0612
+//#pragma warning disable CS0612
+//                    case PublishTransaction _:
+//#pragma warning restore CS0612
                         break;
                     case ClaimTransaction tx_claim:
                         foreach (CoinReference claim in tx_claim.Claims)
@@ -205,10 +205,10 @@ namespace OX.Wallets
                         }
                         break;
 #pragma warning disable CS0612
-                    case EnrollmentTransaction tx_enrollment:
-                        if (accounts_tracked.ContainsKey(tx_enrollment.ScriptHash))
-                            accounts_changed.Add(tx_enrollment.ScriptHash);
-                        break;
+                    //case EnrollmentTransaction tx_enrollment:
+                    //    if (accounts_tracked.ContainsKey(tx_enrollment.ScriptHash))
+                    //        accounts_changed.Add(tx_enrollment.ScriptHash);
+                    //    break;
                     case RegisterTransaction tx_register:
                         if (accounts_tracked.ContainsKey(tx_register.OwnerScriptHash))
                             accounts_changed.Add(tx_register.OwnerScriptHash);

@@ -58,9 +58,9 @@ namespace OX
                 [TransactionType.TreatyTransaction] = Fixed8.One * 10,
                 [TransactionType.NFTCoinTransaction] = Fixed8.One * 10,
                 [TransactionType.SecretLetterTransaction] = Fixed8.One * 10,
-                [TransactionType.EnrollmentTransaction] = Fixed8.One * 1000,
+                //[TransactionType.EnrollmentTransaction] = Fixed8.One * 1000,
                 [TransactionType.IssueTransaction] = Fixed8.One * 5000,
-                [TransactionType.PublishTransaction] = Fixed8.One * 500,
+                //[TransactionType.PublishTransaction] = Fixed8.One * 500,
                 [TransactionType.RegisterTransaction] = Fixed8.One * 10000
             };
 

@@ -232,11 +232,11 @@ namespace OX.Persistence
                 }
                 switch (tx)
                 {
-#pragma warning disable CS0612
-                    case EnrollmentTransaction tx_enrollment:
-                        snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
-                        break;
-#pragma warning restore CS0612
+//#pragma warning disable CS0612
+//                    case EnrollmentTransaction tx_enrollment:
+//                        snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
+//                        break;
+//#pragma warning restore CS0612
                     case StateTransaction tx_state:
                         foreach (StateDescriptor descriptor in tx_state.Descriptors)
                             switch (descriptor.Type)

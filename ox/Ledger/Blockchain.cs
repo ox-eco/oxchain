@@ -561,11 +561,11 @@ namespace OX.Ledger
                                     snapshot.SpentCoins.GetAndChange(input.PrevHash);
                             }
                             break;
-#pragma warning disable CS0612
-                        case EnrollmentTransaction tx_enrollment:
-                            snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
-                            break;
-#pragma warning restore CS0612
+//#pragma warning disable CS0612
+//                        case EnrollmentTransaction tx_enrollment:
+//                            snapshot.Validators.GetAndChange(tx_enrollment.PublicKey, () => new ValidatorState(tx_enrollment.PublicKey)).Registered = true;
+//                            break;
+//#pragma warning restore CS0612
                         case StateTransaction tx_state:
                             foreach (StateDescriptor descriptor in tx_state.Descriptors)
                                 switch (descriptor.Type)
@@ -578,22 +578,22 @@ namespace OX.Ledger
                                         break;
                                 }
                             break;
-#pragma warning disable CS0612
-                        case PublishTransaction tx_publish:
-                            snapshot.Contracts.GetOrAdd(tx_publish.ScriptHash, () => new ContractState
-                            {
-                                Script = tx_publish.Script,
-                                ParameterList = tx_publish.ParameterList,
-                                ReturnType = tx_publish.ReturnType,
-                                ContractProperties = (ContractPropertyState)Convert.ToByte(tx_publish.NeedStorage),
-                                Name = tx_publish.Name,
-                                CodeVersion = tx_publish.CodeVersion,
-                                Author = tx_publish.Author,
-                                Email = tx_publish.Email,
-                                Description = tx_publish.Description
-                            });
-                            break;
-#pragma warning restore CS0612
+//#pragma warning disable CS0612
+//                        case PublishTransaction tx_publish:
+//                            snapshot.Contracts.GetOrAdd(tx_publish.ScriptHash, () => new ContractState
+//                            {
+//                                Script = tx_publish.Script,
+//                                ParameterList = tx_publish.ParameterList,
+//                                ReturnType = tx_publish.ReturnType,
+//                                ContractProperties = (ContractPropertyState)Convert.ToByte(tx_publish.NeedStorage),
+//                                Name = tx_publish.Name,
+//                                CodeVersion = tx_publish.CodeVersion,
+//                                Author = tx_publish.Author,
+//                                Email = tx_publish.Email,
+//                                Description = tx_publish.Description
+//                            });
+//                            break;
+//#pragma warning restore CS0612
                         case InvocationTransaction tx_invocation:
                             using (ApplicationEngine engine = new ApplicationEngine(TriggerType.Application, tx_invocation, snapshot.Clone(), tx_invocation.Gas))
                             {

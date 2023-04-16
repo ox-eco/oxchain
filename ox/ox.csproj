@@ -28,6 +28,11 @@
     <OutputPath>c:\ox</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Network\P2P\Payloads\EnrollmentTransaction.cs" />
+    <Compile Remove="Network\P2P\Payloads\PublishTransaction.cs" />
+  </ItemGroup>
+
 
  
   

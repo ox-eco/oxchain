@@ -12,8 +12,8 @@ namespace OX.Network.P2P.Payloads
         IssueTransaction = 0x01,
         [ReflectionCache(typeof(ClaimTransaction))]
         ClaimTransaction = 0x02,
-        [ReflectionCache(typeof(EnrollmentTransaction))]
-        EnrollmentTransaction = 0x20,
+        //[ReflectionCache(typeof(EnrollmentTransaction))]
+        //EnrollmentTransaction = 0x20,
         [ReflectionCache(typeof(RegisterTransaction))]
         RegisterTransaction = 0x40,
         [ReflectionCache(typeof(ContractTransaction))]
@@ -23,8 +23,8 @@ namespace OX.Network.P2P.Payloads
         /// <summary>
         /// Publish scripts to the blockchain for being invoked later.
         /// </summary>
-        [ReflectionCache(typeof(PublishTransaction))]
-        PublishTransaction = 0xd0,
+        //[ReflectionCache(typeof(PublishTransaction))]
+        //PublishTransaction = 0xd0,
         [ReflectionCache(typeof(InvocationTransaction))]
         InvocationTransaction = 0xd1,
         [ReflectionCache(typeof(BillTransaction))]
