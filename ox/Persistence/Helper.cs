@@ -77,6 +77,10 @@ namespace OX.Persistence
         {
             return persistence.Transactions.TryGet(hash)?.Transaction;
         }
+        public static SideSateList GetSides(this IPersistence persistence, UInt160 recipient)
+        {
+            return persistence.Sides.TryGet(recipient);
+        }
         public static NFTState GetNFTState(this IPersistence persistence, UInt256 hash)
         {
             return persistence.NFTs.TryGet(hash);

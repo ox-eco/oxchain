@@ -644,6 +644,22 @@ namespace OX.Ledger
                                     break;
                             }
                             break;
+                        case SideTransaction tx_side:
+                            var recipientScriptHash = Contract.CreateSignatureRedeemScript(tx_side.Recipient).ToScriptHash();
+                            var sideState = new SideState { SideScriptHash = tx_side.GetContract().ScriptHash, SideTransaction = tx_side };
+                            var sideList = snapshot.Sides.TryGet(recipientScriptHash);
+                            if (sideList.IsNotNull())
+                            {
+                                var list = sideList.SideStateList.ToList();
+                                list.Add(sideState);
+                                sideList.SideStateList = list.ToArray();
+                            }
+                            else
+                            {
+                                SideSateList sideStateList = new SideSateList { SideStateList = new SideState[] { sideState } };
+                                snapshot.Sides.Add(recipientScriptHash, sideStateList);
+                            }
+                            break;
                         case NFTCoinTransaction tx_nftcoin:
                             snapshot.NFTs.Add(tx.Hash, new NFTState { NFTCoin = tx_nftcoin, BlockIndex = block.Index, N = n, DataHash = tx_nftcoin.DataHash });
                             break;

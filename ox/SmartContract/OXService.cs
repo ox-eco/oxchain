@@ -99,7 +99,7 @@ namespace OX.SmartContract
             Register("OX.Iterator.Keys", Iterator_Keys, 1);
             Register("OX.Iterator.Values", Iterator_Values, 1);
             Register("OX.Iterator.Concat", Iterator_Concat, 1);
-
+            Register("OX.Blockchain.GetSides", Blockchain_GetSides);
             #region Aliases
             Register("OX.Iterator.Next", Enumerator_Next, 1);
             Register("OX.Iterator.Value", Enumerator_Value, 1);
@@ -107,7 +107,14 @@ namespace OX.SmartContract
 
 
         }
-
+        private bool Blockchain_GetSides(ExecutionEngine engine)
+        {
+            UInt160 hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            SideSateList sideSateList = Snapshot.Sides.TryGet(hash);
+            if (sideSateList == null) return false;
+            engine.CurrentContext.EvaluationStack.Push(StackItem.FromInterface(sideSateList));
+            return true;
+        }
         private bool Blockchain_GetAccount(ExecutionEngine engine)
         {
             UInt160 hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());

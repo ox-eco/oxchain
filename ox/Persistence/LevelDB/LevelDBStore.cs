@@ -81,6 +81,10 @@ namespace OX.Persistence.LevelDB
         {
             return new DbCache<UInt256, TransactionState>(db, null, null, Prefixes.DATA_Transaction);
         }
+        public override DataCache<UInt160, SideSateList> GetSides()
+        {
+            return new DbCache<UInt160, SideSateList>(db, null, null, Prefixes.DATA_SideList);
+        }
         public override DataCache<UInt256, NFTState> GetNFTs()
         {
             return new DbCache<UInt256, NFTState>(db, null, null, Prefixes.DATA_NFT);
