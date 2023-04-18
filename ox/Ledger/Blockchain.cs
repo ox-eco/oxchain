@@ -110,7 +110,7 @@ namespace OX.Ledger
                         new TransactionOutput
                         {
                             AssetId = OXC_Token.Hash,
-                            Value = Fixed8.One* 20000000,
+                            Value = Fixed8.One* 120000000,
                             ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
                         }
                     },
