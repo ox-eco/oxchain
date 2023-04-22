@@ -49,7 +49,7 @@ namespace OX.SmartContract
             Register("OX.Block.GetTransactionCount", Block_GetTransactionCount, 1);
             Register("OX.Block.GetTransactions", Block_GetTransactions, 1);
             Register("OX.Block.GetTransaction", Block_GetTransaction, 1);
-            Register("OX.Transaction.GetHash", Transaction_GetHash);
+            Register("OX.Transaction.GetHash", Transaction_GetHash, 1);
             Register("OX.Transaction.GetType", Transaction_GetType, 1);
             Register("OX.Transaction.GetAttributes", Transaction_GetAttributes, 1);
             Register("OX.Transaction.GetInputs", Transaction_GetInputs, 1);
@@ -102,9 +102,9 @@ namespace OX.SmartContract
             Register("OX.Iterator.Keys", Iterator_Keys, 1);
             Register("OX.Iterator.Values", Iterator_Values, 1);
             Register("OX.Iterator.Concat", Iterator_Concat, 1);
-            Register("OX.Blockchain.GetSides", Blockchain_GetSides);
-            Register("OX.Blockchain.IsInSide", Blockchain_IsInSide);
-            Register("OX.Ethereum.EncodeUTF8AndEcRecover", Ethereum_EncodeUTF8AndEcRecover);
+            Register("OX.Blockchain.GetSides", Blockchain_GetSides,1);
+            Register("OX.Blockchain.IsInSide", Blockchain_IsInSide,1);
+            Register("OX.Ethereum.EncodeUTF8AndEcRecover", Ethereum_EncodeUTF8AndEcRecover, 1);
             #region Aliases
             Register("OX.Iterator.Next", Enumerator_Next, 1);
             Register("OX.Iterator.Value", Enumerator_Value, 1);
