@@ -65,5 +65,7 @@ namespace OX.Network.P2P.Payloads
         AssetTrustTransaction =0xb3,
         [ReflectionCache(typeof(RangeTransaction))]
         RangeTransaction = 0xb4,
+        [ReflectionCache(typeof(EthereumTrustTransaction))]
+        EthereumTrustTransaction = 0xb5,
     }
 }

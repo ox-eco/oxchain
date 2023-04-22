@@ -36,7 +36,8 @@ namespace OX.Ledger
         public const int MaxValidators = 1024;
         public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
         public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0x1bb1483c8c1175b37062d7d586bd4b67abb255e2");
-        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0x81f1f7cb058c498e68e74ab813d1c377af36d209");
+        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0x0f23223738f58f8aabe8da81d0029c65e3a76d25");
+        public static UInt160 EthereumTrustContractScriptHash = UInt160.Parse("0x6bb2a19b06b467bd82a6df6c8532d51fb48ffcb4");
         static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static uint[] GenerationBonusAmount => genesisGenerationAmount;
         public static readonly TimeSpan TimePerBlock = TimeSpan.FromSeconds(SecondsPerBlock);

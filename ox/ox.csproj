@@ -50,6 +50,7 @@
     <!--<PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />-->
     <PackageReference Include="Akka" Version="1.5.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.6" />
+    <PackageReference Include="Nethereum.Signer" Version="4.14.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ox.vm\ox.vm.csproj" />

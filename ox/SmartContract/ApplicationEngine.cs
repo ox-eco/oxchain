@@ -97,7 +97,11 @@ namespace OX.SmartContract
                 : instruction.TokenString.ToInteropMethodHash();
             long price = Service.GetPrice(api_hash);
             if (price > 0) return price;
+            if (api_hash == "OX.Transaction.GetHash".ToInteropMethodHash())
+                return 0;
             if (api_hash == "OX.Blockchain.GetSides".ToInteropMethodHash())
+                return 0;            
+            if (api_hash == "OX.Ethereum.EncodeUTF8AndEcRecover".ToInteropMethodHash())
                 return 0;
             if (api_hash == "OX.Asset.Create".ToInteropMethodHash())
                 return 5000L * 100000000L / ratio;

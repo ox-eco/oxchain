@@ -14,6 +14,9 @@ using System.Linq;
 using System.Text;
 using OX.Cryptography.ECC;
 using Org.BouncyCastle.Security.Certificates;
+using Nethereum.Signer;
+using Nethereum.Signer.Crypto;
+using Nethereum.Hex.HexConvertors.Extensions;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -82,6 +85,16 @@ namespace OX.Network.P2P.Payloads
                 var attrs = this.Attributes.Where(p => p.Usage == TransactionAttributeUsage.RelatedScriptHash);
                 if (attrs.IsNullOrEmpty()) return default;
                 return attrs.Select(p => new UInt160(p.Data)).ToArray();
+            }
+        }
+        public EthECDSASignature[] EthSignatures
+        {
+            get
+            {
+                if (this.Attributes.IsNullOrEmpty()) return default;
+                var attrs = this.Attributes.Where(p => p.Usage == TransactionAttributeUsage.EthSignature);
+                if (attrs.IsNullOrEmpty()) return default;
+                return attrs.Select(p => MessageSigner.ExtractEcdsaSignature(p.Data.ToHex(true))).ToArray();
             }
         }
         InventoryType IInventory.InventoryType => InventoryType.TX;
@@ -359,6 +372,18 @@ namespace OX.Network.P2P.Payloads
                 try
                 {
                     new UInt160(attr.Data);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            foreach (var attr in Attributes.Where(p => p.Usage == TransactionAttributeUsage.EthSignature))
+            {
+                try
+                {
+                    var signature = MessageSigner.ExtractEcdsaSignature(attr.Data.ToHex(true));
+                    if (signature.IsNull()) return false;
                 }
                 catch
                 {

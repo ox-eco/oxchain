@@ -1,4 +1,5 @@
-﻿using OX.Cryptography.ECC;
+﻿using Akka.Util;
+using OX.Cryptography.ECC;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
 using OX.Persistence;
@@ -48,7 +49,7 @@ namespace OX.SmartContract
             Register("OX.Block.GetTransactionCount", Block_GetTransactionCount, 1);
             Register("OX.Block.GetTransactions", Block_GetTransactions, 1);
             Register("OX.Block.GetTransaction", Block_GetTransaction, 1);
-            Register("OX.Transaction.GetHash", Transaction_GetHash, 1);
+            Register("OX.Transaction.GetHash", Transaction_GetHash);
             Register("OX.Transaction.GetType", Transaction_GetType, 1);
             Register("OX.Transaction.GetAttributes", Transaction_GetAttributes, 1);
             Register("OX.Transaction.GetInputs", Transaction_GetInputs, 1);
@@ -102,12 +103,23 @@ namespace OX.SmartContract
             Register("OX.Iterator.Values", Iterator_Values, 1);
             Register("OX.Iterator.Concat", Iterator_Concat, 1);
             Register("OX.Blockchain.GetSides", Blockchain_GetSides);
+            Register("OX.Ethereum.EncodeUTF8AndEcRecover", Ethereum_EncodeUTF8AndEcRecover);
             #region Aliases
             Register("OX.Iterator.Next", Enumerator_Next, 1);
             Register("OX.Iterator.Value", Enumerator_Value, 1);
             #endregion
 
 
+        }
+        private bool Ethereum_EncodeUTF8AndEcRecover(ExecutionEngine engine)
+        {
+            string message = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            string signature = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var signer = new Nethereum.Signer.EthereumMessageSigner();
+            var address = signer.EncodeUTF8AndEcRecover(message, signature);
+            if (address.IsNullOrEmpty()) return false;
+            engine.CurrentContext.EvaluationStack.Push(address.ToLower());
+            return true;
         }
         private bool Blockchain_GetSides(ExecutionEngine engine)
         {

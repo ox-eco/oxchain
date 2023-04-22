@@ -15,7 +15,7 @@ namespace OX.Network.P2P.Payloads
         public uint MinIndex;
         public override int Size => base.Size + sizeof(uint) + sizeof(uint);
         public override Fixed8 SystemFee => AttributesFee;
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.RelatedScriptHash && m.Data.GetVarSize() > 8).Count();
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
 
         public RangeTransaction()
             : base(TransactionType.RangeTransaction)

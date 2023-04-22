@@ -24,7 +24,7 @@ namespace OX.Network.P2P.Payloads
 
         public override int Size => base.Size + Trustee.Size + Truster.Size + sizeof(bool) + Targets.GetVarSize() + SideScopes.GetVarSize() + TrustContract.Size;
         public override Fixed8 SystemFee => AttributesFee;
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.RelatedScriptHash && m.Data.GetVarSize() > 8).Count();
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
 
         public AssetTrustTransaction()
           : base(TransactionType.AssetTrustTransaction)
@@ -72,12 +72,18 @@ namespace OX.Network.P2P.Payloads
             {
                 sb.EmitPush(this.Trustee);
                 sb.EmitPush(this.Truster);
-                byte[] data = new byte[0];
+                byte[] targetDatas = new byte[0];
                 foreach (var target in this.Targets.OrderBy(p => p))
                 {
-                    data = data.Concat(target.ToArray()).ToArray();
+                    targetDatas = targetDatas.Concat(target.ToArray()).ToArray();
                 }
-                sb.EmitPush(data);
+                sb.EmitPush(targetDatas);
+               var sideDatas = new byte[0];
+                foreach (var sideScope in this.SideScopes.OrderBy(p => p))
+                {
+                    sideDatas = sideDatas.Concat(sideScope.ToArray()).ToArray();
+                }
+                sb.EmitPush(sideDatas);
                 sb.EmitPush(this.IsMustRelateTruster);
                 sb.EmitAppCall(this.TrustContract);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());

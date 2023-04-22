@@ -42,8 +42,8 @@
         Tip4 = 0xf9,
         Tip5 = 0xfa,
         Tip6 = 0xfb,
-        Tip7 = 0xfc,
-        RelatedData = 0xfd,
+        RelatedData = 0xfc,
+        EthSignature = 0xfd,
         RelatedScriptHash = 0xfe,
         RelatedPublicKey = 0xff
     }

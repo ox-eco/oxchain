@@ -73,6 +73,8 @@ namespace OX
                         return TxData.AsSerializable<AssetTrustTransaction>();
                     case TransactionType.RangeTransaction:
                         return TxData.AsSerializable<RangeTransaction>();
+                    case TransactionType.EthereumTrustTransaction:
+                        return TxData.AsSerializable<EthereumTrustTransaction>();
                 }
                 return default;
 
