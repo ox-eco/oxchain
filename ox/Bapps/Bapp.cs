@@ -10,15 +10,27 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using OX.SmartContract;
+using OX.IO;
 
 
 namespace OX.Bapps
 {
-    //public class BizAccount
-    //{
-    //    public string Address;
-    //    public ECPoint PublicKey;
-    //}
+    public class SideScope : ISerializable
+    {
+        public UInt160 MasterAddress;
+        public string Description;
+        public virtual int Size => MasterAddress.Size + Description.GetVarSize();
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write(MasterAddress);
+            writer.WriteVarString(Description);
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            MasterAddress = reader.ReadSerializable<UInt160>();
+            Description = reader.ReadVarString();
+        }
+    }
     public abstract class Bapp
     {
         public static event BappEventHandler<BappEvent> BappEvent;
@@ -112,7 +124,7 @@ namespace OX.Bapps
         public abstract IBappProvider BuildBappProvider();
         public abstract IBappApi BuildBappApi();
         public abstract IBappUi BuildBappUi();
-
+        public abstract SideScope[] GetSideScopes();
 
         static Bapp()
         {
