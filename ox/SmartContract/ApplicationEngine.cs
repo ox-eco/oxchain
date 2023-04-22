@@ -99,8 +99,10 @@ namespace OX.SmartContract
             if (price > 0) return price;
             if (api_hash == "OX.Transaction.GetHash".ToInteropMethodHash())
                 return 0;
+            if (api_hash == "OX.Blockchain.IsInSide".ToInteropMethodHash())
+                return 0;
             if (api_hash == "OX.Blockchain.GetSides".ToInteropMethodHash())
-                return 0;            
+                return 0;
             if (api_hash == "OX.Ethereum.EncodeUTF8AndEcRecover".ToInteropMethodHash())
                 return 0;
             if (api_hash == "OX.Asset.Create".ToInteropMethodHash())

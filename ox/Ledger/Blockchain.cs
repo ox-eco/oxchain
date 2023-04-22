@@ -36,7 +36,7 @@ namespace OX.Ledger
         public const int MaxValidators = 1024;
         public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
         public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0x1bb1483c8c1175b37062d7d586bd4b67abb255e2");
-        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0x0f23223738f58f8aabe8da81d0029c65e3a76d25");
+        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0xd01821550f57efa7b04d1af24206fb7377cec8b3");
         public static UInt160 EthereumTrustContractScriptHash = UInt160.Parse("0x6bb2a19b06b467bd82a6df6c8532d51fb48ffcb4");
         static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static uint[] GenerationBonusAmount => genesisGenerationAmount;
@@ -574,6 +574,7 @@ namespace OX.Ledger
                                     var list = bonusVoteList.Votes.ToList();
                                     list.Add(blockBonusVote);
                                     bonusVoteList.Votes = list.ToArray();
+                                    snapshot.BlockBonusVoteList.GetAndChange((UInt32Wrapper)bonusSetting.Index, () => bonusVoteList);
                                 }
                                 else
                                 {
@@ -681,6 +682,7 @@ namespace OX.Ledger
                                 var list = sideList.SideStateList.ToList();
                                 list.Add(sideState);
                                 sideList.SideStateList = list.ToArray();
+                                snapshot.Sides.GetAndChange(recipientScriptHash, () => sideList);
                             }
                             else
                             {

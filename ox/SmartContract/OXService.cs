@@ -103,6 +103,7 @@ namespace OX.SmartContract
             Register("OX.Iterator.Values", Iterator_Values, 1);
             Register("OX.Iterator.Concat", Iterator_Concat, 1);
             Register("OX.Blockchain.GetSides", Blockchain_GetSides);
+            Register("OX.Blockchain.IsInSide", Blockchain_IsInSide);
             Register("OX.Ethereum.EncodeUTF8AndEcRecover", Ethereum_EncodeUTF8AndEcRecover);
             #region Aliases
             Register("OX.Iterator.Next", Enumerator_Next, 1);
@@ -119,6 +120,21 @@ namespace OX.SmartContract
             var address = signer.EncodeUTF8AndEcRecover(message, signature);
             if (address.IsNullOrEmpty()) return false;
             engine.CurrentContext.EvaluationStack.Push(address.ToLower());
+            return true;
+        }
+        private bool Blockchain_IsInSide(ExecutionEngine engine)
+        {
+            UInt160 side_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            UInt160 scope_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            string contractScriptHash = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            SideSateList sideSateList = Snapshot.Sides.TryGet(scope_script_hash);
+            bool isInside = false;
+            if (sideSateList.IsNotNull() && sideSateList.SideStateList.IsNotNullAndEmpty())
+            {
+                var sides = sideSateList.SideStateList.Where(m => m.SideScriptHash == side_script_hash && m.SideTransaction.AuthContract.ToString() == contractScriptHash);
+                isInside = sides.IsNotNullAndEmpty();
+            }
+            engine.CurrentContext.EvaluationStack.Push(isInside);
             return true;
         }
         private bool Blockchain_GetSides(ExecutionEngine engine)
