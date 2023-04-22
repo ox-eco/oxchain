@@ -115,7 +115,7 @@ namespace OX.SmartContract
             string contractScriptHash = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
             SideSateList sideSateList = Snapshot.Sides.TryGet(hash);
             if (sideSateList.IsNull() || sideSateList.SideStateList.IsNullOrEmpty()) return false;
-            var sides = sideSateList.SideStateList.Where(m => m.SideTransaction.MergeContract.ToString() == contractScriptHash);
+            var sides = sideSateList.SideStateList.Where(m => m.SideTransaction.AuthContract.ToString() == contractScriptHash);
             if (sides.IsNullOrEmpty()) return false;
             engine.CurrentContext.EvaluationStack.Push(sides.Select(p => (StackItem)p.SideScriptHash.ToArray()).ToArray());
             return true;

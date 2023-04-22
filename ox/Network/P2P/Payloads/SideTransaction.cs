@@ -29,10 +29,10 @@ namespace OX.Network.P2P.Payloads
         public SideType SideType;
         public byte[] Data;
         public byte Flag;
-        public UInt160 MergeContract;
+        public UInt160 AuthContract;
         public byte[] Attach;
 
-        public override int Size => base.Size + Recipient.Size + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + MergeContract.Size + Attach.GetVarSize();
+        public override int Size => base.Size + Recipient.Size + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + AuthContract.Size + Attach.GetVarSize();
         public override Fixed8 SystemFee => Attach.Length > 0 ? Fixed8.One : Fixed8.Zero + AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.RelatedScriptHash && m.Data.GetVarSize() > 8).Count();
 
@@ -52,7 +52,7 @@ namespace OX.Network.P2P.Payloads
             SideType = (SideType)reader.ReadByte();
             Data = reader.ReadVarBytes();
             Flag = reader.ReadByte();
-            MergeContract = reader.ReadSerializable<UInt160>();
+            AuthContract = reader.ReadSerializable<UInt160>();
             Attach = reader.ReadVarBytes();
         }
 
@@ -62,7 +62,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write((byte)SideType);
             writer.WriteVarBytes(Data);
             writer.Write(Flag);
-            writer.Write(MergeContract);
+            writer.Write(AuthContract);
             writer.WriteVarBytes(Attach);
         }
 
@@ -73,7 +73,7 @@ namespace OX.Network.P2P.Payloads
             json["sidetype"] = SideType.ToString();
             json["data"] = Data.ToHexString();
             json["flag"] = Flag.ToString();
-            json["lockcontract"] = MergeContract.ToString();
+            json["lockcontract"] = AuthContract.ToString();
             json["attach"] = Attach.ToHexString();
             return json;
         }
@@ -85,7 +85,7 @@ namespace OX.Network.P2P.Payloads
                 sb.EmitPush(this.Flag);
                 sb.EmitPush(this.Data);
                 sb.EmitPush((byte)this.SideType);
-                sb.EmitAppCall(this.MergeContract);
+                sb.EmitAppCall(this.AuthContract);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }
         }

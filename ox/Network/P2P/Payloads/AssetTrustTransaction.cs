@@ -19,9 +19,10 @@ namespace OX.Network.P2P.Payloads
         public ECPoint Truster;
         public bool IsMustRelateTruster;
         public UInt160[] Targets;
+        public UInt160[] SideScopes;
         public UInt160 TrustContract;
 
-        public override int Size => base.Size + Trustee.Size + Truster.Size + sizeof(bool) + Targets.GetVarSize() + TrustContract.Size;
+        public override int Size => base.Size + Trustee.Size + Truster.Size + sizeof(bool) + Targets.GetVarSize() + SideScopes.GetVarSize() + TrustContract.Size;
         public override Fixed8 SystemFee => AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.RelatedScriptHash && m.Data.GetVarSize() > 8).Count();
 
@@ -32,6 +33,7 @@ namespace OX.Network.P2P.Payloads
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
             this.Targets = new UInt160[0];
+            this.SideScopes = new UInt160[0];
         }
 
 
@@ -41,6 +43,7 @@ namespace OX.Network.P2P.Payloads
             Truster = reader.ReadSerializable<ECPoint>();
             IsMustRelateTruster = reader.ReadBoolean();
             Targets = reader.ReadSerializableArray<UInt160>();
+            SideScopes = reader.ReadSerializableArray<UInt160>();
             TrustContract = reader.ReadSerializable<UInt160>();
         }
 
@@ -50,6 +53,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Truster);
             writer.Write(IsMustRelateTruster);
             writer.Write(Targets);
+            writer.Write(SideScopes);
             writer.Write(TrustContract);
         }
 
