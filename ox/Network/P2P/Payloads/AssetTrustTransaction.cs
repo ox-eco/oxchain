@@ -78,13 +78,13 @@ namespace OX.Network.P2P.Payloads
                     targetDatas = targetDatas.Concat(target.ToArray()).ToArray();
                 }
                 sb.EmitPush(targetDatas);
-               var sideDatas = new byte[0];
+                sb.EmitPush(this.IsMustRelateTruster);
+                var sideDatas = new byte[0];
                 foreach (var sideScope in this.SideScopes.OrderBy(p => p))
                 {
                     sideDatas = sideDatas.Concat(sideScope.ToArray()).ToArray();
                 }
                 sb.EmitPush(sideDatas);
-                sb.EmitPush(this.IsMustRelateTruster);
                 sb.EmitAppCall(this.TrustContract);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }

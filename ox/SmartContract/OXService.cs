@@ -102,8 +102,8 @@ namespace OX.SmartContract
             Register("OX.Iterator.Keys", Iterator_Keys, 1);
             Register("OX.Iterator.Values", Iterator_Values, 1);
             Register("OX.Iterator.Concat", Iterator_Concat, 1);
-            Register("OX.Blockchain.GetSides", Blockchain_GetSides,1);
-            Register("OX.Blockchain.IsInSide", Blockchain_IsInSide,1);
+            Register("OX.Blockchain.GetSides", Blockchain_GetSides, 1);
+            Register("OX.Blockchain.IsInSide", Blockchain_IsInSide, 1);
             Register("OX.Ethereum.EncodeUTF8AndEcRecover", Ethereum_EncodeUTF8AndEcRecover, 1);
             #region Aliases
             Register("OX.Iterator.Next", Enumerator_Next, 1);
@@ -124,6 +124,9 @@ namespace OX.SmartContract
         }
         private bool Blockchain_IsInSide(ExecutionEngine engine)
         {
+            //var v1 = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
+            //var v2 = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
+            //var v3 = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
             UInt160 side_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
             UInt160 scope_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
             string contractScriptHash = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
@@ -135,6 +138,7 @@ namespace OX.SmartContract
                 isInside = sides.IsNotNullAndEmpty();
             }
             engine.CurrentContext.EvaluationStack.Push(isInside);
+            //engine.CurrentContext.EvaluationStack.Push(true);
             return true;
         }
         private bool Blockchain_GetSides(ExecutionEngine engine)
