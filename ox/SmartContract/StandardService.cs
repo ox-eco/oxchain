@@ -1,4 +1,5 @@
-﻿using OX.Cryptography.ECC;
+﻿using Newtonsoft.Json.Linq;
+using OX.Cryptography.ECC;
 using OX.IO;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
@@ -165,7 +166,13 @@ namespace OX.SmartContract
         {
             return CheckWitness(engine, Contract.CreateSignatureRedeemScript(pubkey).ToScriptHash());
         }
-
+        protected bool Runtime_CreateSignatureRedeemScriptHash(ExecutionEngine engine)
+        {
+            byte[] PubkeyBytes = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
+            var sh = Contract.CreateSignatureRedeemScript(ECPoint.DecodePoint(PubkeyBytes, ECCurve.Secp256r1)).ToScriptHash();
+            engine.CurrentContext.EvaluationStack.Push(sh.ToArray());
+            return true;
+        }
         protected bool Runtime_CheckWitness(ExecutionEngine engine)
         {
             byte[] hashOrPubkey = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
@@ -554,7 +561,7 @@ namespace OX.SmartContract
             }
             return false;
         }
-        
+
         protected bool Transaction_GetHash(ExecutionEngine engine)
         {
             if (engine.CurrentContext.EvaluationStack.Pop() is InteropInterface _interface)

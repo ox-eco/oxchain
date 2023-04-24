@@ -22,7 +22,9 @@ namespace OX.SmartContract
         public OXService(TriggerType trigger, Snapshot snapshot)
             : base(trigger, snapshot)
         {
+            
             Register("OX.Runtime.GetTrigger", Runtime_GetTrigger, 1);
+            Register("OX.Runtime.CreateSignatureRedeemScriptHash", Runtime_CreateSignatureRedeemScriptHash, 1);
             Register("OX.Runtime.CheckWitness", Runtime_CheckWitness, 200);
             Register("OX.Runtime.Notify", Runtime_Notify, 1);
             Register("OX.Runtime.Log", Runtime_Log, 1);

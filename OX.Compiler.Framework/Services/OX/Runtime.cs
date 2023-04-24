@@ -16,6 +16,8 @@ namespace OX.SmartContract.Framework.Services
 
         [Syscall("OX.Runtime.CheckWitness")]
         public static extern bool CheckWitness(byte[] hashOrPubkey);
+        [Syscall("OX.Runtime.CreateSignatureRedeemScriptHash")]
+        public static extern byte[] CreateSignatureRedeemScriptHash(byte[] Pubkey);
 
         [Syscall("OX.Runtime.Notify")]
         public static extern void Notify(params object[] state);
