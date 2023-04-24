@@ -51,7 +51,7 @@ namespace OX.Network.P2P.Payloads
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitPush(this.EthereumAddress.ToLower());
-                sb.EmitAppCall(Blockchain.EthereumTrustContractScriptHash);
+                sb.EmitAppCall(Blockchain.EthereumMapContractScriptHash);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }
         }
