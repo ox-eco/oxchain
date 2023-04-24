@@ -13,17 +13,16 @@ using System.Linq;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class EthereumTrustTransaction : Transaction
+    public class EthereumMapTransaction : Transaction
     {
         public string EthereumAddress;
-        public UInt160 EthereumTrustContract;
 
-        public override int Size => base.Size + EthereumAddress.GetVarSize() + EthereumTrustContract.Size;
+        public override int Size => base.Size + EthereumAddress.GetVarSize();
         public override Fixed8 SystemFee => AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
 
-        public EthereumTrustTransaction()
-          : base(TransactionType.EthereumTrustTransaction)
+        public EthereumMapTransaction()
+          : base(TransactionType.EthereumMapTransaction)
         {
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
@@ -34,20 +33,17 @@ namespace OX.Network.P2P.Payloads
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             EthereumAddress = reader.ReadVarString();
-            EthereumTrustContract = reader.ReadSerializable<UInt160>();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
             writer.WriteVarString(EthereumAddress.ToLower());
-            writer.Write(EthereumTrustContract);
         }
 
         public override JObject ToJson()
         {
             JObject json = base.ToJson();
             json["ethereumaddress"] = EthereumAddress.ToLower();
-            json["trustcontract"] = EthereumTrustContract.ToString();
             return json;
         }
         public Contract GetContract()
@@ -55,7 +51,7 @@ namespace OX.Network.P2P.Payloads
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitPush(this.EthereumAddress.ToLower());
-                sb.EmitAppCall(this.EthereumTrustContract);
+                sb.EmitAppCall(Blockchain.EthereumTrustContractScriptHash);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }
         }

@@ -7,7 +7,11 @@ namespace OX.SmartContract.Framework.Services
             [Syscall("OX.Transaction.GetHash")]
             get;
         }
-
+        public extern byte[] InputHash
+        {
+            [Syscall("OX.Transaction.GetInputHash")]
+            get;
+        }
         public extern byte Type
         {
             [Syscall("OX.Transaction.GetType")]

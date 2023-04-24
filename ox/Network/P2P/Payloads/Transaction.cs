@@ -17,6 +17,7 @@ using Org.BouncyCastle.Security.Certificates;
 using Nethereum.Signer;
 using Nethereum.Signer.Crypto;
 using Nethereum.Hex.HexConvertors.Extensions;
+using System.Runtime.CompilerServices;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -65,6 +66,18 @@ namespace OX.Network.P2P.Payloads
                     _hash = new UInt256(Crypto.Default.Hash256(this.GetHashData()));
                 }
                 return _hash;
+            }
+        }
+        private UInt256 _inputhash = null;
+        public UInt256 InputHash
+        {
+            get
+            {
+                if (_inputhash == null)
+                {
+                    _inputhash = new UInt256(Crypto.Default.Hash256(this.GetInputHashData()));
+                }
+                return _inputhash;
             }
         }
         public ECPoint[] RelatedPublicKeys
@@ -282,7 +295,19 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Inputs);
             writer.Write(Outputs);
         }
-
+        public byte[] GetInputHashData()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(ms))
+            {
+                foreach (var input in this.Inputs)
+                {
+                    writer.Write(input);
+                }
+                writer.Flush();
+                return ms.ToArray();
+            }
+        }
         public virtual JObject ToJson()
         {
             JObject json = new JObject();
