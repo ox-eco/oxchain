@@ -105,7 +105,8 @@ namespace OX.SmartContract
             Register("OX.Iterator.Concat", Iterator_Concat, 1);
             Register("OX.Blockchain.GetSides", Blockchain_GetSides, 1);
             Register("OX.Blockchain.IsInSide", Blockchain_IsInSide, 1);
-            Register("OX.Ethereum.EncodeUTF8AndEcRecover", Ethereum_EncodeUTF8AndEcRecover, 1);
+            Register("OX.Ethereum.EcRecover", Ethereum_EcRecover, 1);
+            Register("OX.Ethereum.EcRecoverString", Ethereum_EcRecoverString, 1);
             #region Aliases
             Register("OX.Iterator.Next", Enumerator_Next, 1);
             Register("OX.Iterator.Value", Enumerator_Value, 1);
@@ -113,10 +114,20 @@ namespace OX.SmartContract
 
 
         }
-        private bool Ethereum_EncodeUTF8AndEcRecover(ExecutionEngine engine)
+        private bool Ethereum_EcRecover(ExecutionEngine engine)
         {
-            string message = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
-            string signature = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var message = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
+            var signature = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var signer = new Nethereum.Signer.EthereumMessageSigner();
+            var address = signer.EncodeUTF8AndEcRecover(message.ToHexString(), signature);
+            if (address.IsNullOrEmpty()) return false;
+            engine.CurrentContext.EvaluationStack.Push(address.ToLower());
+            return true;
+        }
+        private bool Ethereum_EcRecoverString(ExecutionEngine engine)
+        {
+            var message = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var signature = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
             var signer = new Nethereum.Signer.EthereumMessageSigner();
             var address = signer.EncodeUTF8AndEcRecover(message, signature);
             if (address.IsNullOrEmpty()) return false;

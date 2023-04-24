@@ -4,7 +4,9 @@ namespace OX.SmartContract.Framework.Services
 {
     public static class Ethereum
     {
-        [Syscall("OX.Ethereum.EncodeUTF8AndEcRecover")]
-        public static extern string EncodeUTF8AndEcRecover(string message, string signature);
+        [Syscall("OX.Ethereum.EcRecover")]
+        public static extern string EcRecover(byte[] message, byte[] signature);
+        [Syscall("OX.Ethereum.EcRecoverString")]
+        public static extern string EcRecoverString(byte[] message, byte[] signature);
     }
 }
