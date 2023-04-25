@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System;
+using Nethereum.Util;
+using Nethereum.Hex.HexConvertors.Extensions;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -164,6 +166,16 @@ namespace OX.Network.P2P.Payloads
                     {
                         Data.AsSerializable<ECPoint>();
                         return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                case SideType.EthereumAddress:
+                    try
+                    {
+                        var addr = new AddressUtil().ConvertToChecksumAddress(Data.ToHex());
+                        return addr.IsValidEthereumAddressHexFormat();
                     }
                     catch
                     {
