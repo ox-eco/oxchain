@@ -169,8 +169,13 @@ namespace OX.SmartContract
         protected bool Runtime_CreateSignatureRedeemScriptHash(ExecutionEngine engine)
         {
             byte[] PubkeyBytes = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
-            var sh = Contract.CreateSignatureRedeemScript(ECPoint.DecodePoint(PubkeyBytes, ECCurve.Secp256r1)).ToScriptHash();
-            engine.CurrentContext.EvaluationStack.Push(sh.ToArray());
+            using (ScriptBuilder sb = new ScriptBuilder())
+            {
+                sb.EmitPush(PubkeyBytes);
+                sb.Emit(OpCode.CHECKSIG);
+                var bs = sb.ToArray().ToScriptHash().ToArray();
+                engine.CurrentContext.EvaluationStack.Push(bs);
+            }        
             return true;
         }
         protected bool Runtime_CheckWitness(ExecutionEngine engine)
