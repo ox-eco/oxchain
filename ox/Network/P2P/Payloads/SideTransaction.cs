@@ -21,7 +21,8 @@ namespace OX.Network.P2P.Payloads
         TimeStamp = 0x03,
         BlockStamp = 0x04,
         Hash = 0x05,
-        PublicKey = 0x06
+        PublicKey = 0x06,
+        EthereumAddress = 0x77
     }
     public class SideTransaction : Transaction
     {
