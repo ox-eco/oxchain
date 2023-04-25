@@ -37,7 +37,7 @@ namespace OX.Ledger
         public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
         public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0x1bb1483c8c1175b37062d7d586bd4b67abb255e2");
         public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0xe64586c07a90ec1a1b0c8fc22868cf3eff94560b");
-        public static UInt160 EthereumMapContractScriptHash = UInt160.Parse("0x217422aac78eace1dd15ca141779c890d27339e4");
+        public static UInt160 EthereumMapContractScriptHash = UInt160.Parse("0x7936b6048164a204d18bda47e0871c20892be824");
         static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static uint[] GenerationBonusAmount => genesisGenerationAmount;
         public static readonly TimeSpan TimePerBlock = TimeSpan.FromSeconds(SecondsPerBlock);
