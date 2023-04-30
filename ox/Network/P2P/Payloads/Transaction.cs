@@ -80,6 +80,30 @@ namespace OX.Network.P2P.Payloads
                 return _inputhash;
             }
         }
+        private UInt256 _outputhash = null;
+        public UInt256 OutputHash
+        {
+            get
+            {
+                if (_outputhash == null)
+                {
+                    _outputhash = new UInt256(Crypto.Default.Hash256(this.GetOutputHashData()));
+                }
+                return _outputhash;
+            }
+        }
+        private UInt256 _inputOutputhash = null;
+        public UInt256 InputOutputHash
+        {
+            get
+            {
+                if (_inputOutputhash == null)
+                {
+                    _inputOutputhash = new UInt256(Crypto.Default.Hash256(this.GetInputAndOutputHashData()));
+                }
+                return _inputOutputhash;
+            }
+        }
         public ECPoint[] RelatedPublicKeys
         {
             get
@@ -303,6 +327,36 @@ namespace OX.Network.P2P.Payloads
                 foreach (var input in this.Inputs)
                 {
                     writer.Write(input);
+                }
+                writer.Flush();
+                return ms.ToArray();
+            }
+        }
+        public byte[] GetOutputHashData()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(ms))
+            {
+                foreach (var output in this.Outputs)
+                {
+                    writer.Write(output);
+                }
+                writer.Flush();
+                return ms.ToArray();
+            }
+        }
+        public byte[] GetInputAndOutputHashData()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            using (BinaryWriter writer = new BinaryWriter(ms))
+            {
+                foreach (var input in this.Inputs)
+                {
+                    writer.Write(input);
+                }
+                foreach (var output in this.Outputs)
+                {
+                    writer.Write(output);
                 }
                 writer.Flush();
                 return ms.ToArray();

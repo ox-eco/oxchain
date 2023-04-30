@@ -53,6 +53,8 @@ namespace OX.SmartContract
             Register("OX.Block.GetTransaction", Block_GetTransaction, 1);
             Register("OX.Transaction.GetHash", Transaction_GetHash, 1);
             Register("OX.Transaction.GetInputHash", Transaction_GetInputHash, 1);
+            Register("OX.Transaction.GetOutputHash", Transaction_GetOutputHash, 1);
+            Register("OX.Transaction.GetInputOutputHash", Transaction_GetInputAndOutputHash, 1);
             Register("OX.Transaction.GetType", Transaction_GetType, 1);
             Register("OX.Transaction.GetAttributes", Transaction_GetAttributes, 1);
             Register("OX.Transaction.GetInputs", Transaction_GetInputs, 1);

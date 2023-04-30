@@ -589,6 +589,28 @@ namespace OX.SmartContract
             }
             return false;
         }
+        protected bool Transaction_GetOutputHash(ExecutionEngine engine)
+        {
+            if (engine.CurrentContext.EvaluationStack.Pop() is InteropInterface _interface)
+            {
+                Transaction tx = _interface.GetInterface<Transaction>();
+                if (tx == null) return false;
+                engine.CurrentContext.EvaluationStack.Push(tx.OutputHash.ToArray());
+                return true;
+            }
+            return false;
+        }
+        protected bool Transaction_GetInputAndOutputHash(ExecutionEngine engine)
+        {
+            if (engine.CurrentContext.EvaluationStack.Pop() is InteropInterface _interface)
+            {
+                Transaction tx = _interface.GetInterface<Transaction>();
+                if (tx == null) return false;
+                engine.CurrentContext.EvaluationStack.Push(tx.InputOutputHash.ToArray());
+                return true;
+            }
+            return false;
+        }
         protected bool Storage_GetContext(ExecutionEngine engine)
         {
             engine.CurrentContext.EvaluationStack.Push(StackItem.FromInterface(new StorageContext

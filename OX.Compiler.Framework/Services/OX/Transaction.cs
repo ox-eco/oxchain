@@ -12,6 +12,16 @@ namespace OX.SmartContract.Framework.Services
             [Syscall("OX.Transaction.GetInputHash")]
             get;
         }
+        public extern byte[] OutputHash
+        {
+            [Syscall("OX.Transaction.GetOutputHash")]
+            get;
+        }
+        public extern byte[] InputOutputHash
+        {
+            [Syscall("OX.Transaction.GetInputOutputHash")]
+            get;
+        }
         public extern byte Type
         {
             [Syscall("OX.Transaction.GetType")]
