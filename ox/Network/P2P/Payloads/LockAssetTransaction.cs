@@ -70,6 +70,7 @@ namespace OX.Network.P2P.Payloads
         public LockAssetTransaction()
           : base(TransactionType.LockAssetTransaction)
         {
+            this.LockContract = Blockchain.LockAssetContractScriptHash;
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
