@@ -17,7 +17,8 @@ namespace OX.Network.P2P.Payloads
     {
         public string EthereumAddress;
         public uint LockExpirationIndex;
-        public override int Size => base.Size + EthereumAddress.GetVarSize() + sizeof(uint);
+        public UInt160 EthMapContract;
+        public override int Size => base.Size + EthereumAddress.GetVarSize() + sizeof(uint) + EthMapContract.Size;
         public override Fixed8 SystemFee => AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
 
@@ -35,12 +36,14 @@ namespace OX.Network.P2P.Payloads
         {
             EthereumAddress = reader.ReadVarString();
             LockExpirationIndex = reader.ReadUInt32();
+            EthMapContract = reader.ReadSerializable<UInt160>();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
             writer.WriteVarString(EthereumAddress.ToLower());
             writer.Write(LockExpirationIndex);
+            writer.Write(EthMapContract);
         }
 
         public override JObject ToJson()
@@ -55,7 +58,7 @@ namespace OX.Network.P2P.Payloads
             {
                 sb.EmitPush(this.EthereumAddress.ToLower());
                 sb.EmitPush(this.LockExpirationIndex);
-                sb.EmitAppCall(Blockchain.EthereumMapContractScriptHash);
+                sb.EmitAppCall(this.EthMapContract);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }
         }
