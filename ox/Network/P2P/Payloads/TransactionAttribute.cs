@@ -15,7 +15,7 @@ namespace OX.Network.P2P.Payloads
         {
             get
             {
-                if (Usage == TransactionAttributeUsage.ContractHash || Usage == TransactionAttributeUsage.ECDH02 || Usage == TransactionAttributeUsage.ECDH03 || Usage == TransactionAttributeUsage.Vote || (Usage >= TransactionAttributeUsage.Hash1 && Usage <= TransactionAttributeUsage.Hash15))
+                if (Usage == TransactionAttributeUsage.ContractHash || Usage == TransactionAttributeUsage.ECDH02 || Usage == TransactionAttributeUsage.ECDH03 || Usage == TransactionAttributeUsage.Vote || (Usage >= TransactionAttributeUsage.Hash1 && Usage <= TransactionAttributeUsage.RelatedTransactionHash))
                     return sizeof(TransactionAttributeUsage) + 32;
                 else if (Usage == TransactionAttributeUsage.Script)
                     return sizeof(TransactionAttributeUsage) + 20;
@@ -33,7 +33,7 @@ namespace OX.Network.P2P.Payloads
         void ISerializable.Deserialize(BinaryReader reader)
         {
             Usage = (TransactionAttributeUsage)reader.ReadByte();
-            if (Usage == TransactionAttributeUsage.ContractHash || Usage == TransactionAttributeUsage.Vote || (Usage >= TransactionAttributeUsage.Hash1 && Usage <= TransactionAttributeUsage.Hash15))
+            if (Usage == TransactionAttributeUsage.ContractHash || Usage == TransactionAttributeUsage.Vote || (Usage >= TransactionAttributeUsage.Hash1 && Usage <= TransactionAttributeUsage.RelatedTransactionHash))
                 Data = reader.ReadBytes(32);
             else if (Usage == TransactionAttributeUsage.ECDH02 || Usage == TransactionAttributeUsage.ECDH03)
                 Data = new[] { (byte)Usage }.Concat(reader.ReadBytes(32)).ToArray();

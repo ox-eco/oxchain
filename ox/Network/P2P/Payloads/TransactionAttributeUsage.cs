@@ -28,7 +28,7 @@
         Hash12 = 0xac,
         Hash13 = 0xad,
         Hash14 = 0xae,
-        Hash15 = 0xaf,
+        RelatedTransactionHash = 0xaf,
 
         Remark = 0xf0,
         Remark1 = 0xf1,
