@@ -37,7 +37,7 @@ namespace OX.Network.P2P.Payloads
         public byte[] Attach;
 
         public override int Size => base.Size + Recipient.Size + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + AuthContract.Size + Attach.GetVarSize();
-        public override Fixed8 SystemFee => Attach.Length > 0 ? Fixed8.One : Fixed8.Zero + AttributesFee;
+        public override Fixed8 SystemFee => Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero + AttributesFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
 
         public SideTransaction()
