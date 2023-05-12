@@ -15,7 +15,7 @@ namespace OX.Wallets.NEP6
     public class NEP6Wallet : Wallet
     {
         public override event EventHandler<WalletTransactionEventArgs> WalletTransaction;
-        protected readonly WalletIndexer indexer;
+        protected WalletIndexer indexer;
         protected readonly string path;
         protected string password;
         protected string name;

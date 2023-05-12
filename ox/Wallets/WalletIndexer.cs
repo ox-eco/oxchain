@@ -22,7 +22,7 @@ namespace OX.Wallets
         private readonly Dictionary<CoinReference, Coin> coins_tracked = new Dictionary<CoinReference, Coin>();
 
         private readonly DB db;
-        private readonly Thread thread;
+        private Thread thread;
         private readonly object SyncRoot = new object();
         private bool disposed = false;
 
@@ -38,7 +38,7 @@ namespace OX.Wallets
             }
         }
 
-        public WalletIndexer(string path)
+        public WalletIndexer(string path, bool autoStart = true)
         {
             path = Path.GetFullPath(path);
             if (!Directory.Exists(path))
@@ -83,6 +83,14 @@ namespace OX.Wallets
                 batch.Put(SliceBuilder.Begin(DataEntryPrefix.SYS_Version), Assembly.GetExecutingAssembly().GetName().Version.ToString());
                 db.Write(WriteOptions.Default, batch);
             }
+            if (autoStart)
+            {
+                StartIndex();
+            }
+        }
+
+        public void StartIndex()
+        {
             thread = new Thread(ProcessBlocks)
             {
                 IsBackground = true,
@@ -90,8 +98,6 @@ namespace OX.Wallets
             };
             thread.Start();
         }
-
-
 
         public void Dispose()
         {
@@ -188,9 +194,9 @@ namespace OX.Wallets
                     case MinerTransaction _:
                     case ContractTransaction _:
                     case RangeTransaction _:
-//#pragma warning disable CS0612
-//                    case PublishTransaction _:
-//#pragma warning restore CS0612
+                        //#pragma warning disable CS0612
+                        //                    case PublishTransaction _:
+                        //#pragma warning restore CS0612
                         break;
                     case ClaimTransaction tx_claim:
                         foreach (CoinReference claim in tx_claim.Claims)
@@ -234,7 +240,7 @@ namespace OX.Wallets
 
         private void ProcessBlocks()
         {
-            Thread.Sleep(10000);
+            //Thread.Sleep(10000);
             while (!disposed)
             {
                 while (!disposed)
