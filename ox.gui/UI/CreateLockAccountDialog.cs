@@ -1,4 +1,5 @@
-﻿using OX.SmartContract;
+﻿using OX.Ledger;
+using OX.SmartContract;
 using OX.VM;
 using OX.Wallets;
 using System;
@@ -21,10 +22,10 @@ namespace OX.UI
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitPush(GetKey().PublicKey);
+                sb.EmitPush((byte)0);
                 sb.EmitPush(timestamp);
                 sb.EmitPush(true);
-                var sh = UInt160.Parse("0x334b191cca29463a62ef69b790e015b2f7467383");
-                sb.EmitAppCall(sh);
+                sb.EmitAppCall(Blockchain.LockAssetContractScriptHash);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }
         }
