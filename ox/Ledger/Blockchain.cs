@@ -562,6 +562,10 @@ namespace OX.Ledger
                             foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
                             break;
+                        case EthereumMapTransaction _:
+                            foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
+                                snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
+                            break;
                         case LockAssetTransaction lat:
                             foreach (TransactionResult result in lat.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
