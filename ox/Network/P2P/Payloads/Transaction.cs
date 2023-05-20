@@ -428,6 +428,10 @@ namespace OX.Network.P2P.Payloads
                     if (results_issue.Any(p => p.AssetId == Blockchain.OXC_Token.Hash))
                         return false;
                     break;
+                case TransactionType.EthereumMapTransaction:
+                    if (results_issue.Any(p => p.AssetId == Blockchain.OXC_Token.Hash))
+                        return false;
+                    break;
                 default:
                     if (results_issue.Length > 0)
                         return false;
