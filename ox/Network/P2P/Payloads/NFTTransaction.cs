@@ -61,9 +61,11 @@ namespace OX.Network.P2P.Payloads
     {
         public NftID NftID;
         public byte Flag;
+        public string NftName;
+        public string Description;
         public string Seal;
         public string AuthorName;
-        public int Size => NftID.Size + sizeof(byte) + Seal.GetVarSize() + AuthorName.GetVarSize();
+        public int Size => NftID.Size + sizeof(byte) + NftName.GetVarSize() + Description.GetVarSize() + Seal.GetVarSize() + AuthorName.GetVarSize();
         private UInt256 _hash = null;
         public UInt256 Hash
         {
@@ -80,6 +82,8 @@ namespace OX.Network.P2P.Payloads
         {
             writer.Write(NftID);
             writer.Write(Flag);
+            writer.WriteVarString(NftName);
+            writer.WriteVarString(Description);
             writer.WriteVarString(Seal);
             writer.WriteVarString(AuthorName);
 
@@ -88,6 +92,8 @@ namespace OX.Network.P2P.Payloads
         {
             NftID = reader.ReadSerializable<NftID>();
             Flag = reader.ReadByte();
+            NftName = reader.ReadVarString();
+            Description = reader.ReadVarString();
             Seal = reader.ReadVarString();
             AuthorName = reader.ReadVarString();
         }
@@ -290,11 +296,11 @@ namespace OX.Network.P2P.Payloads
                 UInt160 oldOwner = default;
                 if (nfsState.LastNFS.NFSHolder.MixAccountType == MixAccountType.OX)
                 {
-                    oldOwner=nfsState.LastNFS.NFSHolder.AsOXAddress();
+                    oldOwner = nfsState.LastNFS.NFSHolder.AsOXAddress();
                 }
                 else if (nfsState.LastNFS.NFSHolder.MixAccountType == MixAccountType.Ethereum)
                 {
-                    oldOwner=nfsState.LastNFS.NFSHolder.AsEthAddress().BuildMapAddress();
+                    oldOwner = nfsState.LastNFS.NFSHolder.AsEthAddress().BuildMapAddress();
                 }
                 else return false;
                 if (this.Outputs.IsNullOrEmpty()) return false;
