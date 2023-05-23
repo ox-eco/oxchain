@@ -693,29 +693,35 @@ namespace OX.Ledger
                                 SideSateList sideStateList = new SideSateList { SideStateList = new SideState[] { sideState } };
                                 snapshot.Sides.Add(recipientScriptHash, sideStateList);
                             }
-                            break;                       
+                            break;
                         case NftTransaction tx_nfc:
-                            snapshot.NFCs.Add(tx_nfc.NFCCopyright.NFCID, new NFCState { NFC = tx_nfc, BlockIndex = block.Index, N = n });
+                            snapshot.NFTs.Add(tx_nfc.NFCCopyright.NFCID, new NFCState { NFC = tx_nfc, BlockIndex = block.Index, N = n });
                             break;
                         case NftTransferTransaction tx_nfs:
                             switch (tx_nfs.NFSType)
                             {
                                 case NftChangeType.Issue:
                                     NFSStateKey nfskey = new NFSStateKey { NFCID = tx_nfs.NFSStateKey.NFCID, IssueBlockIndex = block.Index, IssueN = n };
-                                    snapshot.NFSs.Add(nfskey, new NFSState { LastNFS = tx_nfs, TransferBlockIndex = 0, TransferN = 0 });
+                                    snapshot.NFTTransfers.Add(nfskey, new NFSState { LastNFS = tx_nfs, TransferBlockIndex = 0, TransferN = 0 });
+                                    var nft = snapshot.NFTs.TryGet(tx_nfs.NFSStateKey.NFCID);
+                                    if (nft.IsNotNull())
+                                    {
+                                        nft.Num++;
+                                        snapshot.NFTs.GetAndChange(tx_nfs.NFSStateKey.NFCID, () => nft);
+                                    }
                                     break;
                                 case NftChangeType.Transfer:
-                                    var nfsState = snapshot.NFSs.TryGet(tx_nfs.NFSStateKey);
+                                    var nfsState = snapshot.NFTTransfers.TryGet(tx_nfs.NFSStateKey);
                                     if (nfsState.IsNotNull())
                                     {
                                         nfsState.LastNFS = tx_nfs;
                                         nfsState.TransferBlockIndex = block.Index;
                                         nfsState.TransferN = n;
-                                        snapshot.NFSs.GetAndChange(tx_nfs.NFSStateKey, () => nfsState);
+                                        snapshot.NFTTransfers.GetAndChange(tx_nfs.NFSStateKey, () => nfsState);
                                     }
                                     break;
                             }
-                            break; 
+                            break;
                         case BookTransaction tx_book:
                             snapshot.Books.Add(tx.Hash, new BookState { Book = tx_book, CopyrightOwner = Contract.CreateSignatureRedeemScript(tx_book.Author).ToScriptHash(), BlockIndex = block.Index, N = n, DataHash = tx_book.Hash });
                             break;

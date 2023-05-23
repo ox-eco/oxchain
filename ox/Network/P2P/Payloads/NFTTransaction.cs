@@ -200,7 +200,7 @@ namespace OX.Network.P2P.Payloads
             if (this.NFCCopyright.NFCID.IsNull()) return false;
             if (this.NFCCopyright.NFCID.CID.IsNullOrEmpty()) return false;
             if (this.Author.IsNull()) return false;
-            if (snapshot.NFCs.TryGet(this.NFCCopyright.NFCID).IsNotNull()) return false;
+            if (snapshot.NFTs.TryGet(this.NFCCopyright.NFCID).IsNotNull()) return false;
             return base.Verify(snapshot, mempool);
         }
     }

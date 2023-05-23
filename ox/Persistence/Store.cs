@@ -11,8 +11,8 @@ namespace OX.Persistence
         DataCache<UInt256, BlockState> IPersistence.Blocks => GetBlocks();
         DataCache<UInt256, TransactionState> IPersistence.Transactions => GetTransactions();
         DataCache<UInt160, SideSateList> IPersistence.Sides => GetSides();
-        DataCache<NftID, NFCState> IPersistence.NFCs => GetNFCs();
-        DataCache<NFSStateKey, NFSState> IPersistence.NFSs => GetNFSs();
+        DataCache<NftID, NFCState> IPersistence.NFTs => GetNFTs();
+        DataCache<NFSStateKey, NFSState> IPersistence.NFTTransfers => GetNFTTransfers();
         DataCache<UInt256, BookState> IPersistence.Books => GetBooks();
         DataCache<UInt160, AccountState> IPersistence.Accounts => GetAccounts();
         DataCache<UInt256, UnspentCoinState> IPersistence.UnspentCoins => GetUnspentCoins();
@@ -31,8 +31,8 @@ namespace OX.Persistence
         public abstract DataCache<UInt256, BlockState> GetBlocks();
         public abstract DataCache<UInt256, TransactionState> GetTransactions();
         public abstract DataCache<UInt160, SideSateList> GetSides();
-        public abstract DataCache<NftID, NFCState> GetNFCs();
-        public abstract DataCache<NFSStateKey, NFSState> GetNFSs();
+        public abstract DataCache<NftID, NFCState> GetNFTs();
+        public abstract DataCache<NFSStateKey, NFSState> GetNFTTransfers();
         public abstract DataCache<UInt256, BookState> GetBooks();
         public abstract DataCache<UInt160, AccountState> GetAccounts();
         public abstract DataCache<UInt256, UnspentCoinState> GetUnspentCoins();

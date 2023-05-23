@@ -87,12 +87,12 @@ namespace OX.Persistence.LevelDB
             return new DbCache<UInt160, SideSateList>(db, null, null, Prefixes.DATA_SideList);
         }
         
-        public override DataCache<NftID, NFCState> GetNFCs()
+        public override DataCache<NftID, NFCState> GetNFTs()
         {
             return new DbCache<NftID, NFCState>(db, null, null, Prefixes.DATA_NFT);
         }
        
-        public override DataCache<NFSStateKey, NFSState> GetNFSs()
+        public override DataCache<NFSStateKey, NFSState> GetNFTTransfers()
         {
             return new DbCache<NFSStateKey, NFSState>(db, null, null, Prefixes.DATA_NFT_Transfer);
         }

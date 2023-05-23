@@ -17,8 +17,8 @@ namespace OX.Persistence.LevelDB
         public override DataCache<UInt256, BlockState> Blocks { get; }
         public override DataCache<UInt256, TransactionState> Transactions { get; }
         public override DataCache<UInt160, SideSateList> Sides { get; }
-        public override DataCache<NftID, NFCState> NFCs { get; }
-        public override DataCache<NFSStateKey, NFSState> NFSs { get; }
+        public override DataCache<NftID, NFCState> NFTs { get; }
+        public override DataCache<NFSStateKey, NFSState> NFTTransfers { get; }
         public override DataCache<UInt256, BookState> Books { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
@@ -42,8 +42,8 @@ namespace OX.Persistence.LevelDB
             Blocks = new DbCache<UInt256, BlockState>(db, options, batch, Prefixes.DATA_Block);
             Transactions = new DbCache<UInt256, TransactionState>(db, options, batch, Prefixes.DATA_Transaction);
             Sides = new DbCache<UInt160, SideSateList>(db, options, batch, Prefixes.DATA_SideList);
-            NFCs = new DbCache<NftID, NFCState>(db, options, batch, Prefixes.DATA_NFT);
-            NFSs = new DbCache<NFSStateKey, NFSState>(db, options, batch, Prefixes.DATA_NFT_Transfer);
+            NFTs = new DbCache<NftID, NFCState>(db, options, batch, Prefixes.DATA_NFT);
+            NFTTransfers = new DbCache<NFSStateKey, NFSState>(db, options, batch, Prefixes.DATA_NFT_Transfer);
             Accounts = new DbCache<UInt160, AccountState>(db, options, batch, Prefixes.ST_Account);
             Books = new DbCache<UInt256, BookState>(db, options, batch, Prefixes.DATA_Book);
             UnspentCoins = new DbCache<UInt256, UnspentCoinState>(db, options, batch, Prefixes.ST_Coin);

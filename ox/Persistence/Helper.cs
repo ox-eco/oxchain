@@ -84,12 +84,12 @@ namespace OX.Persistence
         
         public static NFCState GetNFCState(this IPersistence persistence, NftID nfcid)
         {
-            return persistence. NFCs.TryGet(nfcid);
+            return persistence. NFTs.TryGet(nfcid);
         }
        
         public static NFSState GetNFSs(this IPersistence persistence, NFSStateKey key)
         {
-            return persistence.NFSs.TryGet(key);
+            return persistence.NFTTransfers.TryGet(key);
         }
         public static BookState GetBookState(this IPersistence persistence, UInt256 bookId)
         {
