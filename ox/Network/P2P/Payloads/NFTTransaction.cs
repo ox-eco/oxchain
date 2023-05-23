@@ -260,7 +260,7 @@ namespace OX.Network.P2P.Payloads
         {
             if (this.NFSType == NftChangeType.Issue && this.NFSStateKey.IsNotNull() && this.NFSStateKey.NFCID.IsNotNull())
             {
-                var nfcstate = Blockchain.Singleton.CurrentSnapshot.GetNFCState(this.NFSStateKey.NFCID);
+                var nfcstate = Blockchain.Singleton.CurrentSnapshot.GetNftState(this.NFSStateKey.NFCID);
                 if (nfcstate.IsNotNull())
                     yield return Contract.CreateSignatureRedeemScript(nfcstate.NFC.Author).ToScriptHash();
             }
@@ -273,7 +273,7 @@ namespace OX.Network.P2P.Payloads
             if (NFSCopyright.IsNull()) return false;
             if (NFSHolder.IsNull()) return false;
             if (!NFSHolder.Verify()) return false;
-            var nfcState = snapshot.GetNFCState(NFSStateKey.NFCID);
+            var nfcState = snapshot.GetNftState(NFSStateKey.NFCID);
             if (nfcState.IsNull()) return false;
             if (this.NFSType == NftChangeType.Transfer)
             {
@@ -282,7 +282,7 @@ namespace OX.Network.P2P.Payloads
                 if (Auth.Signature.IsNullOrEmpty()) return false;
                 if (!Auth.Verify()) return false;
 
-                var nfsState = snapshot.GetNFSs(this.NFSStateKey);
+                var nfsState = snapshot.GetNftTransfer(this.NFSStateKey);
                 if (nfsState.IsNull()) return false;
                 if (nfsState.LastNFS.NFSHolder != Auth.Target.Target) return false;
                 if (nfsState.LastNFS.Hash != Auth.Target.PreHash) return false;

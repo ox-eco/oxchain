@@ -82,12 +82,12 @@ namespace OX.Persistence
             return persistence.Sides.TryGet(recipient);
         }
         
-        public static NFCState GetNFCState(this IPersistence persistence, NftID nfcid)
+        public static NFCState GetNftState(this IPersistence persistence, NftID nfcid)
         {
             return persistence. NFTs.TryGet(nfcid);
         }
        
-        public static NFSState GetNFSs(this IPersistence persistence, NFSStateKey key)
+        public static NFSState GetNftTransfer(this IPersistence persistence, NFSStateKey key)
         {
             return persistence.NFTTransfers.TryGet(key);
         }
