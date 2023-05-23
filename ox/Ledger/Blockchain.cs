@@ -695,10 +695,10 @@ namespace OX.Ledger
                             }
                             break;
                         case NftTransaction tx_nfc:
-                            snapshot.NFTs.Add(tx_nfc.NFCCopyright.NFCID, new NFCState { NFC = tx_nfc, BlockIndex = block.Index, N = n });
+                            snapshot.NFTs.Add(tx_nfc.NftCopyright.NftID, new NFCState { NFC = tx_nfc, BlockIndex = block.Index, N = n });
                             break;
                         case NftTransferTransaction tx_nfs:
-                            switch (tx_nfs.NFSType)
+                            switch (tx_nfs.NftChangeType)
                             {
                                 case NftChangeType.Issue:
                                     NFSStateKey nfskey = new NFSStateKey { NFCID = tx_nfs.NFSStateKey.NFCID, IssueBlockIndex = block.Index, IssueN = n };

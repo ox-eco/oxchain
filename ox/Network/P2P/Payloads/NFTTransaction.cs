@@ -59,11 +59,11 @@ namespace OX.Network.P2P.Payloads
     }
     public class NftCoinCopyright : ISerializable
     {
-        public NftID NFCID;
+        public NftID NftID;
         public byte Flag;
         public string Seal;
         public string AuthorName;
-        public int Size => NFCID.Size + sizeof(byte) + Seal.GetVarSize() + AuthorName.GetVarSize();
+        public int Size => NftID.Size + sizeof(byte) + Seal.GetVarSize() + AuthorName.GetVarSize();
         private UInt256 _hash = null;
         public UInt256 Hash
         {
@@ -78,7 +78,7 @@ namespace OX.Network.P2P.Payloads
         }
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write(NFCID);
+            writer.Write(NftID);
             writer.Write(Flag);
             writer.WriteVarString(Seal);
             writer.WriteVarString(AuthorName);
@@ -86,7 +86,7 @@ namespace OX.Network.P2P.Payloads
         }
         public void Deserialize(BinaryReader reader)
         {
-            NFCID = reader.ReadSerializable<NftID>();
+            NftID = reader.ReadSerializable<NftID>();
             Flag = reader.ReadByte();
             Seal = reader.ReadVarString();
             AuthorName = reader.ReadVarString();
@@ -126,7 +126,7 @@ namespace OX.Network.P2P.Payloads
     }
     public class NftTransaction : Transaction
     {
-        public NftCoinCopyright NFCCopyright;
+        public NftCoinCopyright NftCopyright;
         public ECPoint Author;
         /// <summary>
         /// 0:Image,1:Music,2:Video
@@ -138,7 +138,7 @@ namespace OX.Network.P2P.Payloads
         public byte SubContentType;
         public byte[] Mark;
 
-        public override int Size => base.Size + NFCCopyright.Size + Author.Size + sizeof(byte) + sizeof(byte) + Mark.GetVarSize();
+        public override int Size => base.Size + NftCopyright.Size + Author.Size + sizeof(byte) + sizeof(byte) + Mark.GetVarSize();
         public NftTransaction()
           : base(TransactionType.NftTransaction)
         {
@@ -164,7 +164,7 @@ namespace OX.Network.P2P.Payloads
         }
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
-            NFCCopyright = reader.ReadSerializable<NftCoinCopyright>();
+            NftCopyright = reader.ReadSerializable<NftCoinCopyright>();
             Author = reader.ReadSerializable<ECPoint>();
             ContentType = reader.ReadByte();
             SubContentType = reader.ReadByte();
@@ -173,7 +173,7 @@ namespace OX.Network.P2P.Payloads
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
-            writer.Write(NFCCopyright);
+            writer.Write(NftCopyright);
             writer.Write(Author);
             writer.Write(ContentType);
             writer.Write(SubContentType);
@@ -183,10 +183,10 @@ namespace OX.Network.P2P.Payloads
         public override JObject ToJson()
         {
             JObject json = base.ToJson();
-            json["cid"] = this.NFCCopyright.NFCID.CID;
-            json["idtype"] = this.NFCCopyright.NFCID.IDType.ToString();
-            json["seal"] = this.NFCCopyright.Seal;
-            json["authorname"] = this.NFCCopyright.AuthorName;
+            json["cid"] = this.NftCopyright.NftID.CID;
+            json["idtype"] = this.NftCopyright.NftID.IDType.ToString();
+            json["seal"] = this.NftCopyright.Seal;
+            json["authorname"] = this.NftCopyright.AuthorName;
             json["author"] = Author.ToString();
             json["contenttype"] = ContentType.Value();
             json["subcontenttype"] = SubContentType.Value();
@@ -196,18 +196,18 @@ namespace OX.Network.P2P.Payloads
 
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
-            if (this.NFCCopyright.IsNull()) return false;
-            if (this.NFCCopyright.NFCID.IsNull()) return false;
-            if (this.NFCCopyright.NFCID.CID.IsNullOrEmpty()) return false;
+            if (this.NftCopyright.IsNull()) return false;
+            if (this.NftCopyright.NftID.IsNull()) return false;
+            if (this.NftCopyright.NftID.CID.IsNullOrEmpty()) return false;
             if (this.Author.IsNull()) return false;
-            if (snapshot.NFTs.TryGet(this.NFCCopyright.NFCID).IsNotNull()) return false;
+            if (snapshot.NFTs.TryGet(this.NftCopyright.NftID).IsNotNull()) return false;
             return base.Verify(snapshot, mempool);
         }
     }
     public class NftTransferTransaction : Transaction
     {
         public NFSStateKey NFSStateKey;
-        public NftChangeType NFSType;
+        public NftChangeType NftChangeType;
         public NftTransferCopyright NFSCopyright;
         public NFSHolder NFSHolder;
         public MixSignatureValidator<NftTransferAuthentication> Auth;
@@ -224,7 +224,7 @@ namespace OX.Network.P2P.Payloads
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             NFSStateKey = reader.ReadSerializable<NFSStateKey>();
-            NFSType = (NftChangeType)reader.ReadByte();
+            NftChangeType = (NftChangeType)reader.ReadByte();
             NFSCopyright = reader.ReadSerializable<NftTransferCopyright>();
             NFSHolder = reader.ReadSerializable<NFSHolder>();
             if (reader.ReadBoolean())
@@ -235,7 +235,7 @@ namespace OX.Network.P2P.Payloads
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
             writer.Write(NFSStateKey);
-            writer.Write((byte)NFSType);
+            writer.Write((byte)NftChangeType);
             writer.Write(NFSCopyright);
             writer.Write(NFSHolder);
             if (Auth.IsNotNull())
@@ -258,7 +258,7 @@ namespace OX.Network.P2P.Payloads
         }
         private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator()
         {
-            if (this.NFSType == NftChangeType.Issue && this.NFSStateKey.IsNotNull() && this.NFSStateKey.NFCID.IsNotNull())
+            if (this.NftChangeType == NftChangeType.Issue && this.NFSStateKey.IsNotNull() && this.NFSStateKey.NFCID.IsNotNull())
             {
                 var nfcstate = Blockchain.Singleton.CurrentSnapshot.GetNftState(this.NFSStateKey.NFCID);
                 if (nfcstate.IsNotNull())
@@ -275,7 +275,7 @@ namespace OX.Network.P2P.Payloads
             if (!NFSHolder.Verify()) return false;
             var nfcState = snapshot.GetNftState(NFSStateKey.NFCID);
             if (nfcState.IsNull()) return false;
-            if (this.NFSType == NftChangeType.Transfer)
+            if (this.NftChangeType == NftChangeType.Transfer)
             {
                 if (Auth.IsNull()) return false;
                 if (Auth.Target.IsNull()) return false;
