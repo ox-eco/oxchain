@@ -2,6 +2,7 @@
 using OX.IO.Caching;
 using OX.IO.Wrappers;
 using OX.Ledger;
+using OX.Network.P2P.Payloads;
 
 namespace OX.Persistence
 {
@@ -10,8 +11,8 @@ namespace OX.Persistence
         DataCache<UInt256, BlockState> Blocks { get; }
         DataCache<UInt256, TransactionState> Transactions { get; }
         DataCache<UInt160, SideSateList> Sides { get; }
-        DataCache<UInt256, NFTState> NFTs { get; }
-        DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
+        DataCache<NftID, NFCState> NFCs { get; }
+        DataCache<NFSStateKey, NFSState> NFSs { get; }
         DataCache<UInt256, BookState> Books { get; }
         DataCache<UInt160, AccountState> Accounts { get; }
         DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }

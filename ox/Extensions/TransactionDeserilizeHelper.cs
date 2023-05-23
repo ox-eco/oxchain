@@ -53,10 +53,6 @@ namespace OX
                         return TxData.AsSerializable<TreatyTransaction>();
                     case TransactionType.RewardTransaction:
                         return TxData.AsSerializable<RewardTransaction>();
-                    case TransactionType.NFTCoinTransaction:
-                        return TxData.AsSerializable<NFTCoinTransaction>();
-                    case TransactionType.NFTDonateTransaction:
-                        return TxData.AsSerializable<NFTDonateTransaction>();
                     case TransactionType.LockAssetTransaction:
                         return TxData.AsSerializable<LockAssetTransaction>();
                     case TransactionType.BookTransaction:
@@ -75,6 +71,10 @@ namespace OX
                         return TxData.AsSerializable<RangeTransaction>();
                     case TransactionType.EthereumMapTransaction:
                         return TxData.AsSerializable<EthereumMapTransaction>();
+                    case TransactionType.NftTransaction:
+                        return TxData.AsSerializable<NftTransaction>();
+                    case TransactionType.NftTransferTransaction:
+                        return TxData.AsSerializable<NftTransferTransaction>();
                 }
                 return default;
 

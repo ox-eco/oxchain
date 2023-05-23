@@ -3,6 +3,7 @@ using OX.IO.Caching;
 using OX.IO.Data.LevelDB;
 using OX.IO.Wrappers;
 using OX.Ledger;
+using OX.Network.P2P.Payloads;
 using LSnapshot = OX.IO.Data.LevelDB.Snapshot;
 
 namespace OX.Persistence.LevelDB
@@ -16,8 +17,8 @@ namespace OX.Persistence.LevelDB
         public override DataCache<UInt256, BlockState> Blocks { get; }
         public override DataCache<UInt256, TransactionState> Transactions { get; }
         public override DataCache<UInt160, SideSateList> Sides { get; }
-        public override DataCache<UInt256, NFTState> NFTs { get; }
-        public override DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
+        public override DataCache<NftID, NFCState> NFCs { get; }
+        public override DataCache<NFSStateKey, NFSState> NFSs { get; }
         public override DataCache<UInt256, BookState> Books { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
@@ -41,8 +42,8 @@ namespace OX.Persistence.LevelDB
             Blocks = new DbCache<UInt256, BlockState>(db, options, batch, Prefixes.DATA_Block);
             Transactions = new DbCache<UInt256, TransactionState>(db, options, batch, Prefixes.DATA_Transaction);
             Sides = new DbCache<UInt160, SideSateList>(db, options, batch, Prefixes.DATA_SideList);
-            NFTs = new DbCache<UInt256, NFTState>(db, options, batch, Prefixes.DATA_NFT);
-            NFTDonates = new DbCache<NFTDonateStateKey, NFTDonateState>(db, options, batch, Prefixes.DATA_NFTDONATE);
+            NFCs = new DbCache<NftID, NFCState>(db, options, batch, Prefixes.DATA_NFT);
+            NFSs = new DbCache<NFSStateKey, NFSState>(db, options, batch, Prefixes.DATA_NFT_Transfer);
             Accounts = new DbCache<UInt160, AccountState>(db, options, batch, Prefixes.ST_Account);
             Books = new DbCache<UInt256, BookState>(db, options, batch, Prefixes.DATA_Book);
             UnspentCoins = new DbCache<UInt256, UnspentCoinState>(db, options, batch, Prefixes.ST_Coin);

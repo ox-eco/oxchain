@@ -3,6 +3,7 @@ using OX.IO.Caching;
 using OX.IO.Data.LevelDB;
 using OX.IO.Wrappers;
 using OX.Ledger;
+using OX.Network.P2P.Payloads;
 using System;
 using System.Reflection;
 
@@ -85,13 +86,15 @@ namespace OX.Persistence.LevelDB
         {
             return new DbCache<UInt160, SideSateList>(db, null, null, Prefixes.DATA_SideList);
         }
-        public override DataCache<UInt256, NFTState> GetNFTs()
+        
+        public override DataCache<NftID, NFCState> GetNFCs()
         {
-            return new DbCache<UInt256, NFTState>(db, null, null, Prefixes.DATA_NFT);
+            return new DbCache<NftID, NFCState>(db, null, null, Prefixes.DATA_NFT);
         }
-        public override DataCache<NFTDonateStateKey, NFTDonateState> GetNFTDonates()
+       
+        public override DataCache<NFSStateKey, NFSState> GetNFSs()
         {
-            return new DbCache<NFTDonateStateKey, NFTDonateState>(db, null, null, Prefixes.DATA_NFTDONATE);
+            return new DbCache<NFSStateKey, NFSState>(db, null, null, Prefixes.DATA_NFT_Transfer);
         }
         public override DataCache<UInt256, BookState> GetBooks()
         {

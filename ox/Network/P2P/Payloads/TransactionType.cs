@@ -45,10 +45,10 @@ namespace OX.Network.P2P.Payloads
         TreatyTransaction = 0xc9,
         [ReflectionCache(typeof(RewardTransaction))]
         RewardTransaction = 0xca,
-        [ReflectionCache(typeof(NFTCoinTransaction))]
-        NFTCoinTransaction = 0xcb,
-        [ReflectionCache(typeof(NFTDonateTransaction))]
-        NFTDonateTransaction = 0xcc,
+        [ReflectionCache(typeof(NftTransaction))]
+        NftTransaction = 0xcb,
+        [ReflectionCache(typeof(NftTransferTransaction))]
+        NftTransferTransaction = 0xcc,
         [ReflectionCache(typeof(LockAssetTransaction))]
         LockAssetTransaction =0xcd,
         [ReflectionCache(typeof(BookTransaction))]
@@ -66,6 +66,7 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(RangeTransaction))]
         RangeTransaction = 0xb4,
         [ReflectionCache(typeof(EthereumMapTransaction))]
-        EthereumMapTransaction = 0xb5,
+        EthereumMapTransaction = 0xb5
+        
     }
 }

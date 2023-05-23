@@ -17,8 +17,8 @@ namespace OX.Persistence
         public abstract DataCache<UInt256, BlockState> Blocks { get; }
         public abstract DataCache<UInt256, TransactionState> Transactions { get; }
         public abstract DataCache<UInt160, SideSateList> Sides { get; }
-        public abstract DataCache<UInt256, NFTState> NFTs { get; }
-        public abstract DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
+        public abstract DataCache<NftID, NFCState> NFCs { get; }
+        public abstract DataCache<NFSStateKey, NFSState> NFSs { get; }
         public abstract DataCache<UInt256, BookState> Books { get; }
         public abstract DataCache<UInt160, AccountState> Accounts { get; }
         public abstract DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
@@ -151,8 +151,8 @@ namespace OX.Persistence
             Blocks.Commit();
             Transactions.Commit();
             Sides.Commit();
-            NFTs.Commit();
-            NFTDonates.Commit();
+            NFCs.Commit();
+            NFSs.Commit();
             Books.Commit();
             Accounts.Commit();
             UnspentCoins.Commit();

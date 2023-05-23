@@ -29,7 +29,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Ledger\NFTState.cs" />
     <Compile Remove="Network\P2P\Payloads\EnrollmentTransaction.cs" />
+    <Compile Remove="Network\P2P\Payloads\NFTCoinTransaction.cs" />
     <Compile Remove="Network\P2P\Payloads\PublishTransaction.cs" />
   </ItemGroup>
 

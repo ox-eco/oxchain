@@ -81,13 +81,15 @@ namespace OX.Persistence
         {
             return persistence.Sides.TryGet(recipient);
         }
-        public static NFTState GetNFTState(this IPersistence persistence, UInt256 hash)
+        
+        public static NFCState GetNFCState(this IPersistence persistence, NftID nfcid)
         {
-            return persistence.NFTs.TryGet(hash);
+            return persistence. NFCs.TryGet(nfcid);
         }
-        public static NFTDonateState GetNFTDonateState(this IPersistence persistence, NFTDonateStateKey key)
+       
+        public static NFSState GetNFSs(this IPersistence persistence, NFSStateKey key)
         {
-            return persistence.NFTDonates.TryGet(key);
+            return persistence.NFSs.TryGet(key);
         }
         public static BookState GetBookState(this IPersistence persistence, UInt256 bookId)
         {

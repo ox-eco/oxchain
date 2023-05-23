@@ -2,6 +2,7 @@
 using OX.IO.Caching;
 using OX.IO.Wrappers;
 using OX.Ledger;
+using OX.Network.P2P.Payloads;
 
 namespace OX.Persistence
 {
@@ -10,8 +11,8 @@ namespace OX.Persistence
         public override DataCache<UInt256, BlockState> Blocks { get; }
         public override DataCache<UInt256, TransactionState> Transactions { get; }
         public override DataCache<UInt160, SideSateList> Sides { get; }
-        public override DataCache<UInt256, NFTState> NFTs { get; }
-        public override DataCache<NFTDonateStateKey, NFTDonateState> NFTDonates { get; }
+        public override DataCache<NftID, NFCState> NFCs { get; }
+        public override DataCache<NFSStateKey, NFSState> NFSs { get; }
         public override DataCache<UInt256, BookState> Books { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
@@ -32,8 +33,8 @@ namespace OX.Persistence
             this.Blocks = snapshot.Blocks.CreateSnapshot();
             this.Transactions = snapshot.Transactions.CreateSnapshot();
             this.Sides = snapshot.Sides.CreateSnapshot();
-            this.NFTs = snapshot.NFTs.CreateSnapshot();
-            this.NFTDonates = snapshot.NFTDonates.CreateSnapshot();
+            this.NFCs = snapshot.NFCs.CreateSnapshot();
+            this.NFSs = snapshot.NFSs.CreateSnapshot();
             this.Accounts = snapshot.Accounts.CreateSnapshot();
             this.Books = snapshot.Books.CreateSnapshot();
             this.UnspentCoins = snapshot.UnspentCoins.CreateSnapshot();
