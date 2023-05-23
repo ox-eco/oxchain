@@ -23,7 +23,8 @@ namespace OX.Network.P2P.Payloads
     {
         public string CID;
         /// <summary>
-        /// 0:IPFS
+        /// 0:IPFS CID is ipfs cid
+        /// 1:other CID is file hash string
         /// </summary>
         public byte IDType;
         public int Size => CID.GetVarSize() + sizeof(byte);
