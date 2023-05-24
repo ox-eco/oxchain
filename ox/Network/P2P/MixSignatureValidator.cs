@@ -132,6 +132,7 @@ namespace OX.Network.P2P
                 try
                 {
                     ECPoint.DecodePoint(this.Target, ECCurve.Secp256r1);
+                    return true;
                 }
                 catch
                 {
