@@ -291,7 +291,7 @@ namespace OX.Network.P2P.Payloads
 
                 var nfsState = snapshot.GetNftTransfer(this.NFSStateKey);
                 if (nfsState.IsNull()) return false;
-                if (nfsState.LastNFS.NFSHolder != Auth.Target.Target) return false;
+                if (!nfsState.LastNFS.NFSHolder.Equals(Auth.Target.Target)) return false;
                 if (nfsState.LastNFS.Hash != Auth.Target.PreHash) return false;
 
                 UInt160 oldOwner = default;
