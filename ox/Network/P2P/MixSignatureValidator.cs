@@ -169,5 +169,9 @@ namespace OX.Network.P2P
             }
             return base.Equals(obj);
         }
+        public override int GetHashCode()
+        {
+            return this.Target.GetHashCode();
+        }
     }
 }
