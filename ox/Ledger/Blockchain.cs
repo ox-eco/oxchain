@@ -698,28 +698,31 @@ namespace OX.Ledger
                             snapshot.NFTs.Add(tx_nfc.NftCopyright.NftID, new NFCState { NFC = tx_nfc, BlockIndex = block.Index, N = n });
                             break;
                         case NftTransferTransaction tx_nfs:
-                            switch (tx_nfs.NftChangeType)
+                            var nft = snapshot.NFTs.TryGet(tx_nfs.NFSStateKey.NFCID);
+                            if (nft.IsNotNull())
                             {
-                                case NftChangeType.Issue:
-                                    NFSStateKey nfskey = new NFSStateKey { NFCID = tx_nfs.NFSStateKey.NFCID, IssueBlockIndex = block.Index, IssueN = n };
-                                    snapshot.NFTTransfers.Add(nfskey, new NFSState { LastNFS = tx_nfs, TransferBlockIndex = 0, TransferN = 0 });
-                                    var nft = snapshot.NFTs.TryGet(tx_nfs.NFSStateKey.NFCID);
-                                    if (nft.IsNotNull())
-                                    {
-                                        nft.Num++;
+                                switch (tx_nfs.NftChangeType)
+                                {
+                                    case NftChangeType.Issue:
+                                        NFSStateKey nfskey = new NFSStateKey { NFCID = tx_nfs.NFSStateKey.NFCID, IssueBlockIndex = block.Index, IssueN = n };
+                                        snapshot.NFTTransfers.Add(nfskey, new NFSState { LastNFS = tx_nfs, TransferBlockIndex = 0, TransferN = 0 });
+                                        nft.TotalIssue++;
                                         snapshot.NFTs.GetAndChange(tx_nfs.NFSStateKey.NFCID, () => nft);
-                                    }
-                                    break;
-                                case NftChangeType.Transfer:
-                                    var nfsState = snapshot.NFTTransfers.TryGet(tx_nfs.NFSStateKey);
-                                    if (nfsState.IsNotNull())
-                                    {
-                                        nfsState.LastNFS = tx_nfs;
-                                        nfsState.TransferBlockIndex = block.Index;
-                                        nfsState.TransferN = n;
-                                        snapshot.NFTTransfers.GetAndChange(tx_nfs.NFSStateKey, () => nfsState);
-                                    }
-                                    break;
+                                        break;
+                                    case NftChangeType.Transfer:
+                                        var nfsState = snapshot.NFTTransfers.TryGet(tx_nfs.NFSStateKey);
+                                        if (nfsState.IsNotNull())
+                                        {
+                                            nfsState.LastNFS = tx_nfs;
+                                            nfsState.TransferBlockIndex = block.Index;
+                                            nfsState.TransferN = n;
+                                            snapshot.NFTTransfers.GetAndChange(tx_nfs.NFSStateKey, () => nfsState);
+                                        }
+                                        nft.TotalTransfer++;
+                                        nft.TotalAmountTransfer += tx_nfs.Auth.Target.Amount;
+                                        snapshot.NFTs.GetAndChange(tx_nfs.NFSStateKey.NFCID, () => nft);
+                                        break;
+                                }
                             }
                             break;
                         case BookTransaction tx_book:

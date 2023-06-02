@@ -14,11 +14,16 @@ namespace OX.Ledger
         public NftTransaction NFC;
         public uint BlockIndex;
         public ushort N;
-        public uint Num;
+        public uint TotalIssue;
+        public uint TotalTransfer;
+        public Fixed8 TotalAmountTransfer;
 
+        public override int Size => base.Size + NFC.Size + sizeof(uint) + sizeof(ushort) + sizeof(uint) + sizeof(uint) + TotalAmountTransfer.Size;
 
-        public override int Size => base.Size + NFC.Size + sizeof(uint) + sizeof(ushort) + sizeof(uint);
-
+        public NFCState()
+        {
+            TotalAmountTransfer = Fixed8.Zero;
+        }
         NFCState ICloneable<NFCState>.Clone()
         {
             return new NFCState
@@ -26,7 +31,9 @@ namespace OX.Ledger
                 NFC = NFC,
                 BlockIndex = BlockIndex,
                 N = N,
-                Num = Num
+                TotalIssue = TotalIssue,
+                TotalTransfer = TotalTransfer,
+                TotalAmountTransfer = TotalAmountTransfer
             };
         }
 
@@ -38,7 +45,9 @@ namespace OX.Ledger
                 this.NFC = nftcoint;
             this.BlockIndex = reader.ReadUInt32();
             this.N = reader.ReadUInt16();
-            this.Num = reader.ReadUInt32();
+            this.TotalIssue = reader.ReadUInt32();
+            this.TotalTransfer = reader.ReadUInt32();
+            this.TotalAmountTransfer = reader.ReadSerializable<Fixed8>();
         }
 
         void ICloneable<NFCState>.FromReplica(NFCState replica)
@@ -46,7 +55,9 @@ namespace OX.Ledger
             this.NFC = replica.NFC;
             this.BlockIndex = replica.BlockIndex;
             this.N = replica.N;
-            this.Num = replica.Num;
+            this.TotalIssue = replica.TotalIssue;
+            this.TotalTransfer = replica.TotalTransfer;
+            this.TotalAmountTransfer = replica.TotalAmountTransfer;
         }
 
         public override void Serialize(BinaryWriter writer)
@@ -55,7 +66,9 @@ namespace OX.Ledger
             writer.Write(this.NFC);
             writer.Write(BlockIndex);
             writer.Write(N);
-            writer.Write(Num);
+            writer.Write(TotalIssue);
+            writer.Write(TotalTransfer);
+            writer.Write(TotalAmountTransfer);
         }
 
         public override JObject ToJson()
@@ -67,7 +80,9 @@ namespace OX.Ledger
             }
             json["blockindex"] = BlockIndex.ToString();
             json["n"] = N.ToString();
-            json["num"] = Num.ToString();
+            json["totalissue"] = TotalIssue.ToString();
+            json["totaltransfer"] = TotalTransfer.ToString();
+            json["totalamounttransfer"] = TotalAmountTransfer.ToString();
             return json;
         }
     }
