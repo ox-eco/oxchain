@@ -140,9 +140,9 @@ namespace OX.Network.P2P.Payloads
         /// </summary>
         public byte ContentType;
         /// <summary>
-        ///  IssueType==0,0:jpg,1:gif,2:png,3:bmp
+        ///  Lockup period for first resale,N*10000 blocks
         /// </summary>
-        public byte SubContentType;
+        public byte FirstResaleLock;
         public byte[] Mark;
 
         public override int Size => base.Size + NftCopyright.Size + Author.Size + sizeof(byte) + sizeof(byte) + Mark.GetVarSize();
@@ -174,7 +174,7 @@ namespace OX.Network.P2P.Payloads
             NftCopyright = reader.ReadSerializable<NftCoinCopyright>();
             Author = reader.ReadSerializable<ECPoint>();
             ContentType = reader.ReadByte();
-            SubContentType = reader.ReadByte();
+            FirstResaleLock = reader.ReadByte();
             Mark = reader.ReadVarBytes();
         }
 
@@ -183,7 +183,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write(NftCopyright);
             writer.Write(Author);
             writer.Write(ContentType);
-            writer.Write(SubContentType);
+            writer.Write(FirstResaleLock);
             writer.WriteVarBytes(Mark);
         }
 
@@ -196,7 +196,7 @@ namespace OX.Network.P2P.Payloads
             json["authorname"] = this.NftCopyright.AuthorName;
             json["author"] = Author.ToString();
             json["contenttype"] = ContentType.Value();
-            json["subcontenttype"] = SubContentType.Value();
+            json["subcontenttype"] = FirstResaleLock.Value();
             json["mark"] = Mark.ToHexString();
             return json;
         }
@@ -293,6 +293,11 @@ namespace OX.Network.P2P.Payloads
                 if (nfsState.IsNull()) return false;
                 if (!nfsState.LastNFS.NFSHolder.Equals(Auth.Target.Target)) return false;
                 if (nfsState.LastNFS.Hash != Auth.Target.PreHash) return false;
+                var height = snapshot.Height;
+                if (nfsState.LastNFS.NftChangeType == NftChangeType.Issue && nfcState.NFC.FirstResaleLock > 0)
+                {
+                    if (height <= this.NFSStateKey.IssueBlockIndex + nfcState.NFC.FirstResaleLock * 10000) return false;
+                }
 
                 UInt160 oldOwner = default;
                 if (nfsState.LastNFS.NFSHolder.MixAccountType == MixAccountType.OX)
@@ -310,11 +315,11 @@ namespace OX.Network.P2P.Payloads
                 if (outputs.Sum(m => m.Value) < Auth.Target.Amount) return false;
                 if (Auth.Target.MaxIndex > 0)
                 {
-                    if (Auth.Target.MaxIndex <= snapshot.Height) return false;
+                    if (Auth.Target.MaxIndex <= height) return false;
                 }
                 if (Auth.Target.MinIndex > 0)
                 {
-                    if (Auth.Target.MinIndex > snapshot.Height + 1) return false;
+                    if (Auth.Target.MinIndex > height + 1) return false;
                 }
             }
             return base.Verify(snapshot, mempool);
