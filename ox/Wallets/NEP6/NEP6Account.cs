@@ -31,6 +31,8 @@ namespace OX.Wallets.NEP6
             return new NEP6Account(wallet, json["address"].AsString().ToScriptHash(), json["key"]?.AsString())
             {
                 Label = json["label"]?.AsString(),
+                AccessCode = json["accesscode"]?.AsString(),
+                Group = json["group"]?.AsString(),
                 IsDefault = json["isDefault"].AsBoolean(),
                 Lock = json["lock"].AsBoolean(),
                 Contract = NEP6Contract.FromJson(json["contract"]),
@@ -63,6 +65,8 @@ namespace OX.Wallets.NEP6
             JObject account = new JObject();
             account["address"] = ScriptHash.ToAddress();
             account["label"] = Label;
+            account["accesscode"] = AccessCode;
+            account["group"] = Group;
             account["isDefault"] = IsDefault;
             account["lock"] = Lock;
             account["key"] = nep2key;

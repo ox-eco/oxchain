@@ -83,6 +83,8 @@ namespace OX.Wallets.NEP6
                 if (accounts.TryGetValue(account.ScriptHash, out NEP6Account account_old))
                 {
                     account.Label = account_old.Label;
+                    account.AccessCode = account_old.AccessCode;
+                    account.Group = account_old.Group;
                     account.IsDefault = account_old.IsDefault;
                     account.Lock = account_old.Lock;
                     if (account.Contract == null)

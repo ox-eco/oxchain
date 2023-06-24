@@ -10,6 +10,8 @@ namespace OX.Wallets
     {
         public readonly UInt160 ScriptHash;
         public string Label;
+        public string Group;
+        public string AccessCode;
         public bool IsDefault;
         public IWalletAccountProfile Profile;
         public bool Lock;

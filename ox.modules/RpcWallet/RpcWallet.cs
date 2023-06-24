@@ -272,6 +272,8 @@ namespace OX.Plugins
                 ["address"] = account.Address,
                 ["haskey"] = account.HasKey,
                 ["label"] = account.Label,
+                ["accesscode"] = account.AccessCode,
+                ["group"] = account.Group,
                 ["watchonly"] = account.WatchOnly
             };
         }
@@ -285,6 +287,8 @@ namespace OX.Plugins
                 account["address"] = p.Address;
                 account["haskey"] = p.HasKey;
                 account["label"] = p.Label;
+                account["accesscode"] = p.AccessCode;
+                account["group"] = p.Group;
                 account["watchonly"] = p.WatchOnly;
                 return account;
             }).ToArray();
