@@ -81,15 +81,25 @@ namespace OX.Persistence
         {
             return persistence.Sides.TryGet(recipient);
         }
-        
+
         public static NFCState GetNftState(this IPersistence persistence, NftID nfcid)
         {
-            return persistence. NFTs.TryGet(nfcid);
+            return persistence.NFTs.TryGet(nfcid);
         }
-       
+
         public static NFSState GetNftTransfer(this IPersistence persistence, NFSStateKey key)
         {
             return persistence.NFTTransfers.TryGet(key);
+        }
+        public static NFSState GetNftTransfer(this IPersistence persistence, uint issueInddex, ushort issueN)
+        {
+            var block = persistence.GetBlock(issueInddex);
+            if (block.IsNull()) return default;
+            if (block.Transactions.Length <= issueN) return default;
+            var tx = block.Transactions[issueN] as NftTransferTransaction;
+            if (tx.IsNull()) return default;
+            if (tx.NftChangeType != NftChangeType.Issue) return default;
+            return persistence.NFTTransfers.TryGet(new NFSStateKey { NFCID = tx.NFSStateKey.NFCID, IssueBlockIndex = issueInddex, IssueN = issueN });
         }
         public static BookState GetBookState(this IPersistence persistence, UInt256 bookId)
         {
