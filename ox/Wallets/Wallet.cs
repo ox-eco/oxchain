@@ -266,6 +266,8 @@ namespace OX.Wallets
             if (tx.Outputs == null) tx.Outputs = new TransactionOutput[0];
             if (tx.Attributes == null) tx.Attributes = new TransactionAttribute[0];
             fee += tx.SystemFee;
+            if (tx.NeedOutputFee && tx.Outputs.IsNotNullAndEmpty() && tx.Outputs.Length > 1 && fee < Fixed8.One)
+                fee += Fixed8.One;
             var pay_total = (typeof(T) == typeof(IssueTransaction) ? new TransactionOutput[0] : tx.Outputs).GroupBy(p => p.AssetId, (k, g) => new
             {
                 AssetId = k,
@@ -319,6 +321,7 @@ namespace OX.Wallets
             tx.Outputs = outputs_new.ToArray();
             return tx;
         }
+
         public Transaction MakeTransaction(List<TransactionAttribute> attributes, IEnumerable<TransferOutput> outputs, UInt160 from = null, UInt160 change_address = null, Fixed8 fee = default(Fixed8))
         {
             Random rand = new Random();

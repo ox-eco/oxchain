@@ -1,4 +1,5 @@
-﻿using OX.Ledger;
+﻿using OX.IO;
+using OX.Ledger;
 using OX.Persistence;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,14 @@ namespace OX.Network.P2P.Payloads
         {
             get
             {
-                if (Version >= 1) return Fixed8.Zero;
-                if (Outputs.All(p => p.AssetId == Blockchain.OXS_Token.Hash || p.AssetId == Blockchain.OXC_Token.Hash))
-                    return Fixed8.Zero;
-                return base.SystemFee;
+                //if (Version >= 1) return Fixed8.Zero;
+                if (!NeedOutputFee)
+                    return AttributesFee;
+                return AttributesFee + OutputFee;
             }
         }
-
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public override bool NeedOutputFee => !(Outputs.All(p => p.AssetId == Blockchain.OXS_Token.Hash || p.AssetId == Blockchain.OXC_Token.Hash));
         public IssueTransaction()
             : base(TransactionType.IssueTransaction)
         {

@@ -52,8 +52,9 @@ namespace OX.Network.P2P.Payloads
         public byte[] Attach;
 
         public override int Size => base.Size + Recipient.Size + sizeof(bool) + sizeof(uint) + sizeof(byte) + LockContract.Size + Attach.GetVarSize();
-        public override Fixed8 SystemFee => AttributesFee + (Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero) + (Flag == byte.MaxValue ? Fixed8.One * 1000 : Fixed8.Zero);
+        public override Fixed8 SystemFee => AttributesFee +OutputFee+ (Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero) + (Flag == byte.MaxValue ? Fixed8.One * 1000 : Fixed8.Zero);
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public override bool NeedOutputFee => true;
         #region append for Issue
         public bool IsIssue
         {

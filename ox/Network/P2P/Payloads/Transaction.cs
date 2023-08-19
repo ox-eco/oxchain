@@ -55,7 +55,8 @@ namespace OX.Network.P2P.Payloads
                 return _feePerByte;
             }
         }
-
+        public virtual bool NeedOutputFee => false;
+        public Fixed8 OutputFee => this.Outputs.IsNotNullAndEmpty() && this.Outputs.Count() > 2 ? Fixed8.One : Fixed8.Zero;
         private UInt256 _hash = null;
         public UInt256 Hash
         {

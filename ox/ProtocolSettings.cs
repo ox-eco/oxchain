@@ -59,7 +59,7 @@ namespace OX
                 [TransactionType.NftTransaction] = Fixed8.One * 100,
                 [TransactionType.SecretLetterTransaction] = Fixed8.One * 100,
                 //[TransactionType.EnrollmentTransaction] = Fixed8.One * 1000,
-                [TransactionType.IssueTransaction] = Fixed8.One * 5000,
+                //[TransactionType.IssueTransaction] = Fixed8.One * 5000,
                 //[TransactionType.PublishTransaction] = Fixed8.One * 500,
                 [TransactionType.RegisterTransaction] = Fixed8.One * 100000
             };

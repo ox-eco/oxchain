@@ -20,8 +20,9 @@ namespace OX.Network.P2P.Payloads
         public uint LockExpirationIndex;
         public UInt160 EthMapContract;
         public override int Size => base.Size + EthereumAddress.GetVarSize() + sizeof(uint) + EthMapContract.Size;
-        public override Fixed8 SystemFee => AttributesFee;
+        public override Fixed8 SystemFee => AttributesFee+OutputFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public override bool NeedOutputFee => true;
         #region append for Issue
         public bool IsIssue
         {
