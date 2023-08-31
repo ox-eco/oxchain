@@ -8,10 +8,8 @@ namespace OX.Network.P2P.Payloads
     public class ChainPosition : ISerializable
     {
         public uint BlockIndex;
-        public ushort TxIndex;
-      
+        public ushort TxIndex;      
         public virtual int Size => sizeof(uint) + sizeof(ushort) ;
-
         public void Serialize(BinaryWriter writer)
         {
             writer.Write(BlockIndex);
