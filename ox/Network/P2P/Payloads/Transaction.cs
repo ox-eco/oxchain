@@ -386,6 +386,7 @@ namespace OX.Network.P2P.Payloads
 
         public virtual bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
+            if (Outputs.GetAllRepeated(z => new { z.ScriptHash, z.AssetId }).Count() > 0) return false;
             if (Size > MaxTransactionSize) return false;
             for (int i = 1; i < Inputs.Length; i++)
                 for (int j = 0; j < i; j++)
