@@ -18,6 +18,8 @@
     <Company>The OX Project</Company>
     <Description>OX</Description>
     <LangVersion>latest</LangVersion>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>    
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
