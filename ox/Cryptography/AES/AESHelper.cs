@@ -12,6 +12,10 @@ namespace OX.Cryptography.AES
 {
     public static class AESHelper
     {
+        public static void T()
+        {
+            var aes = System.Security.Cryptography.Aes.Create();
+        }
         public static byte[] Encrypt(this byte[] data, OX.Cryptography.ECC.ECPoint shareKey, byte[] salt = default)
         {
             var ks = shareKey.ToString();//.EncodePoint(true).ToHexString();
@@ -35,7 +39,7 @@ namespace OX.Cryptography.AES
         }
         public static byte[] Decrypt(this byte[] encryptedData, OX.Cryptography.ECC.ECPoint shareKey, byte[] salt = default)
         {
-            var ks = shareKey.EncodePoint(true).ToHexString();
+            var ks = shareKey.ToString();
             Rfc2898DeriveBytes deriver = new Rfc2898DeriveBytes(ks, salt.IsNotNullAndEmpty() ? salt : new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, });
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
             aes.Mode = CipherMode.CBC;
