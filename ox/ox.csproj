@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Copyright>2020 OX</Copyright>
     <AssemblyTitle>OX</AssemblyTitle>
-    <Version>1.0.2</Version>
+    <Version>2.0.0</Version>
     <Authors>OX</Authors>
     <TargetFramework>net6.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -18,8 +18,7 @@
     <Company>The OX Project</Company>
     <Description>OX</Description>
     <LangVersion>latest</LangVersion>
-      <PackageLicenseExpression>MIT</PackageLicenseExpression>    
-    <Version>1.0.2</Version>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>        
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
