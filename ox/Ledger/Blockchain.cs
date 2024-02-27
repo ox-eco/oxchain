@@ -422,10 +422,10 @@ namespace OX.Ledger
             if (!MemPool.TryAdd(transaction.Hash, transaction))
                 return RelayResultReason.OutOfMemory;
 
-            if (transaction is BizTransaction ct)
-            {
-                Console.WriteLine($"BizTransaction income {ct.Hash}");
-            }
+            //if (transaction is BizTransaction ct)
+            //{
+            //    Console.WriteLine($"BizTransaction income {ct.Hash}");
+            //}
             system.LocalNode.Tell(new LocalNode.RelayDirectly { Inventory = transaction });
             return RelayResultReason.Succeed;
         }

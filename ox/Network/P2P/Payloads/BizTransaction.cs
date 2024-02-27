@@ -1,5 +1,7 @@
 ﻿using OX.IO;
+using System.Collections.Generic;
 using System.IO;
+using OX.Persistence;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -28,6 +30,11 @@ namespace OX.Network.P2P.Payloads
             writer.Write(BizScriptHash);
             writer.Write((byte)BizTxState);
             SerializeBizData(writer);
+        }
+        public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
+        {
+            if (BizTxState != BizTransactionStatus.OnChain) return false;
+            return base.Verify(snapshot, mempool);
         }
     }
 }
