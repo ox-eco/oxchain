@@ -141,6 +141,7 @@ namespace OX.Ledger
         public Snapshot CurrentSnapshot { get { return currentSnapshot; } }
         public Store Store { get; }
         public MemoryPool MemPool { get; }
+        public FlashStatePool StatePool { get; }
         public uint Height => currentSnapshot.Height;
 
         public uint HeaderHeight => currentSnapshot.HeaderHeight;
@@ -166,6 +167,7 @@ namespace OX.Ledger
         {
             this.system = system;
             this.MemPool = new MemoryPool(system, MemoryPoolMaxTransactions);
+            this.StatePool = new FlashStatePool(system);
             this.Store = store;
             lock (lockObj)
             {
@@ -422,10 +424,6 @@ namespace OX.Ledger
             if (!MemPool.TryAdd(transaction.Hash, transaction))
                 return RelayResultReason.OutOfMemory;
 
-            //if (transaction is BizTransaction ct)
-            //{
-            //    Console.WriteLine($"BizTransaction income {ct.Hash}");
-            //}
             system.LocalNode.Tell(new LocalNode.RelayDirectly { Inventory = transaction });
             return RelayResultReason.Succeed;
         }
@@ -874,9 +872,13 @@ namespace OX.Ledger
         }
         public bool VerifyBizValidator(UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
+            return VerifyBizValidator(currentSnapshot, bizValidatorScriptHash, out OXSBalance, out AskFee);
+        }
+        public bool VerifyBizValidator(Snapshot snapshot, UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
+        {
             OXSBalance = Fixed8.Zero;
             AskFee = Fixed8.Zero;
-            var acts = currentSnapshot.Accounts.GetAndChange(bizValidatorScriptHash, () => null);
+            var acts = snapshot.Accounts.GetAndChange(bizValidatorScriptHash, () => null);
             if (acts.IsNull()) return false;
             var balance = acts.GetBalance(OXS);
             OXSBalance = balance;
