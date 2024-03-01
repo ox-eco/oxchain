@@ -12,10 +12,7 @@ namespace OX.Cryptography.AES
 {
     public static class AESHelper
     {
-        public static void T()
-        {
-            var aes = System.Security.Cryptography.Aes.Create();
-        }
+       
         public static byte[] Encrypt(this byte[] data, OX.Cryptography.ECC.ECPoint shareKey, byte[] salt = default)
         {
             var ks = shareKey.ToString();//.EncodePoint(true).ToHexString();
