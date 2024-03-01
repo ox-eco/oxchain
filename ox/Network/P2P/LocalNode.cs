@@ -159,15 +159,7 @@ namespace OX.Network.P2P
         private void OnRelay(IInventory inventory)
         {
             if (inventory is Transaction transaction)
-            {
-                bool ok = true;
-                if (inventory is BizTransaction bt)
-                {
-                    ok = bt.BizTxState == BizTransactionStatus.OnChain;
-                }
-                if (ok)
-                    system.Consensus?.Tell(transaction);
-            }
+                system.Consensus?.Tell(transaction);
             system.Blockchain.Tell(inventory);
         }
 
