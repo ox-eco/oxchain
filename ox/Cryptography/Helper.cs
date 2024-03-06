@@ -1,5 +1,7 @@
 ﻿using OX.IO;
 using OX.Network.P2P.Payloads;
+using OX.Wallets;
+using OX.Cryptography.ECC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +11,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
+
 namespace OX.Cryptography
 {
     public static class Helper
     {
         private static ThreadLocal<SHA256> _sha256 = new ThreadLocal<SHA256>(() => SHA256.Create());
         private static ThreadLocal<RIPEMD160Managed> _ripemd160 = new ThreadLocal<RIPEMD160Managed>(() => new RIPEMD160Managed());
-
+      
         public static byte[] AES256Decrypt(this byte[] block, byte[] key)
         {
             using (Aes aes = Aes.Create())
@@ -98,7 +101,7 @@ namespace OX.Cryptography
 
         public static uint Murmur32(this IEnumerable<byte> value, uint seed)
         {
-            using (Murmur3 murmur = new Murmur3(seed))
+            using (Murmur32 murmur = new Murmur32(seed))
             {
                 return murmur.ComputeHash(value.ToArray()).ToUInt32(0);
             }

@@ -6,7 +6,7 @@
     <Description>OX.VM</Description>
     <Version>1.0.2</Version>
     <Authors>OX</Authors>
-	  <TargetFramework>net6.0</TargetFramework>
+	  <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>ox.vm</AssemblyName>
     <PackageId>OX.VM</PackageId>
     <PackageTags></PackageTags>

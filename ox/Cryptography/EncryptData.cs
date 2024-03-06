@@ -5,13 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using OX.IO;
+using Org.BouncyCastle.Asn1.Cms;
 
-namespace OX.Cryptography.AES
+namespace OX.Cryptography
 {
-    public class AESEncryptData : ISerializable
+    public class EncryptData : ISerializable
     {
         public byte[] Data;
         public virtual int Size => Data.GetVarSize();
+        public EncryptData()
+        {
+
+        }
+        public EncryptData(byte[] data) : this()
+        {
+            this.Data = data;
+        }
         public virtual void Serialize(BinaryWriter writer)
         {
             writer.WriteVarBytes(Data);

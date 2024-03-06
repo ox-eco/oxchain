@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace OX.Network.P2P
@@ -18,6 +19,8 @@ namespace OX.Network.P2P
         public class Relay { public IInventory Inventory; }
         internal class RelayDirectly { public IInventory Inventory; }
         internal class SendDirectly { public IInventory Inventory; }
+        internal class RelayFlash { public IInventory Inventory; }
+        internal class RelayFlashDirectly { public IInventory Inventory; }
 
         public const uint ProtocolVersion = 0;
 
@@ -151,6 +154,12 @@ namespace OX.Network.P2P
                 case SendDirectly send:
                     OnSendDirectly(send.Inventory);
                     break;
+                case RelayFlash relay:
+                    OnRelayFlash(relay.Inventory);
+                    break;
+                case RelayFlashDirectly relay:
+                    OnRelayFlashDirectly(relay.Inventory);
+                    break;
                 case RelayResultReason _:
                     break;
             }
@@ -162,11 +171,20 @@ namespace OX.Network.P2P
                 system.Consensus?.Tell(transaction);
             system.Blockchain.Tell(inventory);
         }
+        private void OnRelayFlash(IInventory inventory)
+        {
+            system.Blockchain.Tell(inventory);
+        }
 
         private void OnRelayDirectly(IInventory inventory)
         {
             Connections.Tell(new RemoteNode.Relay { Inventory = inventory });
         }
+        private void OnRelayFlashDirectly(IInventory inventory)
+        {
+            Connections.Tell(inventory);
+        }
+
 
         private void OnSendDirectly(IInventory inventory)
         {

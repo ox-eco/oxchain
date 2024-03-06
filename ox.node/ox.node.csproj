@@ -5,7 +5,7 @@
     <AssemblyTitle>OX.Node</AssemblyTitle>
     <Version>1.0.1</Version>
     <Authors>OX.Node</Authors>
-	  <TargetFramework>net6.0</TargetFramework>
+	  <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>ox.node</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>OX.Node</PackageId>

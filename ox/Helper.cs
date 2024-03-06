@@ -346,5 +346,39 @@ namespace OX
                 yield return resultSelector(item, weight);
             }
         }
+        /// <summary>
+        /// Concatenates the specified byte arrays.
+        /// </summary>
+        /// <param name="buffers">The byte arrays to concatenate.</param>
+        /// <returns>The concatenated byte array.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte[] Concat(params byte[][] buffers)
+        {
+            int length = 0;
+            for (int i = 0; i < buffers.Length; i++)
+                length += buffers[i].Length;
+            byte[] dst = new byte[length];
+            int p = 0;
+            foreach (byte[] src in buffers)
+            {
+                Buffer.BlockCopy(src, 0, dst, p, src.Length);
+                p += src.Length;
+            }
+            return dst;
+        }
+
+        /// <summary>
+        /// Concatenates two byte arrays.
+        /// </summary>
+        /// <param name="a">The first byte array to concatenate.</param>
+        /// <param name="b">The second byte array to concatenate.</param>
+        /// <returns>The concatenated byte array.</returns>
+        public static byte[] Concat(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
+        {
+            byte[] buffer = new byte[a.Length + b.Length];
+            a.CopyTo(buffer);
+            b.CopyTo(buffer.AsSpan(a.Length));
+            return buffer;
+        }
     }
 }

@@ -95,6 +95,14 @@ namespace OX
         {
             this.oxsystem.LocalNode.Tell(new LocalNode.Relay { Inventory = inventory });
         }
+        public void SendDirectly(IInventory inventory)
+        {
+            this.oxsystem.LocalNode.Tell(new LocalNode.SendDirectly { Inventory = inventory });
+        }
+        public void RelayFlash(FlashState flashState)
+        {
+            this.oxsystem.LocalNode.Tell(new LocalNode.RelayFlash { Inventory = flashState });
+        }
         public bool SignAndRelay(Transaction tx)
         {
             ContractParametersContext context;
@@ -119,6 +127,32 @@ namespace OX
                 return true;
             }
             msg = $"Failed sending transaction with hash={tx.Hash}";
+            Console.WriteLine(msg);
+            return true;
+        }
+        public bool SignAndRelay(FlashState fs)
+        {
+            ContractParametersContext context;
+            try
+            {
+                context = new ContractParametersContext(fs);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Error creating contract params: {ex}");
+                throw;
+            }
+            this.wallet.Sign(context);
+            string msg;
+            if (context.Completed)
+            {
+                fs.Witnesses = context.GetWitnesses();
+                this.Relay(fs);
+                msg = $"Signed and relayed flashstate with hash={fs.Hash}";
+                Console.WriteLine(msg);
+                return true;
+            }
+            msg = $"Failed sending flashstate with hash={fs.Hash}";
             Console.WriteLine(msg);
             return true;
         }

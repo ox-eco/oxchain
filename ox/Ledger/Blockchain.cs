@@ -15,6 +15,7 @@ using OX.Wallets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace OX.Ledger
@@ -32,6 +33,7 @@ namespace OX.Ledger
 
         public static readonly uint SecondsPerBlock = ProtocolSettings.Default.SecondsPerBlock;
         public static readonly Fixed8 BappDetainOXS = ProtocolSettings.Default.BappDetainOXS;
+        public static readonly Fixed8 FlashMinOXSBalance = ProtocolSettings.Default.FlashMinOXSBalance;
         public const uint DecrementInterval = 2000000;
         public const int MaxValidators = 1024;
         public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
@@ -427,7 +429,17 @@ namespace OX.Ledger
             system.LocalNode.Tell(new LocalNode.RelayDirectly { Inventory = transaction });
             return RelayResultReason.Succeed;
         }
-
+        private RelayResultReason OnNewFlashState(FlashState flashState)
+        {
+            if (this.MemPool.Count > this.MemPool.RebroadcastMultiplierThreshold)
+                return RelayResultReason.OutOfMemory;
+            if (!flashState.Verify(currentSnapshot, StatePool, out AccountState accountState))
+                return RelayResultReason.Invalid;
+            if (StatePool.TryAppend(GetAccountFlashStateCapacity(accountState), accountState.ScriptHash, flashState, Blockchain.singleton.HeaderHeight))
+                system.LocalNode.Tell(new LocalNode.RelayFlashDirectly { Inventory = flashState });
+            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}   /   {OX.SmartContract.Contract.CreateSignatureRedeemScript(flashState.Sender).ToScriptHash().ToAddress()}   /   {flashState.Hash.ToString()}");
+            return RelayResultReason.Succeed;
+        }
         private void OnPersistCompleted(Block block)
         {
             Debugger.Log(nameof(Blockchain), $"block persist completed=>{block.Index}/{block.Hash}", 2);
@@ -454,6 +466,9 @@ namespace OX.Ledger
                     break;
                 case Transaction transaction:
                     Sender.Tell(OnNewTransaction(transaction));
+                    break;
+                case FlashState flashState:
+                    Sender.Tell(OnNewFlashState(flashState));
                     break;
                 case ConsensusPayload payload:
                     Sender.Tell(OnNewConsensus(payload));
@@ -531,6 +546,10 @@ namespace OX.Ledger
                                 }
                             }
                             account.Balances[out_prev.AssetId] -= out_prev.Value;
+                            if (out_prev.AssetId.Equals(OXS_Token.Hash))
+                            {
+                                this.StatePool.Crop(out_prev.ScriptHash, GetAccountFlashStateCapacity(account));
+                            }
                         }
                     }
                     List<ApplicationExecutionResult> execution_results = new List<ApplicationExecutionResult>();
@@ -888,6 +907,17 @@ namespace OX.Ledger
             if (balance < BappDetainOXS) return false;
             return true;
         }
+        public bool VerifyFlashStateSender(UInt160 flashStateSender, out Fixed8 OXSBalance)
+        {
+            return VerifyFlashStateSender(flashStateSender, out OXSBalance);
+        }
+        public bool VerifyFlashStateSender(Snapshot snapshot, UInt160 flashStateSender, out AccountState accountState)
+        {
+            accountState = snapshot.Accounts.GetAndChange(flashStateSender, () => null);
+            if (accountState.IsNull()) return false;
+            if (accountState.GetBalance(OXS) < FlashMinOXSBalance) return false;
+            return true;
+        }
         public bool IsFrozen(UInt160 scriptHash, out uint ExpireIndex)
         {
             var acts = currentSnapshot.Accounts.GetAndChange(scriptHash, () => null);
@@ -903,6 +933,16 @@ namespace OX.Ledger
             else
                 ExpireIndex = 0;
             return isFrozen;
+        }
+        public int GetAccountFlashStateCapacity(AccountState accountState)
+        {
+            var balance = accountState.GetBalance(OXS);
+            if (balance > Fixed8.Zero)
+            {
+                var multiple = balance.GetInternalValue() / FlashMinOXSBalance.GetInternalValue();
+                return (int)multiple * 10;
+            }
+            return 0;
         }
     }
 

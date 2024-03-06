@@ -1,4 +1,5 @@
 ﻿using OX.Cryptography.ECC;
+using OX.Cryptography;
 using OX.IO;
 using OX.IO.Json;
 using OX.Persistence;
@@ -11,6 +12,26 @@ using System.Linq;
 
 namespace OX.Network.P2P.Payloads
 {
+    public class SecretLetterData : ISerializable
+    {
+        public UInt256[] ReplyTxIds;
+        public byte[] Content;
+        public virtual int Size => ReplyTxIds.GetVarSize() + Content.GetVarSize();
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write(ReplyTxIds);
+            writer.WriteVarBytes(Content);
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            ReplyTxIds = reader.ReadSerializableArray<UInt256>();
+            Content = reader.ReadVarBytes();
+        }
+        public string GetContentString()
+        {
+            return System.Text.Encoding.UTF8.GetString(this.Content);
+        }
+    }
     public class SecretLetterTransaction : Transaction
     {
         public ECPoint From;
@@ -28,6 +49,16 @@ namespace OX.Network.P2P.Payloads
             this.Attributes = new TransactionAttribute[0];
             this.Flag = 0;
             this.Data = new byte[0];
+        }
+        public SecretLetterTransaction(KeyPair local, ECPoint remote, string content, UInt256[] replyTxIds = default)
+            : this()
+        {
+            var contentData = System.Text.Encoding.UTF8.GetBytes(content);
+            SecretLetterData sld = new SecretLetterData { Content = System.Text.Encoding.UTF8.GetBytes(content), ReplyTxIds = replyTxIds ?? [UInt256.Zero] };
+            this.From = local.PublicKey;
+            this.ToHash = Contract.CreateSignatureRedeemScript(remote).ToScriptHash().Hash;
+            this.Flag = 1;
+            this.Data = sld.ToArray().Encrypt(local, remote);
         }
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
         {
@@ -62,6 +93,16 @@ namespace OX.Network.P2P.Payloads
             json["flag"] = this.Flag.ToString();
             json["data"] = this.Data.ToHexString();
             return json;
+        }
+        public bool TryDecrypt(KeyPair local, out SecretLetterData secretLetterData)
+        {
+            secretLetterData = new EncryptData(this.Data).Decrypt<SecretLetterData>(local, this.From);
+            return secretLetterData.IsNotNull();
+        }
+        public bool TryDecrypt(KeyPair local, ECPoint remote, out SecretLetterData secretLetterData)
+        {
+            secretLetterData = new EncryptData(this.Data).Decrypt<SecretLetterData>(local, remote);
+            return secretLetterData.IsNotNull();
         }
     }
 }

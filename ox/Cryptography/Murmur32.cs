@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace OX.Cryptography
 {
-    public sealed class Murmur3 : HashAlgorithm
+    public sealed class Murmur32 : HashAlgorithm
     {
         private const uint c1 = 0xcc9e2d51;
         private const uint c2 = 0x1b873593;
@@ -19,7 +19,7 @@ namespace OX.Cryptography
 
         public override int HashSize => 32;
 
-        public Murmur3(uint seed)
+        public Murmur32(uint seed)
         {
             this.seed = seed;
             Initialize();

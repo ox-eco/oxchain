@@ -8,6 +8,7 @@
         UnableToVerify,
         Invalid,
         PolicyFail,
+        FlashInsufficientBalance,
         Unknown
     }
 }

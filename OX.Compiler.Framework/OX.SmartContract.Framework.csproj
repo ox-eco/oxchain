@@ -5,7 +5,7 @@
     <AssemblyTitle>OX.SmartContract.Framework</AssemblyTitle>
     <Version>2.10</Version>
     <Authors>The OX Project</Authors>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <AssemblyName>OX.SmartContract.Framework</AssemblyName>
     <PackageId>OX.SmartContract.Framework</PackageId>
     <PackageTags>OX;Blockchain;Smart Contract;VM</PackageTags>

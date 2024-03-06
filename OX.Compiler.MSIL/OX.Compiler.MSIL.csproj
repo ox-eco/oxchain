@@ -15,7 +15,7 @@
     <Description>OX Compiler for .NET</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <BaseOutputPath>C:\ox</BaseOutputPath>
   </PropertyGroup>
 
@@ -29,12 +29,12 @@
     <OutputType>Exe</OutputType>
     <PackageId>OX.OXN</PackageId>
     <PackAsTool>true</PackAsTool>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SharedLibrary)' == true">
     <PackageId>OX.Compiler.MSIL</PackageId>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,12 +45,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OX.Compiler.Framework\OX.SmartContract.Framework.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="ox.vm">
-      <HintPath>C:\ox\net6.0\ox.vm.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\ox.vm\ox.vm.csproj" />
   </ItemGroup>
 
 </Project>

@@ -17,7 +17,7 @@ namespace OX.Ledger
         // Allow a reverified transaction to be rebroadcasted if it has been this many block times since last broadcast.
         private const int BlocksTillRebroadcastLowPriorityPoolTx = 30;
         private const int BlocksTillRebroadcastHighPriorityPoolTx = 10;
-        private int RebroadcastMultiplierThreshold => Capacity / 10;
+        internal int RebroadcastMultiplierThreshold => Capacity / 10;
 
         private static readonly double MaxSecondsToReverifyHighPrioTx = (double)Blockchain.SecondsPerBlock / 3;
         private static readonly double MaxSecondsToReverifyLowPrioTx = (double)Blockchain.SecondsPerBlock / 5;
