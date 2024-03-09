@@ -19,8 +19,8 @@ namespace OX.Network.P2P
         public class Relay { public IInventory Inventory; }
         internal class RelayDirectly { public IInventory Inventory; }
         internal class SendDirectly { public IInventory Inventory; }
-        internal class RelayFlash { public IInventory Inventory; }
-        internal class RelayFlashDirectly { public IInventory Inventory; }
+        internal class RelayFlash { public string RemoteNodeKey; public FlashState FlashState; }
+        //internal class RelayFlashDirectly { public IInventory Inventory; }
 
         public const uint ProtocolVersion = 0;
 
@@ -155,10 +155,7 @@ namespace OX.Network.P2P
                     OnSendDirectly(send.Inventory);
                     break;
                 case RelayFlash relay:
-                    OnRelayFlash(relay.Inventory);
-                    break;
-                case RelayFlashDirectly relay:
-                    OnRelayFlashDirectly(relay.Inventory);
+                    OnRelayFlash(relay);
                     break;
                 case RelayResultReason _:
                     break;
@@ -167,23 +164,26 @@ namespace OX.Network.P2P
 
         private void OnRelay(IInventory inventory)
         {
-            if (inventory is Transaction transaction )
+            if (inventory is Transaction transaction)
                 system.Consensus?.Tell(transaction);
-            system.Blockchain.Tell(inventory);
+            if (inventory.InventoryType == InventoryType.FS)
+            {
+                if (inventory is FlashState fs)
+                    OnRelayFlash(new RelayFlash { FlashState = fs, RemoteNodeKey = "localhost" });
+            }
+            else
+                system.Blockchain.Tell(inventory);
         }
-        private void OnRelayFlash(IInventory inventory)
+        private void OnRelayFlash(RelayFlash relayFLash)
         {
-            system.Blockchain.Tell(inventory);
+            system.Blockchain.Tell(relayFLash);
         }
 
         private void OnRelayDirectly(IInventory inventory)
         {
             Connections.Tell(new RemoteNode.Relay { Inventory = inventory });
         }
-        private void OnRelayFlashDirectly(IInventory inventory)
-        {
-            Connections.Tell(inventory);
-        }
+
 
 
         private void OnSendDirectly(IInventory inventory)

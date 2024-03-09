@@ -4,7 +4,7 @@
     {
         TX = 0x01,
         Block = 0x02,
-        FlashState = 0x03,
+        FS = 0x03,
         Consensus = 0xe0
     }
 }

@@ -101,7 +101,7 @@ namespace OX
         }
         public void RelayFlash(FlashState flashState)
         {
-            this.oxsystem.LocalNode.Tell(new LocalNode.RelayFlash { Inventory = flashState });
+            this.oxsystem.LocalNode.Tell(new LocalNode.RelayFlash { FlashState = flashState });
         }
         public bool SignAndRelay(Transaction tx)
         {

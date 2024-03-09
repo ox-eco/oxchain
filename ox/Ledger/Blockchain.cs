@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using static OX.Network.P2P.LocalNode;
 
 namespace OX.Ledger
 {
@@ -429,15 +430,42 @@ namespace OX.Ledger
             system.LocalNode.Tell(new LocalNode.RelayDirectly { Inventory = transaction });
             return RelayResultReason.Succeed;
         }
-        private RelayResultReason OnNewFlashState(FlashState flashState)
+        private RelayResultReason OnNewFlashState(RelayFlash RelayFlash)
         {
             if (this.MemPool.Count > this.MemPool.RebroadcastMultiplierThreshold)
                 return RelayResultReason.OutOfMemory;
+            var flashState = RelayFlash.FlashState;
             if (!flashState.Verify(currentSnapshot, StatePool, out AccountState accountState))
                 return RelayResultReason.Invalid;
-            if (StatePool.TryAppend(GetAccountFlashStateCapacity(accountState), accountState.ScriptHash, flashState, Blockchain.singleton.HeaderHeight))
-                system.LocalNode.Tell(new LocalNode.RelayFlashDirectly { Inventory = flashState });
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}   /   {OX.SmartContract.Contract.CreateSignatureRedeemScript(flashState.Sender).ToScriptHash().ToAddress()}   /   {flashState.Hash.ToString()}");
+            StatePool.TryAppend(accountState, flashState, RelayFlash.RemoteNodeKey, flashAccount =>
+            {
+                foreach (var remoteNode in LocalNode.Singleton.RemoteNodes)
+                {
+                    var nodeKey = remoteNode.Value.Remote.ToString();
+                    if (flashAccount.VerifyRelay(flashState.Hash, nodeKey))
+                    {
+                        remoteNode.Key.Tell(flashState);
+                        if (!flashAccount.OutRemoteKeys.Contains(nodeKey)) flashAccount.OutRemoteKeys.Add(nodeKey);
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /  {nodeKey}  /   {OX.SmartContract.Contract.CreateSignatureRedeemScript(flashState.Sender).ToScriptHash().ToAddress()}   /   {flashState.Hash.ToString()}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /excluded  {nodeKey}  ");
+                    }
+                }
+                Console.WriteLine($"in keys:  ");
+                foreach (var inkey in flashAccount.InRemoteKeys)
+                {
+                    Console.WriteLine($"{inkey}  ");
+                }
+                Console.WriteLine($"out keys:  ");
+                foreach (var outkey in flashAccount.OutRemoteKeys)
+                {
+                    Console.WriteLine($"{outkey}  ");
+                }
+            });
+
+
             return RelayResultReason.Succeed;
         }
         private void OnPersistCompleted(Block block)
@@ -467,8 +495,8 @@ namespace OX.Ledger
                 case Transaction transaction:
                     Sender.Tell(OnNewTransaction(transaction));
                     break;
-                case FlashState flashState:
-                    Sender.Tell(OnNewFlashState(flashState));
+                case RelayFlash RelayFlash:
+                    Sender.Tell(OnNewFlashState(RelayFlash));
                     break;
                 case ConsensusPayload payload:
                     Sender.Tell(OnNewConsensus(payload));
@@ -548,7 +576,7 @@ namespace OX.Ledger
                             account.Balances[out_prev.AssetId] -= out_prev.Value;
                             if (out_prev.AssetId.Equals(OXS_Token.Hash))
                             {
-                                this.StatePool.Crop(out_prev.ScriptHash, GetAccountFlashStateCapacity(account));
+                                this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
                             }
                         }
                     }
@@ -934,16 +962,7 @@ namespace OX.Ledger
                 ExpireIndex = 0;
             return isFrozen;
         }
-        public int GetAccountFlashStateCapacity(AccountState accountState)
-        {
-            var balance = accountState.GetBalance(OXS);
-            if (balance > Fixed8.Zero)
-            {
-                var multiple = balance.GetInternalValue() / FlashMinOXSBalance.GetInternalValue();
-                return (int)multiple * 10;
-            }
-            return 0;
-        }
+
     }
 
     internal class BlockchainMailbox : PriorityMailbox

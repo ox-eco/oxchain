@@ -31,6 +31,7 @@ namespace OX.Network.P2P
         }
 
         private readonly OXSystem system;
+        private readonly IPEndPoint Remote;
         private readonly PendingKnownHashesCollection pendingKnownHashes;
         private readonly FIFOSet<UInt256> knownHashes;
         private readonly FIFOSet<UInt256> sentHashes;
@@ -42,9 +43,10 @@ namespace OX.Network.P2P
 
         private readonly ICancelable timer = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(TimerInterval, TimerInterval, Context.Self, new Timer(), ActorRefs.NoSender);
 
-        public ProtocolHandler(OXSystem system)
+        public ProtocolHandler(OXSystem system, IPEndPoint remote)
         {
             this.system = system;
+            this.Remote = remote;
             this.pendingKnownHashes = new PendingKnownHashesCollection();
             this.knownHashes = new FIFOSet<UInt256>(Blockchain.Singleton.MemPool.Capacity * 2);
             this.sentHashes = new FIFOSet<UInt256>(Blockchain.Singleton.MemPool.Capacity * 2);
@@ -132,6 +134,10 @@ namespace OX.Network.P2P
                 case "tx":
                     if (msg.Payload.Length <= Transaction.MaxTransactionSize)
                         OnInventoryReceived(msg.GetTransaction());
+                    break;
+                case "fs":
+                    if (msg.Payload.Length <= FlashState.MaxFlashStateSize)
+                        OnFlashStateReceived(msg.GetFlashState());
                     break;
                 case "verack":
                 case "version":
@@ -271,7 +277,10 @@ namespace OX.Network.P2P
             if (payload.Headers.Length == 0) return;
             system.Blockchain.Tell(payload.Headers, Context.Parent);
         }
-
+        private void OnFlashStateReceived(FlashState flashState)
+        {
+            system.LocalNode.Tell(new LocalNode.RelayFlash { RemoteNodeKey = this.Remote.ToString(), FlashState = flashState });
+        }
         private void OnInventoryReceived(IInventory inventory)
         {
             system.TaskManager.Tell(new TaskManager.TaskCompleted { Hash = inventory.Hash }, Context.Parent);
@@ -351,9 +360,9 @@ namespace OX.Network.P2P
                 pendingKnownHashes.RemoveAt(0);
             }
         }
-        public static Props Props(OXSystem system)
+        public static Props Props(OXSystem system, IPEndPoint remote)
         {
-            return Akka.Actor.Props.Create(() => new ProtocolHandler(system)).WithMailbox("protocol-handler-mailbox");
+            return Akka.Actor.Props.Create(() => new ProtocolHandler(system, remote)).WithMailbox("protocol-handler-mailbox");
         }
     }
 

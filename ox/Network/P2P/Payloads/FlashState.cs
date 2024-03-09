@@ -18,12 +18,13 @@ using Nethereum.Signer;
 using Nethereum.Signer.Crypto;
 using Nethereum.Hex.HexConvertors.Extensions;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace OX.Network.P2P.Payloads
 {
     public abstract class FlashState : IEquatable<FlashState>, IInventory
     {
-        public const int MaxTransactionSize = 1024;
+        public const int MaxFlashStateSize = 1024;
         /// <summary>
         /// Reflection cache for FlashStateType
         /// </summary>
@@ -31,7 +32,7 @@ namespace OX.Network.P2P.Payloads
 
         public readonly FlashStateType Type;
         public ECPoint Sender;
-
+        public uint MinIndex;
         public Witness[] Witnesses { get; set; }
 
         private UInt256 _hash = null;
@@ -47,11 +48,11 @@ namespace OX.Network.P2P.Payloads
             }
         }
 
-        InventoryType IInventory.InventoryType => InventoryType.FlashState;
+        InventoryType IInventory.InventoryType => InventoryType.FS;
 
 
 
-        public virtual int Size => sizeof(TransactionType) + Witnesses.GetVarSize();
+        public virtual int Size => sizeof(TransactionType) + Sender.Size + sizeof(uint) + Witnesses.GetVarSize();
 
         protected FlashState(FlashStateType type)
         {
@@ -100,6 +101,7 @@ namespace OX.Network.P2P.Payloads
         private void DeserializeUnsignedWithoutType(BinaryReader reader)
         {
             Sender = reader.ReadSerializable<ECPoint>();
+            MinIndex = reader.ReadUInt32();
             DeserializeExclusiveData(reader);
         }
 
@@ -150,16 +152,18 @@ namespace OX.Network.P2P.Payloads
         {
             writer.Write((byte)Type);
             writer.Write(Sender);
+            writer.Write(MinIndex);
             SerializeExclusiveData(writer);
         }
 
         public virtual JObject ToJson()
         {
             JObject json = new JObject();
-            json["txid"] = Hash.ToString();
+            json["fsid"] = Hash.ToString();
             json["size"] = Size;
             json["type"] = Type;
             json["sender"] = Sender.ToString();
+            json["minindex"] = MinIndex.ToString();
             return json;
         }
 
@@ -170,6 +174,9 @@ namespace OX.Network.P2P.Payloads
 
         public virtual bool Verify(Snapshot snapshot, FlashStatePool flashStatePool, out AccountState accountState)
         {
+            accountState = null;
+            if (MinIndex > snapshot.Height + 1) return false;
+            if (MinIndex + 10 <= snapshot.Height) return false;
             var sh = Contract.CreateSignatureRedeemScript(this.Sender).ToScriptHash();
             if (!Blockchain.Singleton.VerifyFlashStateSender(snapshot, sh, out accountState)) return false;
             return this.VerifyWitnesses(snapshot);

@@ -35,7 +35,7 @@ namespace OX.Network.P2P
             : base(connection, remote, local)
         {
             this.system = system;
-            this.protocol = Context.ActorOf(ProtocolHandler.Props(system));
+            this.protocol = Context.ActorOf(ProtocolHandler.Props(system, remote));
             LocalNode.Singleton.RemoteNodes.TryAdd(Self, this);
             SendMessage(Message.Create("version", VersionPayload.Create(LocalNode.Singleton.ListenerPort, LocalNode.Nonce, LocalNode.UserAgent, Blockchain.Singleton.Height)));
         }

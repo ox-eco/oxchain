@@ -49,7 +49,7 @@ namespace OX.Cryptography
             });
             return ecdh1.DeriveKeyMaterial(ecdh2.PublicKey).Sha256();//z = r * P = r* k * G
         }
-        public static byte[] AES256Encrypt(this byte[] plainData, byte[] key, byte[] nonce, byte[] associatedData = null)
+        public static byte[] AES256Encrypt_ForDiffieHellman(this byte[] plainData, byte[] key, byte[] nonce, byte[] associatedData = null)
         {
             if (nonce.Length != 12) throw new ArgumentOutOfRangeException(nameof(nonce));
             var tag = new byte[16];
@@ -75,7 +75,7 @@ namespace OX.Cryptography
             return Concat(nonce, cipherBytes, tag);
         }
 
-        public static byte[] AES256Decrypt(this byte[] encryptedData, byte[] key, byte[] associatedData = null)
+        public static byte[] AES256Decrypt_ForDiffieHellman(this byte[] encryptedData, byte[] key, byte[] associatedData = null)
         {
             ReadOnlySpan<byte> encrypted = encryptedData;
             var nonce = encrypted[..12];
@@ -110,7 +110,7 @@ namespace OX.Cryptography
             random.NextBytes(nonce);
             return new T()
             {
-                Data = item.ToArray().AES256Encrypt(key, nonce)
+                Data = item.ToArray().AES256Encrypt_ForDiffieHellman(key, nonce)
             };
         }
         public static byte[] Encrypt(this byte[] plainData, KeyPair local, ECPoint remote)
@@ -119,14 +119,14 @@ namespace OX.Cryptography
             Random random = new Random();
             byte[] nonce = new byte[12];
             random.NextBytes(nonce);
-            return plainData.AES256Encrypt(key, nonce);
+            return plainData.AES256Encrypt_ForDiffieHellman(key, nonce);
         }
         public static T Decrypt<T>(this EncryptData data, KeyPair local, ECPoint remote) where T : ISerializable, new()
         {
             try
             {
                 var key = ECDHDeriveKey(local, remote);
-                var bs = data.Data.AES256Decrypt(key);
+                var bs = data.Data.AES256Decrypt_ForDiffieHellman(key);
                 if (bs.IsNullOrEmpty()) return default;
                 return bs.AsSerializable<T>();
             }
@@ -140,7 +140,7 @@ namespace OX.Cryptography
             try
             {
                 var key = ECDHDeriveKey(local, remote);
-                return encryptedData.AES256Decrypt(key);
+                return encryptedData.AES256Decrypt_ForDiffieHellman(key);
             }
             catch
             {
