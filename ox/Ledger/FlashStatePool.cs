@@ -40,6 +40,7 @@ namespace OX.Ledger
             try
             {
                 var interval = GetAccountFlashStateInterval(accountState);
+                if (interval == 0) return false;
                 if (!_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
                 {
                     flashAccount = new FlashAccount();
