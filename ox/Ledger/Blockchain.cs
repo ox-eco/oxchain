@@ -450,7 +450,7 @@ namespace OX.Ledger
                     }
                     else
                     {
-                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /excluded  {nodeKey}  ");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /excluded  {nodeKey}   /   {flashState.Hash.ToString()}");
                     }
                 }
                 Console.WriteLine($"in keys:  ");
