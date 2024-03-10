@@ -432,6 +432,7 @@ namespace OX.Ledger
         }
         private RelayResultReason OnNewFlashState(RelayFlash RelayFlash)
         {
+            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} OnNewFlashState:  {RelayFlash.FlashState.Hash.ToString()}");
             if (this.MemPool.Count > this.MemPool.RebroadcastMultiplierThreshold)
                 return RelayResultReason.OutOfMemory;
             var flashState = RelayFlash.FlashState;
@@ -453,16 +454,16 @@ namespace OX.Ledger
                         Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /excluded  {nodeKey}   /   {flashState.Hash.ToString()}");
                     }
                 }
-                Console.WriteLine($"in keys:  ");
-                foreach (var inkey in flashAccount.InRemoteKeys)
-                {
-                    Console.WriteLine($"{inkey}  ");
-                }
-                Console.WriteLine($"out keys:  ");
-                foreach (var outkey in flashAccount.OutRemoteKeys)
-                {
-                    Console.WriteLine($"{outkey}  ");
-                }
+                Console.WriteLine($"in keys:  {flashAccount.InRemoteKeys.Count}");
+                //foreach (var inkey in flashAccount.InRemoteKeys)
+                //{
+                //    Console.WriteLine($"{inkey}  ");
+                //}
+                Console.WriteLine($"out keys:  {flashAccount.OutRemoteKeys.Count}");
+                //foreach (var outkey in flashAccount.OutRemoteKeys)
+                //{
+                //    Console.WriteLine($"{outkey}  ");
+                //}
             });
 
 
@@ -574,9 +575,9 @@ namespace OX.Ledger
                                 }
                             }
                             account.Balances[out_prev.AssetId] -= out_prev.Value;
-                            if (out_prev.AssetId.Equals(OXS_Token.Hash))
+                            if (out_prev.AssetId.Equals(OXS_Token.Hash)&& account.Balances[out_prev.AssetId] < Blockchain.FlashMinOXSBalance)
                             {
-                                this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
+                                    this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
                             }
                         }
                     }
