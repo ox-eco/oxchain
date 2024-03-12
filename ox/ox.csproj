@@ -30,8 +30,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Cryptography\AES\AESHelper.cs" />
-    <Compile Remove="Cryptography\AES\ECDHHelper.cs" />
     <Compile Remove="Ledger\NFTState.cs" />
     <Compile Remove="Network\P2P\Payloads\EnrollmentTransaction.cs" />
     <Compile Remove="Network\P2P\Payloads\NFTCoinTransaction.cs" />
@@ -59,8 +57,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ox.vm\ox.vm.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Cryptography\AES\" />
   </ItemGroup>
 </Project>
