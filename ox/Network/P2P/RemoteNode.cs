@@ -21,6 +21,7 @@ namespace OX.Network.P2P
         private readonly IActorRef protocol;
         private readonly Queue<Message> message_queue_high = new Queue<Message>();
         private readonly Queue<Message> message_queue_low = new Queue<Message>();
+        private readonly Queue<Message> message_queue_flashstate = new Queue<Message>();
         private ByteString msg_buffer = ByteString.Empty;
         private bool ack = true;
         private BloomFilter bloom_filter;
@@ -45,6 +46,7 @@ namespace OX.Network.P2P
             if (!verack || !ack) return;
             Queue<Message> queue = message_queue_high;
             if (queue.Count == 0) queue = message_queue_low;
+            if (queue.Count == 0) queue = message_queue_flashstate;
             if (queue.Count == 0) return;
             SendMessage(queue.Dequeue());
         }
@@ -68,7 +70,7 @@ namespace OX.Network.P2P
                 case "pong":
                     is_single = true;
                     break;
-            }
+            }            
             Queue<Message> message_queue;
             switch (message.Command)
             {
@@ -80,6 +82,9 @@ namespace OX.Network.P2P
                 case "getaddr":
                 case "mempool":
                     message_queue = message_queue_high;
+                    break;
+                case "fs":
+                    message_queue = message_queue_flashstate;
                     break;
                 default:
                     message_queue = message_queue_low;

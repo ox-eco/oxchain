@@ -28,9 +28,9 @@ namespace OX.Ledger
             var balance = accountState.GetBalance(Blockchain.OXS);
             if (balance > Fixed8.Zero)
             {
-                if (balance >= Blockchain.FlashMinOXSBalance * 100) return 10;
-                if (balance >= Blockchain.FlashMinOXSBalance * 10) return 100;
-                if (balance >= Blockchain.FlashMinOXSBalance) return 1000;
+                if (balance >= Blockchain.FlashMinOXSBalance * 100) return 2;
+                if (balance >= Blockchain.FlashMinOXSBalance * 10) return 10;
+                if (balance >= Blockchain.FlashMinOXSBalance) return 100;
             }
             return 0;
         }
