@@ -5,6 +5,7 @@ namespace OX.Bapps
 {
     public interface IBappApi : IBappPort
     {
+        void OnFlashState(FlashState flashState);
         void OnBlock(Block block);
         void BeforeOnBlock(Block block);
         void AfterOnBlock(Block block);

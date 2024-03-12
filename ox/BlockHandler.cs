@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using OX.Bapps;
 using OX.Cryptography.ECC;
 using OX.Ledger;
 using OX.Network.P2P;
@@ -28,6 +29,7 @@ namespace OX
         public abstract void OnStop();
         protected abstract void OnReceived(object message);
         protected abstract void OnBlockPersistCompleted(Block block);
+        protected abstract void OnFlashStateCaptured(FlashState flashState);
 
         public BlockHandler(OXSystem system) : this(system, null)
         {
@@ -65,6 +67,11 @@ namespace OX
             {
                 OnBlockPersistCompleted(completed.Block);
             }
+            else if (message is Blockchain.FlashStateCaptured flashStateCaptured)
+            {
+                Bapp.OnFlashStateCaptured(flashStateCaptured.FlashState);
+                OnFlashStateCaptured(flashStateCaptured.FlashState);
+            }
             else if (message is WalletCommand walletCommand)
             {
                 this.wallet = walletCommand.Wallet;
@@ -85,10 +92,12 @@ namespace OX
         {
             this.OnStart();
             Context.System.EventStream.Subscribe(Self, typeof(Blockchain.PersistCompleted));
+            Context.System.EventStream.Subscribe(Self, typeof(Blockchain.FlashStateCaptured));
         }
         public virtual void Stop()
         {
             Context.System.EventStream.Unsubscribe(Self, typeof(Blockchain.PersistCompleted));
+            Context.System.EventStream.Unsubscribe(Self, typeof(Blockchain.FlashStateCaptured));
             this.OnStop();
         }
         public void Relay(IInventory inventory)

@@ -19,7 +19,7 @@ namespace OX.Bapps
         public static string WalletIndexDirectory { get; set; }
         public Bapp Bapp { get; set; }
         public abstract Wallet Wallet { get; set; }
-      
+
         public DB Db { get; protected set; }
 
         public BaseBappProvider(Bapp bapp)
@@ -40,6 +40,7 @@ namespace OX.Bapps
         public abstract void AfterOnBlock(Block block)
        ;
         public abstract void OnBlock(Block block);
+        public abstract void OnFlashState(FlashState flashState);
         #endregion
         public IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default) where K : ISerializable, new() where V : ISerializable, new()
         {

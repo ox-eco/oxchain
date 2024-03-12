@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using OX.SmartContract;
 using OX.IO;
+using static OX.Ledger.Blockchain;
 
 
 namespace OX.Bapps
@@ -36,6 +37,7 @@ namespace OX.Bapps
         public static event BappEventHandler<BappEvent> BappEvent;
         public static event BappEventHandler<CrossBappMessage> CrossBappMessage;
         public static event BappEventHandler<Block> BappBlockEvent;
+        public static event BappEventHandler<FlashState> FlashStateEvent;
         public static event BappEventHandler BappRebuildIndex;
         static Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
         public static IEnumerable<Assembly> Assemblies { get { return assemblies.Values; } }
@@ -193,6 +195,14 @@ namespace OX.Bapps
                     yield return bapp.BappProvider;
                 }
             }
+        }
+        public static void OnFlashStateCaptured(FlashState flashState)
+        {
+            foreach (var bapp in bapps)
+            {
+                bapp.OnFlashState(flashState);
+            }
+            FlashStateEvent?.Invoke(flashState);
         }
         public static void OnBlockIndex(Block block)
         {
@@ -362,6 +372,12 @@ namespace OX.Bapps
                 var sh = Contract.CreateSignatureRedeemScript(pubkey).ToScriptHash();
                 BizScriptHashStates[pubkey] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
             }
+        }
+        void OnFlashState(FlashState flashState)
+        {
+            if (this.BappProvider.IsNotNull()) this.BappProvider.OnFlashState(flashState);
+            if (this.BappApi.IsNotNull()) this.BappApi.OnFlashState(flashState);
+            if (this.BappUi.IsNotNull()) this.BappUi.OnFlashState(flashState);
         }
         void OnBlock(Block block)
         {

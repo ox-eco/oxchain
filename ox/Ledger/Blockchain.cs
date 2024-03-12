@@ -27,6 +27,7 @@ namespace OX.Ledger
         public static UInt256 OXC => OXC_Token.Hash;
         public class ApplicationExecuted { public Transaction Transaction; public ApplicationExecutionResult[] ExecutionResults; }
         public class PersistCompleted { public Block Block; }
+        public class FlashStateCaptured { public FlashState FlashState; }
         public class Import { public IEnumerable<Block> Blocks; }
         public class ImportCompleted { }
         public class FillMemoryPool { public IEnumerable<Transaction> Transactions; }
@@ -438,7 +439,7 @@ namespace OX.Ledger
             var flashState = RelayFlash.FlashState;
             if (!flashState.Verify(currentSnapshot, StatePool, out AccountState accountState))
                 return RelayResultReason.Invalid;
-            StatePool.TryAppend(accountState, flashState, RelayFlash.RemoteNodeKey, flashAccount =>
+            if (StatePool.TryAppend(accountState, flashState, RelayFlash.RemoteNodeKey, flashAccount =>
             {
                 foreach (var remoteNode in LocalNode.Singleton.RemoteNodes)
                 {
@@ -464,7 +465,10 @@ namespace OX.Ledger
                 //{
                 //    Console.WriteLine($"{outkey}  ");
                 //}
-            });
+            }))
+            {
+                Context.System.EventStream.Publish(new FlashStateCaptured {  FlashState = flashState });
+            }
 
 
             return RelayResultReason.Succeed;
@@ -575,9 +579,9 @@ namespace OX.Ledger
                                 }
                             }
                             account.Balances[out_prev.AssetId] -= out_prev.Value;
-                            if (out_prev.AssetId.Equals(OXS_Token.Hash)&& account.Balances[out_prev.AssetId] < Blockchain.FlashMinOXSBalance)
+                            if (out_prev.AssetId.Equals(OXS_Token.Hash) && account.Balances[out_prev.AssetId] < Blockchain.FlashMinOXSBalance)
                             {
-                                    this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
+                                this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
                             }
                         }
                     }
