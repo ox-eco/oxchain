@@ -22,20 +22,47 @@ namespace OX.Ledger
         {
             _system = system;
         }
-        public int GetAccountFlashStateInterval(AccountState accountState)
+        public int GetAccountFlashStateInterval(Fixed8 oxsBalance)
         {
-            var balance = accountState.GetBalance(Blockchain.OXS);
-            if (balance > Fixed8.Zero)
+            if (oxsBalance < Blockchain.FlashMinOXSBalance) return 0;
+            if (oxsBalance >= Blockchain.FlashMinOXSBalance * 1000) return 2;
+
+            Fixed8 totalOXS = Fixed8.Zero;
+            int totalFS = 0;
+            var fas = this._flashAccounts.Where(m => m.Value.LastIndex > Blockchain.Singleton.HeaderHeight - 10);
+            if (fas.IsNotNullAndEmpty())
             {
-                if (balance >= Blockchain.FlashMinOXSBalance * 100) return 2;
-                if (balance >= Blockchain.FlashMinOXSBalance * 10) return 10;
-                if (balance >= Blockchain.FlashMinOXSBalance) return 100;
+                totalOXS = fas.Sum(m => m.Value.LastOXSBalance);
+                totalFS = fas.Count();
+            }
+            if (oxsBalance >= Blockchain.FlashMinOXSBalance * 100)
+            {
+                return totalFS > 5000 ? 10 : 2;
+            }
+            if (oxsBalance >= Blockchain.FlashMinOXSBalance * 10)
+            {
+                if (totalFS < 1000) return 2;
+                else if (totalFS < 5000) return 10;
+                else return 100;
+            }
+            if (oxsBalance >= Blockchain.FlashMinOXSBalance)
+            {
+                if (totalFS == 0 || totalFS > 5000) return 0;
+
+                var k = totalOXS / 10000;
+                if (k > Fixed8.OXT * 5) return 0;
+                if (k > Fixed8.OXT * 2)
+                    return totalFS < 1000 ? 10 : 100;
+                else
+                    return totalFS < 1000 ? 2 : 10;
+
             }
             return 0;
         }
         internal bool AllowFlashState(AccountState accountState, uint referenceLastFlashIndex = 0)
         {
-            var interval = GetAccountFlashStateInterval(accountState);
+            var balance = accountState.GetBalance(Blockchain.OXS);
+            var interval = GetAccountFlashStateInterval(balance);
             if (interval == 0) return false;
             if (_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
             {
@@ -51,7 +78,8 @@ namespace OX.Ledger
             _txRwLock.EnterReadLock();
             try
             {
-                var interval = GetAccountFlashStateInterval(accountState);
+                var balance = accountState.GetBalance(Blockchain.OXS);
+                var interval = GetAccountFlashStateInterval(balance);
                 if (interval == 0) return false;
                 if (!_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
                 {
@@ -66,7 +94,7 @@ namespace OX.Ledger
                 {
                     if (flashstate.MinIndex < flashAccount.LastIndex + interval) return false;
                 }
-                var ret = flashAccount.TryAppenFlashState(flashstate);
+                var ret = flashAccount.TryAppenFlashState(flashstate, balance);
                 if (action != default)
                 {
                     action(flashAccount);
@@ -97,16 +125,18 @@ namespace OX.Ledger
     {
         public UInt256 LastHash { get; private set; } = UInt256.Zero;
         public uint LastIndex { get; private set; } = 0;
+        public Fixed8 LastOXSBalance { get; private set; } = Fixed8.Zero;
         public FlashState LastFlashState { get; private set; }
         public List<string> InRemoteKeys = new List<string>();
         public List<string> OutRemoteKeys = new List<string>();
-        public bool TryAppenFlashState(FlashState flashState)
+        public bool TryAppenFlashState(FlashState flashState, Fixed8 oxsBalance)
         {
             if (flashState.MinIndex <= LastIndex) return false;
             if (flashState.Hash.Equals(LastHash)) return false;
             LastHash = flashState.Hash;
             LastFlashState = flashState;
             LastIndex = flashState.MinIndex;
+            LastOXSBalance = oxsBalance;
             InRemoteKeys.Clear();
             OutRemoteKeys.Clear();
             return true;
@@ -123,6 +153,7 @@ namespace OX.Ledger
     {
         public static bool AllowFlashState(this Blockchain blockchain, AccountState accountState, uint referenceLastFlashIndex = 0)
         {
+            if (blockchain.MemPool.Count > blockchain.MemPool.RebroadcastMultiplierThreshold) return false;
             return blockchain.StatePool.AllowFlashState(accountState, referenceLastFlashIndex);
         }
     }

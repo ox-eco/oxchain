@@ -68,7 +68,7 @@ namespace OX
             this.SystemFee = sys_fee;
             this.SecondsPerBlock = 15;
             this.BappDetainOXS = Fixed8.One * 100_000;
-            this.FlashMinOXSBalance = Fixed8.OXT;
+            this.FlashMinOXSBalance = Fixed8.One * 100;
             this.LowPriorityThreshold = Fixed8.Satoshi * 100_000;
         }
         public IEnumerable<IPEndPoint> GetSeedIPs()
