@@ -3,6 +3,8 @@ using OX.Network.P2P;
 using OX.Network.P2P.Payloads;
 using OX.Persistence;
 using OX.Plugins;
+using OX.SmartContract;
+using OX.VM;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,47 +24,77 @@ namespace OX.Ledger
         {
             _system = system;
         }
-        public int GetAccountFlashStateInterval(Fixed8 oxsBalance)
+        public int GetAccountFlashStateInterval(int txPoolCount, Fixed8 oxsBalance)
         {
             if (oxsBalance < Blockchain.FlashMinOXSBalance) return 0;
-            if (oxsBalance >= Blockchain.FlashMinOXSBalance * 1000) return 2;
+            var multiple = (int)(oxsBalance.GetInternalValue() / Blockchain.FlashMinOXSBalance.GetInternalValue());
 
-            Fixed8 totalOXS = Fixed8.Zero;
+            long totalOXS = 0;
             int totalFS = 0;
             var fas = this._flashAccounts.Where(m => m.Value.LastIndex > Blockchain.Singleton.HeaderHeight - 10);
             if (fas.IsNotNullAndEmpty())
             {
-                totalOXS = fas.Sum(m => m.Value.LastOXSBalance);
+                totalOXS = fas.Sum(m => m.Value.LastOXSBalance.GetInternalValue());
                 totalFS = fas.Count();
             }
-            if (oxsBalance >= Blockchain.FlashMinOXSBalance * 100)
-            {
-                return totalFS > 5000 ? 10 : 2;
-            }
-            if (oxsBalance >= Blockchain.FlashMinOXSBalance * 10)
-            {
-                if (totalFS < 1000) return 2;
-                else if (totalFS < 5000) return 10;
-                else return 100;
-            }
-            if (oxsBalance >= Blockchain.FlashMinOXSBalance)
-            {
-                if (totalFS == 0 || totalFS > 5000) return 0;
-
-                var k = totalOXS / 10000;
-                if (k > Fixed8.OXT * 5) return 0;
-                if (k > Fixed8.OXT * 2)
-                    return totalFS < 1000 ? 10 : 100;
-                else
-                    return totalFS < 1000 ? 2 : 10;
-
-            }
-            return 0;
+            return _getFlashStateInterval(txPoolCount, multiple, totalFS, totalOXS);
         }
-        internal bool AllowFlashState(AccountState accountState, uint referenceLastFlashIndex = 0)
+        int _getFlashStateInterval(int txPoolCount, int balanceMultiple, int flashStateNumber, long totalOXSBalance)
+        {
+            //if (balanceMultiple < 1) return 0;
+            //if (balanceMultiple >= 1000) return 2;
+            //if (balanceMultiple >= 100)
+            //{
+            //    return flashStateNumber > 5000 ? 10 : 2;
+            //}
+            //if (balanceMultiple >= 10)
+            //{
+            //    if (flashStateNumber < 1000) return 2;
+            //    else if (flashStateNumber < 5000) return 10;
+            //    else return 100;
+            //}
+            //if (flashStateNumber == 0 || flashStateNumber > 5000) return 0;
+            //var k = totalOXSBalance / 10000;
+            //if (k > 100_000_000L * 5000) return 0;
+            //if (k > 100_000_000L * 2000)
+            //    return flashStateNumber < 1000 ? 10 : 100;
+            //else
+            //    return flashStateNumber < 1000 ? 2 : 10;
+
+
+
+            var IntervalFunctionScriptHash = Blockchain.Singleton.GetIntervalFunctionScriptHash(out ContractState contractState);
+            if (IntervalFunctionScriptHash == default) return 0;
+            var parameters = contractState.ParameterList.Select(p => new ContractParameter(p)).ToArray();
+            parameters[0].Value = "getflashstateinterval";
+            List<ContractParameter> list = new List<ContractParameter>();
+            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = txPoolCount });
+            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = balanceMultiple });
+            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = flashStateNumber });
+            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = totalOXSBalance });
+            parameters[1].Value = list;
+            byte[] scripts = default;
+            using (ScriptBuilder sb = new ScriptBuilder())
+            {
+                sb.EmitAppCall(new UInt160(IntervalFunctionScriptHash), parameters);
+                scripts = sb.ToArray();
+            }
+            var tx = new InvocationTransaction();
+            tx.Version = 1;
+            tx.Script = scripts;
+            if (tx.Attributes == null) tx.Attributes = new TransactionAttribute[0];
+            if (tx.Inputs == null) tx.Inputs = new CoinReference[0];
+            if (tx.Outputs == null) tx.Outputs = new TransactionOutput[0];
+            if (tx.Witnesses == null) tx.Witnesses = new Witness[0];
+            ApplicationEngine engine = ApplicationEngine.Run(tx.Script, tx, testMode: true);
+
+            if (engine.State.HasFlag(VMState.FAULT)) return 0;
+            return (int)engine.ResultStack.Pop().GetBigInteger();
+        }
+        internal bool AllowFlashState(AccountState accountState, int txPoolCount, uint referenceLastFlashIndex = 0)
         {
             var balance = accountState.GetBalance(Blockchain.OXS);
-            var interval = GetAccountFlashStateInterval(balance);
+            var interval = GetAccountFlashStateInterval(txPoolCount, balance);
             if (interval == 0) return false;
             if (_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
             {
@@ -73,13 +105,13 @@ namespace OX.Ledger
                 return Blockchain.Singleton.Height >= referenceLastFlashIndex + interval;
             }
         }
-        public bool TryAppend(AccountState accountState, FlashState flashstate, string remoteNodeKey, Action<FlashAccount> action = default)
+        public bool TryAppend(AccountState accountState, FlashState flashstate, string remoteNodeKey, int txPoolCount, Action<FlashAccount> action = default)
         {
             _txRwLock.EnterReadLock();
             try
             {
                 var balance = accountState.GetBalance(Blockchain.OXS);
-                var interval = GetAccountFlashStateInterval(balance);
+                var interval = GetAccountFlashStateInterval(txPoolCount, balance);
                 if (interval == 0) return false;
                 if (!_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
                 {
@@ -149,12 +181,5 @@ namespace OX.Ledger
             return true;
         }
     }
-    public static class FlashStateHelper
-    {
-        public static bool AllowFlashState(this Blockchain blockchain, AccountState accountState, uint referenceLastFlashIndex = 0)
-        {
-            if (blockchain.MemPool.Count > blockchain.MemPool.RebroadcastMultiplierThreshold) return false;
-            return blockchain.StatePool.AllowFlashState(accountState, referenceLastFlashIndex);
-        }
-    }
+     
 }

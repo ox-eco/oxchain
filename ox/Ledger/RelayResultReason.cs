@@ -9,6 +9,7 @@
         Invalid,
         PolicyFail,
         FlashInsufficientBalance,
+        InFlashBlackList,
         Unknown
     }
 }

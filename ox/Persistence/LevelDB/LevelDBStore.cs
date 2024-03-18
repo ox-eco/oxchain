@@ -1,11 +1,16 @@
 ﻿using OX.Cryptography.ECC;
+using OX.IO;
 using OX.IO.Caching;
 using OX.IO.Data.LevelDB;
 using OX.IO.Wrappers;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace OX.Persistence.LevelDB
 {
@@ -86,12 +91,12 @@ namespace OX.Persistence.LevelDB
         {
             return new DbCache<UInt160, SideSateList>(db, null, null, Prefixes.DATA_SideList);
         }
-        
+
         public override DataCache<NftID, NFCState> GetNFTs()
         {
             return new DbCache<NftID, NFCState>(db, null, null, Prefixes.DATA_NFT);
         }
-       
+
         public override DataCache<NFSStateKey, NFSState> GetNFTTransfers()
         {
             return new DbCache<NFSStateKey, NFSState>(db, null, null, Prefixes.DATA_NFT_Transfer);
@@ -142,5 +147,38 @@ namespace OX.Persistence.LevelDB
         {
             db.Put(new WriteOptions { Sync = true }, SliceBuilder.Begin(prefix).Add(key), value);
         }
+        public override IEnumerable<KeyValuePair<byte[], byte[]>> GetAll(byte prefix, byte[] keys = default)
+        {
+            var builder = SliceBuilder.Begin(prefix);
+            if (keys != default)
+                builder = builder.Add(keys);
+            return this.db.Find(ReadOptions.Default, builder, (k, v) =>
+            {
+                var ks = k.ToArray();
+                var length = ks.Length - sizeof(byte);
+                ks = ks.TakeLast(length).ToArray();
+                byte[] data = v.ToArray();
+                return new KeyValuePair<byte[], byte[]>(ks, data);
+            });
+        }
+        public override IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default)  
+        {
+            var builder = SliceBuilder.Begin(prefix);
+            if (keys != default)
+                builder = builder.Add(keys);
+            return this.db.Find(ReadOptions.Default, builder, (k, v) =>
+            {
+                var ks = k.ToArray();
+                var length = ks.Length - sizeof(byte);
+                ks = ks.TakeLast(length).ToArray();
+                byte[] data = v.ToArray();
+                return new KeyValuePair<K, V>(ks.AsSerializable<K>(), data.AsSerializable<V>());
+            });
+        }
+        public override IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, ISerializable key)  
+        {
+            return GetAll<K, V>(prefix, key.IsNotNull() ? key.ToArray() : default);
+        }
+
     }
 }

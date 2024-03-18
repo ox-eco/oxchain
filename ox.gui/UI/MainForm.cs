@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OX.Cryptography;
 using OX.IO;
 using OX.IO.Actors;
@@ -21,8 +22,13 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+
+
 //using Settings = OX.Properties.Settings;
 using VMArray = OX.VM.Types.Array;
 
@@ -380,7 +386,7 @@ namespace OX.UI
                                     break;
                                 case CertificateQueryResultType.Invalid:
                                     subitem.ForeColor = Color.Red;
-                                    subitem.Text = $"[{ LanHelper.LocalLanguage("Invalid")}][{asset.Owner}]";
+                                    subitem.Text = $"[{LanHelper.LocalLanguage("Invalid")}][{asset.Owner}]";
                                     break;
                                 case CertificateQueryResultType.Expired:
                                     subitem.ForeColor = Color.Yellow;
@@ -1021,6 +1027,178 @@ namespace OX.UI
         private void toolStripStatusLabel3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //t3();
+        }
+      
+        void t2()
+        {
+
+            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashStateContractScriptHash);
+            var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
+            parameters[0].Value = "setintervalfunction";
+            List<ContractParameter> list = new List<ContractParameter>();
+            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = 9 });
+            list.Add(new ContractParameter { Type = ContractParameterType.Hash160, Value = UInt160.Parse("0x80ca930c74f152a74f222249e8136a77873f3f84") }); ;
+            parameters[1].Value = list;
+            byte[] scripts = default;
+            using (ScriptBuilder sb = new ScriptBuilder())
+            {
+                sb.EmitAppCall(Blockchain.FlashStateContractScriptHash, parameters);
+                scripts = sb.ToArray();
+            }
+            var tx = new InvocationTransaction();
+            tx.Version = 1;
+            tx.Script = scripts;
+            if (tx.Attributes == null) tx.Attributes = new TransactionAttribute[0];
+            if (tx.Inputs == null) tx.Inputs = new CoinReference[0];
+            if (tx.Outputs == null) tx.Outputs = new TransactionOutput[0];
+            if (tx.Witnesses == null) tx.Witnesses = new Witness[0];
+
+            var walletAccount = Program.CurrentWallet.GetAccounts().First();
+            Fixed8 fee = Fixed8.One;
+            if (tx.Size > 1024)
+            {
+                Fixed8 sumFee = Fixed8.FromDecimal(tx.Size * 0.00001m) + Fixed8.FromDecimal(0.001m);
+                if (fee < sumFee)
+                {
+                    fee = sumFee;
+                }
+            }
+
+            if (Helper.CostRemind(tx.Gas.Ceiling(), fee))
+            {
+                InvocationTransaction result = Program.CurrentWallet.MakeTransaction(new InvocationTransaction
+                {
+                    Version = tx.Version,
+                    Script = tx.Script,
+                    Gas = tx.Gas,
+                    Attributes = tx.Attributes,
+                    Outputs = tx.Outputs
+                }, change_address: walletAccount.ScriptHash, fee: fee);
+                Helper.SignAndShowInformation(result);
+            }
+
+
+            //ApplicationEngine engine = ApplicationEngine.Run(tx.Script, tx, testMode: true);
+
+            //if (!engine.State.HasFlag(VMState.FAULT))
+            //{
+            //    string name = engine.ResultStack.Pop().GetString();
+            //}
+
+
+        }
+        void t4()
+        {
+            var walletAccount = Program.CurrentWallet.GetAccounts().First();
+            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashStateContractScriptHash);
+            var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
+            parameters[0].Value = "register";
+            List<ContractParameter> list = new List<ContractParameter>();
+            list.Add(new ContractParameter { Type = ContractParameterType.ByteArray, Value = System.Text.Encoding.UTF8.GetBytes("fsadmin") });
+            list.Add(new ContractParameter { Type = ContractParameterType.Hash160, Value = walletAccount.ScriptHash }); ;
+            parameters[1].Value = list;
+            byte[] scripts = default;
+            using (ScriptBuilder sb = new ScriptBuilder())
+            {
+                sb.EmitAppCall(Blockchain.FlashStateContractScriptHash, parameters);
+                scripts = sb.ToArray();
+            }
+            var tx = new InvocationTransaction();
+            tx.Version = 1;
+            tx.Script = scripts;
+            if (tx.Attributes == null) tx.Attributes = new TransactionAttribute[0];
+            if (tx.Inputs == null) tx.Inputs = new CoinReference[0];
+            if (tx.Outputs == null) tx.Outputs = new TransactionOutput[0];
+            if (tx.Witnesses == null) tx.Witnesses = new Witness[0];
+
+
+            Fixed8 fee = Fixed8.One;
+            if (tx.Size > 1024)
+            {
+                Fixed8 sumFee = Fixed8.FromDecimal(tx.Size * 0.00001m) + Fixed8.FromDecimal(0.001m);
+                if (fee < sumFee)
+                {
+                    fee = sumFee;
+                }
+            }
+
+            if (Helper.CostRemind(tx.Gas.Ceiling(), fee))
+            {
+                InvocationTransaction result = Program.CurrentWallet.MakeTransaction(new InvocationTransaction
+                {
+                    Version = tx.Version,
+                    Script = tx.Script,
+                    Gas = tx.Gas,
+                    Attributes = tx.Attributes,
+                    Outputs = tx.Outputs
+                }, change_address: walletAccount.ScriptHash, fee: fee);
+                Helper.SignAndShowInformation(result);
+            }
+
+
+        }
+        void t5()
+        {
+            var walletAccount = Program.CurrentWallet.GetAccounts().First();
+            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashStateContractScriptHash);
+            var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
+            parameters[0].Value = "addblacklist";
+            List<ContractParameter> list = new List<ContractParameter>();
+            list.Add(new ContractParameter { Type = ContractParameterType.Hash160, Value = "AWuy23rogJoztbt8gbXMV398AcC9JfCVEz".ToScriptHash() }); ;
+            parameters[1].Value = list;
+            byte[] scripts = default;
+            using (ScriptBuilder sb = new ScriptBuilder())
+            {
+                sb.EmitAppCall(Blockchain.FlashStateContractScriptHash, parameters);
+                scripts = sb.ToArray();
+            }
+            var tx = new InvocationTransaction();
+            tx.Version = 1;
+            tx.Script = scripts;
+            if (tx.Attributes == null) tx.Attributes = new TransactionAttribute[0];
+            if (tx.Inputs == null) tx.Inputs = new CoinReference[0];
+            if (tx.Outputs == null) tx.Outputs = new TransactionOutput[0];
+            if (tx.Witnesses == null) tx.Witnesses = new Witness[0];
+
+
+            Fixed8 fee = Fixed8.One;
+            if (tx.Size > 1024)
+            {
+                Fixed8 sumFee = Fixed8.FromDecimal(tx.Size * 0.00001m) + Fixed8.FromDecimal(0.001m);
+                if (fee < sumFee)
+                {
+                    fee = sumFee;
+                }
+            }
+
+            if (Helper.CostRemind(tx.Gas.Ceiling(), fee))
+            {
+                InvocationTransaction result = Program.CurrentWallet.MakeTransaction(new InvocationTransaction
+                {
+                    Version = tx.Version,
+                    Script = tx.Script,
+                    Gas = tx.Gas,
+                    Attributes = tx.Attributes,
+                    Outputs = tx.Outputs
+                }, change_address: walletAccount.ScriptHash, fee: fee);
+                Helper.SignAndShowInformation(result);
+            }
+
+
+        }
+        void t3()
+        {
+            var walletAccount = Program.CurrentWallet.GetAccounts().First();
+            var m = FlashStateHelper.GetPoolMutiple();
+            var intervalSH = FlashStateHelper.GetIntervalFunctionScriptHash();
+            var bkl = FlashStateHelper.GetBlackList();
+            var domain = FlashStateHelper.GetDomain(walletAccount.ScriptHash);
+            var dm = System.Text.Encoding.UTF8.GetString(domain);
         }
     }
 }

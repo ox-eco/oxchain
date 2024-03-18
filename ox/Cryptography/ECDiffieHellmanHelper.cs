@@ -102,23 +102,29 @@ namespace OX.Cryptography
             }
             return decryptedData;
         }
-        public static T Encrypt<T>(this ISerializable item, KeyPair local, ECPoint remote) where T : EncryptData, new()
+        public static T Encrypt<T>(this ISerializable item, KeyPair local, ECPoint remote, byte[] nonce = default) where T : EncryptData, new()
         {
             var key = ECDHDeriveKey(local, remote);
-            Random random = new Random();
-            byte[] nonce = new byte[12];
-            random.NextBytes(nonce);
+            if (nonce == default)
+            {
+                Random random = new Random();
+                nonce = new byte[12];
+                random.NextBytes(nonce);
+            }
             return new T()
             {
                 Data = item.ToArray().AES256Encrypt_ForDiffieHellman(key, nonce)
             };
         }
-        public static byte[] Encrypt(this byte[] plainData, KeyPair local, ECPoint remote)
+        public static byte[] Encrypt(this byte[] plainData, KeyPair local, ECPoint remote, byte[] nonce = default)
         {
             var key = ECDHDeriveKey(local, remote);
-            Random random = new Random();
-            byte[] nonce = new byte[12];
-            random.NextBytes(nonce);
+            if (nonce == default)
+            {
+                Random random = new Random();
+                nonce = new byte[12];
+                random.NextBytes(nonce);
+            }
             return plainData.AES256Encrypt_ForDiffieHellman(key, nonce);
         }
         public static T Decrypt<T>(this EncryptData data, KeyPair local, ECPoint remote) where T : ISerializable, new()

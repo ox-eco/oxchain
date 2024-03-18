@@ -1,8 +1,11 @@
 ﻿using OX.Cryptography.ECC;
+using OX.IO;
 using OX.IO.Caching;
+using OX.IO.Data.LevelDB;
 using OX.IO.Wrappers;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
+using System.Collections.Generic;
 
 namespace OX.Persistence
 {
@@ -50,5 +53,13 @@ namespace OX.Persistence
         public abstract void PutSync(byte prefix, byte[] key, byte[] value);
 
         public abstract Snapshot GetSnapshot();
+        public abstract IEnumerable<KeyValuePair<byte[], byte[]>> GetAll(byte prefix, byte[] keys = default);
+        public abstract IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default) where K : ISerializable, new() where V : ISerializable, new();
+
+        public abstract IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, ISerializable key) where K : ISerializable, new() where V : ISerializable, new();
+
+       
+
+
     }
 }
