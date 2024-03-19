@@ -111,7 +111,6 @@
             columnHeader10 = new System.Windows.Forms.ColumnHeader();
             contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(components);
             toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             contextMenuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -207,7 +206,7 @@
             // 
             // 高级AToolStripMenuItem
             // 
-            高级AToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { 提取OXCCToolStripMenuItem, toolStripSeparator7, requestCertificateToolStripMenuItem, 注册资产RToolStripMenuItem, 资产分发IToolStripMenuItem, toolStripSeparator8, deployContractToolStripMenuItem, invokeContractToolStripMenuItem, toolStripSeparator11, DetainToolStripMenuItem, 选举EToolStripMenuItem, signDataToolStripMenuItem, toolStripSeparator9, optionsToolStripMenuItem, testToolStripMenuItem });
+            高级AToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { 提取OXCCToolStripMenuItem, toolStripSeparator7, requestCertificateToolStripMenuItem, 注册资产RToolStripMenuItem, 资产分发IToolStripMenuItem, toolStripSeparator8, deployContractToolStripMenuItem, invokeContractToolStripMenuItem, toolStripSeparator11, DetainToolStripMenuItem, 选举EToolStripMenuItem, signDataToolStripMenuItem, toolStripSeparator9, optionsToolStripMenuItem });
             高级AToolStripMenuItem.Name = "高级AToolStripMenuItem";
             resources.ApplyResources(高级AToolStripMenuItem, "高级AToolStripMenuItem");
             // 
@@ -620,12 +619,6 @@
             resources.ApplyResources(toolStripMenuItem1, "toolStripMenuItem1");
             toolStripMenuItem1.Click += toolStripMenuItem1_Click;
             // 
-            // testToolStripMenuItem
-            // 
-            testToolStripMenuItem.Name = "testToolStripMenuItem";
-            resources.ApplyResources(testToolStripMenuItem, "testToolStripMenuItem");
-            testToolStripMenuItem.Click += testToolStripMenuItem_Click;
-            // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
@@ -737,7 +730,6 @@
         private System.Windows.Forms.ToolStripMenuItem lockToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator12;
         private System.Windows.Forms.ToolStripMenuItem signDataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
     }
 }
 

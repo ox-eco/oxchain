@@ -1029,10 +1029,7 @@ namespace OX.UI
 
         }
 
-        private void testToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //t3();
-        }
+        
       
         void t2()
         {
@@ -1041,8 +1038,8 @@ namespace OX.UI
             var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
             parameters[0].Value = "setintervalfunction";
             List<ContractParameter> list = new List<ContractParameter>();
-            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = 9 });
-            list.Add(new ContractParameter { Type = ContractParameterType.Hash160, Value = UInt160.Parse("0x80ca930c74f152a74f222249e8136a77873f3f84") }); ;
+            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = 4 });
+            list.Add(new ContractParameter { Type = ContractParameterType.Hash160, Value = UInt160.Parse("0x5fe1f220a675fc048375871f525e3d8bcdaaa461") }); ;
             parameters[1].Value = list;
             byte[] scripts = default;
             using (ScriptBuilder sb = new ScriptBuilder())
