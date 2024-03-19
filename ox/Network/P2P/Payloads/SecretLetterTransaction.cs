@@ -12,6 +12,22 @@ using System.Linq;
 
 namespace OX.Network.P2P.Payloads
 {
+    public class SecretLetterBody : ISerializable
+    {
+        public byte[] KeySuffix;
+        public byte[] Data;
+        public virtual int Size => KeySuffix.GetVarSize() + Data.GetVarSize();
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.WriteVarBytes(KeySuffix);
+            writer.WriteVarBytes(Data);
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            KeySuffix = reader.ReadVarBytes();
+            Data = reader.ReadVarBytes();
+        }
+    }
     public class SecretLetterData : ISerializable
     {
         public UInt256[] ReplyTxIds;
@@ -50,15 +66,16 @@ namespace OX.Network.P2P.Payloads
             this.Flag = 0;
             this.Data = new byte[0];
         }
-        public SecretLetterTransaction(KeyPair local, ECPoint remote, string content, UInt256[] replyTxIds = default)
+        public SecretLetterTransaction(KeyPair local, ECPoint remote, byte[] KeySuffix, string content, UInt256[] replyTxIds = default)
             : this()
         {
             var contentData = System.Text.Encoding.UTF8.GetBytes(content);
             SecretLetterData sld = new SecretLetterData { Content = System.Text.Encoding.UTF8.GetBytes(content), ReplyTxIds = replyTxIds ?? [UInt256.Zero] };
+            SecretLetterBody body = new SecretLetterBody { KeySuffix = KeySuffix, Data = sld.ToArray().Encrypt(local, remote, KeySuffix) };
             this.From = local.PublicKey;
             this.ToHash = Contract.CreateSignatureRedeemScript(remote).ToScriptHash().Hash;
             this.Flag = 1;
-            this.Data = sld.ToArray().Encrypt(local, remote);
+            this.Data = body.ToArray();
         }
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
         {
@@ -96,12 +113,14 @@ namespace OX.Network.P2P.Payloads
         }
         public bool TryDecrypt(KeyPair local, out SecretLetterData secretLetterData)
         {
-            secretLetterData = new EncryptData(this.Data).Decrypt<SecretLetterData>(local, this.From);
+            var body = this.Data.AsSerializable<SecretLetterBody>();
+            secretLetterData = new EncryptData(body.Data).Decrypt<SecretLetterData>(local, this.From, body.KeySuffix);
             return secretLetterData.IsNotNull();
         }
         public bool TryDecrypt(KeyPair local, ECPoint remote, out SecretLetterData secretLetterData)
         {
-            secretLetterData = new EncryptData(this.Data).Decrypt<SecretLetterData>(local, remote);
+            var body = this.Data.AsSerializable<SecretLetterBody>();
+            secretLetterData = new EncryptData(body.Data).Decrypt<SecretLetterData>(local, remote, body.KeySuffix);
             return secretLetterData.IsNotNull();
         }
     }

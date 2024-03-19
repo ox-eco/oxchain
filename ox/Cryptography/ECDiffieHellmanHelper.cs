@@ -24,7 +24,7 @@ namespace OX.Cryptography
         {
             return pubkey * key.PrivateKey;
         }
-        public static byte[] ECDHDeriveKey(KeyPair local, ECPoint remote)
+        public static byte[] ECDHDeriveKey(KeyPair local, ECPoint remote, byte[] suffix = default)
         {
             ReadOnlySpan<byte> pubkey_local = local.PublicKey.EncodePoint(false);
             ReadOnlySpan<byte> pubkey_remote = remote.EncodePoint(false);
@@ -47,7 +47,12 @@ namespace OX.Cryptography
                     Y = pubkey_remote[1..][32..].ToArray()
                 }
             });
-            return ecdh1.DeriveKeyMaterial(ecdh2.PublicKey).Sha256();//z = r * P = r* k * G
+            IEnumerable<byte> keys = ecdh1.DeriveKeyMaterial(ecdh2.PublicKey);
+            if (suffix != default)
+            {
+                keys = keys.Concat(suffix);
+            }
+            return keys.Sha256();//z = r * P = r* k * G
         }
         public static byte[] AES256Encrypt_ForDiffieHellman(this byte[] plainData, byte[] key, byte[] nonce, byte[] associatedData = null)
         {
@@ -102,36 +107,31 @@ namespace OX.Cryptography
             }
             return decryptedData;
         }
-        public static T Encrypt<T>(this ISerializable item, KeyPair local, ECPoint remote, byte[] nonce = default) where T : EncryptData, new()
+        public static T Encrypt<T>(this ISerializable item, KeyPair local, ECPoint remote, byte[] suffix = default) where T : EncryptData, new()
         {
-            var key = ECDHDeriveKey(local, remote);
-            if (nonce == default)
-            {
-                Random random = new Random();
-                nonce = new byte[12];
-                random.NextBytes(nonce);
-            }
+            var key = ECDHDeriveKey(local, remote, suffix);
+            Random random = new Random();
+            var nonce = new byte[12];
+            random.NextBytes(nonce);
             return new T()
             {
                 Data = item.ToArray().AES256Encrypt_ForDiffieHellman(key, nonce)
             };
         }
-        public static byte[] Encrypt(this byte[] plainData, KeyPair local, ECPoint remote, byte[] nonce = default)
+        public static byte[] Encrypt(this byte[] plainData, KeyPair local, ECPoint remote, byte[] suffix = default)
         {
-            var key = ECDHDeriveKey(local, remote);
-            if (nonce == default)
-            {
-                Random random = new Random();
-                nonce = new byte[12];
-                random.NextBytes(nonce);
-            }
+            var key = ECDHDeriveKey(local, remote, suffix);
+            Random random = new Random();
+            var nonce = new byte[12];
+            random.NextBytes(nonce);
+
             return plainData.AES256Encrypt_ForDiffieHellman(key, nonce);
         }
-        public static T Decrypt<T>(this EncryptData data, KeyPair local, ECPoint remote) where T : ISerializable, new()
+        public static T Decrypt<T>(this EncryptData data, KeyPair local, ECPoint remote, byte[] suffix = default) where T : ISerializable, new()
         {
             try
             {
-                var key = ECDHDeriveKey(local, remote);
+                var key = ECDHDeriveKey(local, remote, suffix);
                 var bs = data.Data.AES256Decrypt_ForDiffieHellman(key);
                 if (bs.IsNullOrEmpty()) return default;
                 return bs.AsSerializable<T>();
@@ -141,11 +141,11 @@ namespace OX.Cryptography
                 return default;
             }
         }
-        public static byte[] Decrypt(this byte[] encryptedData, KeyPair local, ECPoint remote)
+        public static byte[] Decrypt(this byte[] encryptedData, KeyPair local, ECPoint remote, byte[] suffix = default)
         {
             try
             {
-                var key = ECDHDeriveKey(local, remote);
+                var key = ECDHDeriveKey(local, remote, suffix);
                 return encryptedData.AES256Decrypt_ForDiffieHellman(key);
             }
             catch
