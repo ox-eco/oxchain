@@ -56,7 +56,7 @@ namespace OX.Cryptography
             {
                 keys = keys.Concat(suffix);
             }
-            return keys.Sha256();//z = r * P = r* k * G
+            return Crypto.Default.Hash256(keys.ToArray());
         }
         public static byte[] AES256Encrypt_ForDiffieHellman(this byte[] plainData, byte[] key, byte[] nonce, byte[] associatedData = null)
         {
@@ -122,6 +122,23 @@ namespace OX.Cryptography
                 Data = item.ToArray().AES256Encrypt_ForDiffieHellman(key, nonce)
             };
         }
+        public static T Encrypt<T>(this ISerializable item, IEnumerable<byte> key, byte[] suffix = default) where T : EncryptData, new()
+        {
+            var keys = key;
+            if (suffix != default)
+            {
+                keys = keys.Concat(suffix);
+            }
+            keys = Crypto.Default.Hash256(keys.ToArray());
+
+            Random random = new Random();
+            var nonce = new byte[12];
+            random.NextBytes(nonce);
+            return new T()
+            {
+                Data = item.ToArray().AES256Encrypt_ForDiffieHellman(keys.ToArray(), nonce)
+            };
+        }
         public static byte[] Encrypt(this byte[] plainData, KeyPair local, ECPoint remote, byte[] suffix = default)
         {
             var key = ECDHDeriveKey(local, remote, suffix);
@@ -131,12 +148,45 @@ namespace OX.Cryptography
 
             return plainData.AES256Encrypt_ForDiffieHellman(key, nonce);
         }
+        public static byte[] Encrypt(this byte[] plainData, IEnumerable<byte> key, byte[] suffix = default)
+        {
+            var keys = key;
+            if (suffix != default)
+            {
+                keys = keys.Concat(suffix);
+            }
+            keys = Crypto.Default.Hash256(keys.ToArray());
+            Random random = new Random();
+            var nonce = new byte[12];
+            random.NextBytes(nonce);
+
+            return plainData.AES256Encrypt_ForDiffieHellman(keys.ToArray(), nonce);
+        }
         public static T Decrypt<T>(this EncryptData data, KeyPair local, ECPoint remote, byte[] suffix = default) where T : ISerializable, new()
         {
             try
             {
                 var key = ECDHDeriveKey(local, remote, suffix);
                 var bs = data.Data.AES256Decrypt_ForDiffieHellman(key);
+                if (bs.IsNullOrEmpty()) return default;
+                return bs.AsSerializable<T>();
+            }
+            catch
+            {
+                return default;
+            }
+        }
+        public static T Decrypt<T>(this EncryptData data, IEnumerable<byte> key, byte[] suffix = default) where T : ISerializable, new()
+        {
+            try
+            {
+                var keys = key;
+                if (suffix != default)
+                {
+                    keys = keys.Concat(suffix);
+                }
+                keys = Crypto.Default.Hash256(keys.ToArray());
+                var bs = data.Data.AES256Decrypt_ForDiffieHellman(keys.ToArray());
                 if (bs.IsNullOrEmpty()) return default;
                 return bs.AsSerializable<T>();
             }
@@ -156,6 +206,33 @@ namespace OX.Cryptography
             {
                 return default;
             }
+        }
+        public static byte[] Decrypt(this byte[] encryptedData, IEnumerable<byte> key, byte[] suffix = default)
+        {
+            try
+            {
+                var keys = key;
+                if (suffix != default)
+                {
+                    keys = keys.Concat(suffix);
+                }
+                keys = Crypto.Default.Hash256(keys.ToArray());
+                return encryptedData.AES256Decrypt_ForDiffieHellman(keys.ToArray());
+            }
+            catch
+            {
+                return default;
+            }
+        }
+        public static UInt256 CreateRandomKey(out byte[] privateKey)
+        {
+            privateKey = new byte[32];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(privateKey);
+            }
+            //Array.Clear(privateKey, 0, privateKey.Length);
+            return new UInt256(Crypto.Default.Hash256(privateKey));
         }
     }
 }

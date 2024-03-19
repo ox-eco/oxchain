@@ -435,7 +435,7 @@ namespace OX.Ledger
         private RelayResultReason OnNewFlashState(RelayFlash RelayFlash)
         {
             Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} OnNewFlashState:  {RelayFlash.FlashState.Hash.ToString()}");
-            if (this.MemPool.Count > this.MemPool.RebroadcastMultiplierThreshold*this.GetPoolMutiple())
+            if (this.MemPool.Count > this.MemPool.RebroadcastMultiplierThreshold * this.GetPoolMutiple())
                 return RelayResultReason.OutOfMemory;
             var flashState = RelayFlash.FlashState;
             if (!flashState.Verify(currentSnapshot, StatePool, out AccountState accountState))
@@ -443,7 +443,9 @@ namespace OX.Ledger
             var sender = Contract.CreateSignatureRedeemScript(flashState.Sender).ToScriptHash();
             if (this.InBlackList(sender))
                 return RelayResultReason.InFlashBlackList;
-            if (StatePool.TryAppend(accountState, flashState, RelayFlash.RemoteNodeKey,this.MemPool.Count, flashAccount =>
+            if (flashState.Type == FlashStateType.FlashLog && !this.GetDomain(sender, out byte[] domain))
+                return RelayResultReason.Invalid;
+            if (StatePool.TryAppend(accountState, flashState, RelayFlash.RemoteNodeKey, this.MemPool.Count, flashAccount =>
             {
                 foreach (var remoteNode in LocalNode.Singleton.RemoteNodes)
                 {

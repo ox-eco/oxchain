@@ -42,20 +42,20 @@ namespace OX.Persistence
             }
             return default;
         }
-        public static byte[] GetDomain(this Blockchain blockchain, UInt160 address)
+        public static bool GetDomain(this Blockchain blockchain, UInt160 address, out byte[] domain)
         {
             _domainRwLock.EnterReadLock();
             try
             {
-                if (!_domains.TryGetValue(address, out byte[] result))
+                if (!_domains.TryGetValue(address, out domain))
                 {
-                    result = GetDomain(address);
-                    if (result != default)
+                    domain = GetDomain(address);
+                    if (domain != default)
                     {
-                        _domains[address] = result;
+                        _domains[address] = domain;
                     }
                 }
-                return result;
+                return domain != default;
             }
             finally
             {

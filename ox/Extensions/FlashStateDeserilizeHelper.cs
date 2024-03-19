@@ -19,6 +19,12 @@ namespace OX
                 {
                     case FlashStateType.FlashLog:
                         return flashData.AsSerializable<FlashLog>();
+                    case FlashStateType.FlashMulticast:
+                        return flashData.AsSerializable<FlashMulticast>();
+                    case FlashStateType.FlashUnicast:
+                        return flashData.AsSerializable<FlashUnicast>();
+                    case FlashStateType.FlashMulticastNotice:
+                        return flashData.AsSerializable<FlashMulticastNotice>();
                 }
                 return default;
 

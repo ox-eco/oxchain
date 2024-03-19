@@ -8,5 +8,11 @@ namespace OX.Network.P2P.Payloads
     {
         [ReflectionCache(typeof(FlashLog))]
         FlashLog = 0x00,
+        [ReflectionCache(typeof(FlashMulticast))]
+        FlashMulticast =0x01,
+        [ReflectionCache(typeof(FlashUnicast))]
+        FlashUnicast = 0x02,
+        [ReflectionCache(typeof(FlashMulticastNotice))]
+        FlashMulticastNotice = 0x03,
     }
 }
