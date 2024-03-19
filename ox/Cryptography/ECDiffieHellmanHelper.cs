@@ -24,6 +24,10 @@ namespace OX.Cryptography
         {
             return pubkey * key.PrivateKey;
         }
+        public static ECPoint DiffieHellman(this ECPoint pubkey, KeyPair key)
+        {
+            return pubkey * key.PrivateKey;
+        }
         public static byte[] ECDHDeriveKey(KeyPair local, ECPoint remote, byte[] suffix = default)
         {
             ReadOnlySpan<byte> pubkey_local = local.PublicKey.EncodePoint(false);
