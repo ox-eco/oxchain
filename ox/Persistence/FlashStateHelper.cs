@@ -99,7 +99,7 @@ namespace OX.Persistence
         }
         public static int GetPoolMutiple(this Blockchain blockchain)
         {
-            if (blockchain.HeaderHeight % 100 == 0)
+            if (blockchain.HeaderHeight % 100 == 0 || _poolMultiple == 0)
             {
                 _poolMultiple = GetPoolMutiple();
 
