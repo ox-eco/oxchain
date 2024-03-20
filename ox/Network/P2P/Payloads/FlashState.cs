@@ -24,7 +24,7 @@ namespace OX.Network.P2P.Payloads
 {
     public abstract class FlashState : IEquatable<FlashState>, IInventory
     {
-        public const int MaxFlashStateSize = 1024*2;
+        public const int MaxFlashStateSize = 1024 * 2;
         /// <summary>
         /// Reflection cache for FlashStateType
         /// </summary>
@@ -33,6 +33,7 @@ namespace OX.Network.P2P.Payloads
         public readonly FlashStateType Type;
         public ECPoint Sender;
         public uint MinIndex;
+        public FlashStateContentType ContentType;
         public Witness[] Witnesses { get; set; }
 
         private UInt256 _hash = null;
@@ -52,7 +53,7 @@ namespace OX.Network.P2P.Payloads
 
 
 
-        public virtual int Size => sizeof(TransactionType) + Sender.Size + sizeof(uint) + Witnesses.GetVarSize();
+        public virtual int Size => sizeof(TransactionType) + Sender.Size + sizeof(uint) + sizeof(FlashStateContentType) + Witnesses.GetVarSize();
 
         protected FlashState(FlashStateType type)
         {
@@ -102,6 +103,7 @@ namespace OX.Network.P2P.Payloads
         {
             Sender = reader.ReadSerializable<ECPoint>();
             MinIndex = reader.ReadUInt32();
+            ContentType = (FlashStateContentType)reader.ReadByte();
             DeserializeExclusiveData(reader);
         }
 
@@ -153,6 +155,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write((byte)Type);
             writer.Write(Sender);
             writer.Write(MinIndex);
+            writer.Write((byte)ContentType);
             SerializeExclusiveData(writer);
         }
 
@@ -164,6 +167,7 @@ namespace OX.Network.P2P.Payloads
             json["type"] = Type;
             json["sender"] = Sender.ToString();
             json["minindex"] = MinIndex.ToString();
+            json["contenttype"] = ContentType.Value().ToString();
             return json;
         }
 
