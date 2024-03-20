@@ -364,7 +364,7 @@ namespace OX.Bapps
         }
 
         #endregion
-        void setBappState()
+        public virtual void setBappState()
         {
             foreach (var ad in BizScriptHashStates)
             {
@@ -373,13 +373,13 @@ namespace OX.Bapps
                 BizScriptHashStates[pubkey] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
             }
         }
-        void OnFlashState(FlashState flashState)
+        public virtual void OnFlashState(FlashState flashState)
         {
             if (this.BappProvider.IsNotNull()) this.BappProvider.OnFlashState(flashState);
             if (this.BappApi.IsNotNull()) this.BappApi.OnFlashState(flashState);
             if (this.BappUi.IsNotNull()) this.BappUi.OnFlashState(flashState);
         }
-        void OnBlock(Block block)
+        public virtual void OnBlock(Block block)
         {
             bool ok = false;
             foreach (var tx in block.Transactions)
@@ -424,16 +424,16 @@ namespace OX.Bapps
             if (this.BappUi.IsNotNull()) this.BappUi.AfterOnBlock(block);
 
         }
-        void OnRebuild()
+        public virtual void OnRebuild()
         {
             this.BappProvider?.OnRebuild();
             this.BappUi?.OnRebuild();
         }
-        void OnUiRebuild()
+        public virtual void OnUiRebuild()
         {
             this.BappUi?.OnRebuild();
         }
-        public void PushEvent(BappEvent bappEvent)
+        public virtual void PushEvent(BappEvent bappEvent)
         {
             this.BappProvider?.OnBappEvent(bappEvent);
             this.BappApi?.OnBappEvent(bappEvent);
