@@ -48,6 +48,19 @@ namespace OX.Bapps
         public static string KernelVersion => System.GetType().Assembly.GetVersion();
 
         protected static OXSystem System { get; private set; }
+        IFlashStateProvider _flashStateProvider;
+        protected IFlashStateProvider FlashStateProvider
+        {
+            get
+            {
+                if (_flashStateProvider.IsNull())
+                {
+                    _flashStateProvider = BuildFlashStateProvider();
+                    if (_flashStateProvider.IsNotNull()) _flashStateProvider.Bapp = this;
+                }
+                return _flashStateProvider;
+            }
+        }
         IBappProvider _bappProvider;
         protected IBappProvider BappProvider
         {
@@ -124,6 +137,7 @@ namespace OX.Bapps
         public UInt160[] BizAddresses => BizPublicKeys.IsNullOrEmpty() ? default : BizPublicKeys.Select(m => Contract.CreateSignatureRedeemScript(m).ToScriptHash()).ToArray();
         public abstract string MatchKernelVersion { get; }
         public abstract IBappProvider BuildBappProvider();
+        public abstract IFlashStateProvider BuildFlashStateProvider();
         public abstract IBappApi BuildBappApi();
         public abstract IBappUi BuildBappUi();
         public abstract SideScope[] GetSideScopes();
@@ -193,6 +207,16 @@ namespace OX.Bapps
                 if (bapp.BappProvider.IsNotNull())
                 {
                     yield return bapp.BappProvider;
+                }
+            }
+        }
+        public static IEnumerable<IFlashStateProvider> AllFlashStateProviders()
+        {
+            foreach (var bapp in bapps)
+            {
+                if (bapp.FlashStateProvider.IsNotNull())
+                {
+                    yield return bapp.FlashStateProvider;
                 }
             }
         }
@@ -364,7 +388,7 @@ namespace OX.Bapps
         }
 
         #endregion
-        public virtual void setBappState()
+        void setBappState()
         {
             foreach (var ad in BizScriptHashStates)
             {
@@ -373,13 +397,14 @@ namespace OX.Bapps
                 BizScriptHashStates[pubkey] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
             }
         }
-        public virtual void OnFlashState(FlashState flashState)
+        void OnFlashState(FlashState flashState)
         {
+            if (this.FlashStateProvider.IsNotNull()) this.FlashStateProvider.OnFlashState(flashState);
             if (this.BappProvider.IsNotNull()) this.BappProvider.OnFlashState(flashState);
             if (this.BappApi.IsNotNull()) this.BappApi.OnFlashState(flashState);
             if (this.BappUi.IsNotNull()) this.BappUi.OnFlashState(flashState);
         }
-        public virtual void OnBlock(Block block)
+        void OnBlock(Block block)
         {
             bool ok = false;
             foreach (var tx in block.Transactions)
@@ -424,12 +449,12 @@ namespace OX.Bapps
             if (this.BappUi.IsNotNull()) this.BappUi.AfterOnBlock(block);
 
         }
-        public virtual void OnRebuild()
+        void OnRebuild()
         {
             this.BappProvider?.OnRebuild();
             this.BappUi?.OnRebuild();
         }
-        public virtual void OnUiRebuild()
+        void OnUiRebuild()
         {
             this.BappUi?.OnRebuild();
         }
