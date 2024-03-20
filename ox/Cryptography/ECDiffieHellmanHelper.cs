@@ -28,6 +28,10 @@ namespace OX.Cryptography
         {
             return pubkey * key.PrivateKey;
         }
+        public static UInt256 ECDHDeriveKeyHash(KeyPair local, ECPoint remote)
+        {
+            return new UInt256(Crypto.Default.Hash256(Crypto.Default.Hash256(ECDHDeriveKey(local, remote))));
+        }
         public static byte[] ECDHDeriveKey(KeyPair local, ECPoint remote, byte[] suffix = default)
         {
             ReadOnlySpan<byte> pubkey_local = local.PublicKey.EncodePoint(false);

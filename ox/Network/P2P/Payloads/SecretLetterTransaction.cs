@@ -14,40 +14,24 @@ namespace OX.Network.P2P.Payloads
 {
     public class SecretLetterBody : ISerializable
     {
+        public UInt256 LetterLine;
         public byte[] KeySuffix;
-        public byte[] Data;
-        public virtual int Size => KeySuffix.GetVarSize() + Data.GetVarSize();
+        public byte[] Encryptedcontent;
+        public virtual int Size => LetterLine.Size + KeySuffix.GetVarSize() + Encryptedcontent.GetVarSize();
         public void Serialize(BinaryWriter writer)
         {
+            writer.Write(LetterLine);
             writer.WriteVarBytes(KeySuffix);
-            writer.WriteVarBytes(Data);
+            writer.WriteVarBytes(Encryptedcontent);
         }
         public void Deserialize(BinaryReader reader)
         {
+            LetterLine = reader.ReadSerializable<UInt256>();
             KeySuffix = reader.ReadVarBytes();
-            Data = reader.ReadVarBytes();
+            Encryptedcontent = reader.ReadVarBytes();
         }
     }
-    public class SecretLetterData : ISerializable
-    {
-        public UInt256[] ReplyTxIds;
-        public byte[] Content;
-        public virtual int Size => ReplyTxIds.GetVarSize() + Content.GetVarSize();
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.Write(ReplyTxIds);
-            writer.WriteVarBytes(Content);
-        }
-        public void Deserialize(BinaryReader reader)
-        {
-            ReplyTxIds = reader.ReadSerializableArray<UInt256>();
-            Content = reader.ReadVarBytes();
-        }
-        public string GetContentString()
-        {
-            return System.Text.Encoding.UTF8.GetString(this.Content);
-        }
-    }
+
     public class SecretLetterTransaction : Transaction
     {
         public ECPoint From;
@@ -69,9 +53,9 @@ namespace OX.Network.P2P.Payloads
         public SecretLetterTransaction(KeyPair local, ECPoint remote, byte[] KeySuffix, string content, UInt256[] replyTxIds = default)
             : this()
         {
+            var letterLine = ECDiffieHellmanHelper.ECDHDeriveKeyHash(local, remote);
             var contentData = System.Text.Encoding.UTF8.GetBytes(content);
-            SecretLetterData sld = new SecretLetterData { Content = System.Text.Encoding.UTF8.GetBytes(content), ReplyTxIds = replyTxIds ?? [UInt256.Zero] };
-            SecretLetterBody body = new SecretLetterBody { KeySuffix = KeySuffix, Data = sld.ToArray().Encrypt(local, remote, KeySuffix) };
+            SecretLetterBody body = new SecretLetterBody { LetterLine = letterLine, KeySuffix = KeySuffix, Encryptedcontent = contentData.Encrypt(local, remote, KeySuffix) };
             this.From = local.PublicKey;
             this.ToHash = Contract.CreateSignatureRedeemScript(remote).ToScriptHash().Hash;
             this.Flag = 1;
@@ -111,17 +95,30 @@ namespace OX.Network.P2P.Payloads
             json["data"] = this.Data.ToHexString();
             return json;
         }
-        public bool TryDecrypt(KeyPair local, out SecretLetterData secretLetterData)
+        public bool TryGetBody(out SecretLetterBody body)
         {
-            var body = this.Data.AsSerializable<SecretLetterBody>();
-            secretLetterData = new EncryptData(body.Data).Decrypt<SecretLetterData>(local, this.From, body.KeySuffix);
-            return secretLetterData.IsNotNull();
+            body = null;
+            try
+            {
+                body = this.Data.AsSerializable<SecretLetterBody>();
+                return body.IsNotNull();
+            }
+            catch
+            {
+                return false;
+            }
         }
-        public bool TryDecrypt(KeyPair local, ECPoint remote, out SecretLetterData secretLetterData)
+        public bool TryDecrypt(KeyPair local, out SecretLetterBody body, out byte[] plaintext)
         {
-            var body = this.Data.AsSerializable<SecretLetterBody>();
-            secretLetterData = new EncryptData(body.Data).Decrypt<SecretLetterData>(local, remote, body.KeySuffix);
-            return secretLetterData.IsNotNull();
+            var ret = TryGetBody(out body);
+            plaintext = body.Encryptedcontent.Decrypt(local, this.From, body.KeySuffix);
+            return ret;
+        }
+        public bool TryDecrypt(KeyPair local, ECPoint remote, out SecretLetterBody body, out byte[] plaintext)
+        {
+            var ret = TryGetBody(out body);
+            plaintext = body.Encryptedcontent.Decrypt(local, remote, body.KeySuffix);
+            return ret;
         }
     }
 }
