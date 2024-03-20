@@ -24,7 +24,7 @@ namespace OX.Network.P2P.Payloads
 {
     public abstract class FlashState : IEquatable<FlashState>, IInventory
     {
-        public const int MaxFlashStateSize = 1024;
+        public const int MaxFlashStateSize = 1024*2;
         /// <summary>
         /// Reflection cache for FlashStateType
         /// </summary>
