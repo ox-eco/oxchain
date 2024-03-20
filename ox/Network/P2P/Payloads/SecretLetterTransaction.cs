@@ -50,7 +50,7 @@ namespace OX.Network.P2P.Payloads
             this.Flag = 0;
             this.Data = new byte[0];
         }
-        public SecretLetterTransaction(KeyPair local, ECPoint remote, byte[] KeySuffix, string content, UInt256[] replyTxIds = default)
+        public SecretLetterTransaction(KeyPair local, ECPoint remote, byte[] KeySuffix, string content)
             : this()
         {
             var letterLine = ECDiffieHellmanHelper.ECDHDeriveKeyHash(local, remote);
