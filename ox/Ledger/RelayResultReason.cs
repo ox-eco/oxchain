@@ -10,6 +10,7 @@
         PolicyFail,
         FlashInsufficientBalance,
         InFlashBlackList,
+        NotInFlashWhiteList,
         Unknown
     }
 }

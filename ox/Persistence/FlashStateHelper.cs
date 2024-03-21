@@ -12,9 +12,15 @@ namespace OX.Persistence
     public static class FlashStateHelper
     {
         static int _poolMultiple = 0;
+        /// <summary>
+        /// 1:black list
+        /// 2:white list
+        /// </summary>
+        static int _listKind = 0; 
         static ContractState _contractState = default;
         static byte[] _intervalFunctionScriptHash = default;
         static UInt160[] _blackList = default;
+        static UInt160[] _whiteList = default;
         static readonly Dictionary<UInt160, byte[]> _domains = new Dictionary<UInt160, byte[]>();
         static readonly Dictionary<UInt160, byte[]> _marks = new Dictionary<UInt160, byte[]>();
         static readonly ReaderWriterLockSlim _domainRwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
@@ -42,6 +48,33 @@ namespace OX.Persistence
             }
             return default;
         }
+
+        public static UInt160[] GetWhiteList(this Blockchain blockchain)
+        {
+            if (blockchain.HeaderHeight % 10 == 0)
+            {
+                _whiteList = GetWhiteList();
+            }
+            return _whiteList;
+        }
+        public static bool InWhiteList(this Blockchain blockchain, UInt160 address)
+        {
+            var list = blockchain.GetWhiteList();
+            if (list.IsNullOrEmpty()) return false;
+            return list.Contains(address);
+        }
+        public static UInt160[] GetWhiteList()
+        {
+            var kyes = Blockchain.FlashStateContractScriptHash.ToArray().Concat(System.Text.Encoding.UTF8.GetBytes("wtl")).Concat(new byte[] { 0 });
+            var kbs = Blockchain.Singleton.Store.GetAll(Prefixes.ST_Storage, kyes.ToArray());
+            if (kbs.IsNotNullAndEmpty())
+            {
+                return kbs.Select(m => new UInt160(m.Value.AsSerializable<StorageItem>().Value)).ToArray();
+            }
+            return default;
+        }
+
+
         public static bool GetDomain(this Blockchain blockchain, UInt160 address, out byte[] domain)
         {
             _domainRwLock.EnterReadLock();
@@ -106,6 +139,15 @@ namespace OX.Persistence
             }
             return _poolMultiple;
         }
+        public static int GetListKind(this Blockchain blockchain)
+        {
+            if (blockchain.HeaderHeight % 100 == 0 || _listKind == 0)
+            {
+                _listKind = GetListKind();
+
+            }
+            return _listKind;
+        }
         public static byte[] GetDomain(UInt160 address)
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
@@ -139,6 +181,15 @@ namespace OX.Persistence
             {
                 ScriptHash = Blockchain.FlashStateContractScriptHash,
                 Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 1 }).ToArray(),
+            });
+            return item.IsNotNull() ? item.Value[0] : 0;
+        }
+        public static int GetListKind()
+        {
+            StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
+            {
+                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 2 }).ToArray(),
             });
             return item.IsNotNull() ? item.Value[0] : 0;
         }
