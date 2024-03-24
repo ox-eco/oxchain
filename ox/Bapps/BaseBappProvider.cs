@@ -40,7 +40,7 @@ namespace OX.Bapps
         public abstract void AfterOnBlock(Block block)
        ;
         public abstract void OnBlock(Block block);
-        public abstract void OnFlashState(FlashMessage flashState);
+        public abstract void OnFlashMessage(FlashMessage flashMessage);
         #endregion
         public IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default) where K : ISerializable, new() where V : ISerializable, new()
         {
