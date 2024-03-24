@@ -61,5 +61,15 @@ namespace OX.Network.P2P.Payloads
             json["data"] = Data.ToHexString();
             return json;
         }
+        public bool TryDecrypt(KeyPair local, out byte[] plaintext)
+        {
+            plaintext = this.Data.Decrypt(local, this.Sender, BitConverter.GetBytes(MinIndex));
+            return plaintext != default;
+        }
+        public bool TryDecrypt(KeyPair local, ECPoint remote,  out byte[] plaintext)
+        {
+            plaintext = this.Data.Decrypt(local, remote, BitConverter.GetBytes(MinIndex));
+            return plaintext != default;
+        }
     }
 }
