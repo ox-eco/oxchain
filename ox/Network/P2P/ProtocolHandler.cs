@@ -135,9 +135,9 @@ namespace OX.Network.P2P
                     if (msg.Payload.Length <= Transaction.MaxTransactionSize)
                         OnInventoryReceived(msg.GetTransaction());
                     break;
-                case "fs":
+                case "fm":
                     if (msg.Payload.Length <= FlashMessage.MaxFlashMessageSize)
-                        OnFlashStateReceived(msg.GetFlashState());
+                        OnFlashStateReceived(msg.GetFlashMessage());
                     break;
                 case "verack":
                 case "version":
@@ -279,7 +279,7 @@ namespace OX.Network.P2P
         }
         private void OnFlashStateReceived(FlashMessage flashState)
         {
-            system.LocalNode.Tell(new LocalNode.RelayFlash { RemoteNodeKey = this.Remote.ToString(), FlashState = flashState });
+            system.LocalNode.Tell(new LocalNode.RelayFlash { RemoteNodeKey = this.Remote.ToString(), FlashMessage = flashState });
         }
         private void OnInventoryReceived(IInventory inventory)
         {

@@ -11,6 +11,7 @@ namespace OX.Bapps
         void OnBappEvent(BappEvent bappEvent);
         void OnCrossBappMessage(CrossBappMessage message);
         void OnBlock(Block block);
+        void OnFlashMessage(FlashMessage flashmessage);
         void LoadBappModuleWalletSection(JObject moduleSectionObject);
     }
 }

@@ -29,7 +29,7 @@ namespace OX
         public abstract void OnStop();
         protected abstract void OnReceived(object message);
         protected abstract void OnBlockPersistCompleted(Block block);
-        protected abstract void OnFlashStateCaptured(FlashMessage flashState);
+        protected abstract void OnFlashMessageCaptured(FlashMessage flashMessage);
 
         public BlockHandler(OXSystem system) : this(system, null)
         {
@@ -67,10 +67,10 @@ namespace OX
             {
                 OnBlockPersistCompleted(completed.Block);
             }
-            else if (message is Blockchain.FlashStateCaptured flashStateCaptured)
+            else if (message is Blockchain.FlashMessageCaptured flashMessageCaptured)
             {
-                Bapp.OnFlashStateCaptured(flashStateCaptured.FlashState);
-                OnFlashStateCaptured(flashStateCaptured.FlashState);
+                Bapp.OnFlashMessageCaptured(flashMessageCaptured.FlashMessage);
+                OnFlashMessageCaptured(flashMessageCaptured.FlashMessage);
             }
             else if (message is WalletCommand walletCommand)
             {
@@ -92,12 +92,12 @@ namespace OX
         {
             this.OnStart();
             Context.System.EventStream.Subscribe(Self, typeof(Blockchain.PersistCompleted));
-            Context.System.EventStream.Subscribe(Self, typeof(Blockchain.FlashStateCaptured));
+            Context.System.EventStream.Subscribe(Self, typeof(Blockchain.FlashMessageCaptured));
         }
         public virtual void Stop()
         {
             Context.System.EventStream.Unsubscribe(Self, typeof(Blockchain.PersistCompleted));
-            Context.System.EventStream.Unsubscribe(Self, typeof(Blockchain.FlashStateCaptured));
+            Context.System.EventStream.Unsubscribe(Self, typeof(Blockchain.FlashMessageCaptured));
             this.OnStop();
         }
         public void Relay(IInventory inventory)
@@ -108,9 +108,9 @@ namespace OX
         {
             this.oxsystem.LocalNode.Tell(new LocalNode.SendDirectly { Inventory = inventory });
         }
-        public void RelayFlash(FlashMessage flashState)
+        public void RelayFlash(FlashMessage flashMessage)
         {
-            this.oxsystem.LocalNode.Tell(new LocalNode.RelayFlash { FlashState = flashState });
+            this.oxsystem.LocalNode.Tell(new LocalNode.RelayFlash { FlashMessage = flashMessage });
         }
         public bool SignAndRelay(Transaction tx)
         {
@@ -157,11 +157,11 @@ namespace OX
             {
                 fs.Witnesses = context.GetWitnesses();
                 this.Relay(fs);
-                msg = $"Signed and relayed flashstate with hash={fs.Hash}";
+                msg = $"Signed and relayed flashmessage with hash={fs.Hash}";
                 Console.WriteLine(msg);
                 return true;
             }
-            msg = $"Failed sending flashstate with hash={fs.Hash}";
+            msg = $"Failed sending flashmessage with hash={fs.Hash}";
             Console.WriteLine(msg);
             return true;
         }

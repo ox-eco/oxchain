@@ -27,7 +27,7 @@ namespace OX.Ledger
         public static UInt256 OXC => OXC_Token.Hash;
         public class ApplicationExecuted { public Transaction Transaction; public ApplicationExecutionResult[] ExecutionResults; }
         public class PersistCompleted { public Block Block; }
-        public class FlashStateCaptured { public FlashMessage FlashState; }
+        public class FlashMessageCaptured { public FlashMessage FlashMessage; }
         public class Import { public IEnumerable<Block> Blocks; }
         public class ImportCompleted { }
         public class FillMemoryPool { public IEnumerable<Transaction> Transactions; }
@@ -42,7 +42,7 @@ namespace OX.Ledger
         public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0x1bb1483c8c1175b37062d7d586bd4b67abb255e2");
         public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0xe64586c07a90ec1a1b0c8fc22868cf3eff94560b");
         public static UInt160 EthereumMapContractScriptHash = UInt160.Parse("0x508c5bd9a4a5fd62ea2b0d1c853aff2cec5d5ea7");
-        public static UInt160 FlashStateContractScriptHash = UInt160.Parse("0xdadf55efc35334d438897ae6bf8f5ea51d2ef5f5");
+        public static UInt160 FlashMessageContractScriptHash = UInt160.Parse("0xdadf55efc35334d438897ae6bf8f5ea51d2ef5f5");
         static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static uint[] GenerationBonusAmount => genesisGenerationAmount;
         public static readonly TimeSpan TimePerBlock = TimeSpan.FromSeconds(SecondsPerBlock);
@@ -432,15 +432,15 @@ namespace OX.Ledger
             system.LocalNode.Tell(new LocalNode.RelayDirectly { Inventory = transaction });
             return RelayResultReason.Succeed;
         }
-        private RelayResultReason OnNewFlashState(RelayFlash RelayFlash)
+        private RelayResultReason OnNewFlashMessage(RelayFlash RelayFlash)
         {
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} OnNewFlashState:  {RelayFlash.FlashState.Hash.ToString()}");
+            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} OnNewFlashMessage:  {RelayFlash.FlashMessage.Hash.ToString()}");
             if (this.MemPool.Count > this.MemPool.RebroadcastMultiplierThreshold * this.GetPoolMutiple())
                 return RelayResultReason.OutOfMemory;
-            var flashState = RelayFlash.FlashState;
-            if (!flashState.Verify(currentSnapshot, StatePool, out AccountState accountState))
+            var flashMessage = RelayFlash.FlashMessage;
+            if (!flashMessage.Verify(currentSnapshot, StatePool, out AccountState accountState))
                 return RelayResultReason.Invalid;
-            var sender = Contract.CreateSignatureRedeemScript(flashState.Sender).ToScriptHash();
+            var sender = Contract.CreateSignatureRedeemScript(flashMessage.Sender).ToScriptHash();
             var listkind = this.GetListKind();
             switch (listkind)
             {
@@ -457,20 +457,20 @@ namespace OX.Ledger
             }
             if (!this.GetDomain(sender, out byte[] domain))
                 return RelayResultReason.Invalid;
-            if (StatePool.TryAppend(accountState, flashState, RelayFlash.RemoteNodeKey, this.MemPool.Count, flashAccount =>
+            if (StatePool.TryAppend(accountState, flashMessage, RelayFlash.RemoteNodeKey, this.MemPool.Count, flashAccount =>
             {
                 foreach (var remoteNode in LocalNode.Singleton.RemoteNodes)
                 {
                     var nodeKey = remoteNode.Value.Remote.ToString();
-                    if (flashAccount.VerifyRelay(flashState.Hash, nodeKey))
+                    if (flashAccount.VerifyRelay(flashMessage.Hash, nodeKey))
                     {
-                        remoteNode.Key.Tell(flashState);
+                        remoteNode.Key.Tell(flashMessage);
                         if (!flashAccount.OutRemoteKeys.Contains(nodeKey)) flashAccount.OutRemoteKeys.Add(nodeKey);
-                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /  {nodeKey}  /   {OX.SmartContract.Contract.CreateSignatureRedeemScript(flashState.Sender).ToScriptHash().ToAddress()}   /   {flashState.Hash.ToString()}");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /  {nodeKey}  /   {OX.SmartContract.Contract.CreateSignatureRedeemScript(flashMessage.Sender).ToScriptHash().ToAddress()}   /   {flashMessage.Hash.ToString()}");
                     }
                     else
                     {
-                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /excluded  {nodeKey}   /   {flashState.Hash.ToString()}");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /excluded  {nodeKey}   /   {flashMessage.Hash.ToString()}");
                     }
                 }
                 Console.WriteLine($"in keys:  {flashAccount.InRemoteKeys.Count}");
@@ -485,7 +485,7 @@ namespace OX.Ledger
                 //}
             }))
             {
-                Context.System.EventStream.Publish(new FlashStateCaptured { FlashState = flashState });
+                Context.System.EventStream.Publish(new FlashMessageCaptured { FlashMessage = flashMessage });
             }
 
 
@@ -519,7 +519,7 @@ namespace OX.Ledger
                     Sender.Tell(OnNewTransaction(transaction));
                     break;
                 case RelayFlash RelayFlash:
-                    Sender.Tell(OnNewFlashState(RelayFlash));
+                    Sender.Tell(OnNewFlashMessage(RelayFlash));
                     break;
                 case ConsensusPayload payload:
                     Sender.Tell(OnNewConsensus(payload));
@@ -958,13 +958,13 @@ namespace OX.Ledger
             if (balance < BappDetainOXS) return false;
             return true;
         }
-        public bool VerifyFlashStateSender(UInt160 flashStateSender, out Fixed8 OXSBalance)
+        public bool VerifyFlashMessageSender(UInt160 flashMessageSender, out Fixed8 OXSBalance)
         {
-            return VerifyFlashStateSender(flashStateSender, out OXSBalance);
+            return VerifyFlashMessageSender(flashMessageSender, out OXSBalance);
         }
-        public bool VerifyFlashStateSender(Snapshot snapshot, UInt160 flashStateSender, out AccountState accountState)
+        public bool VerifyFlashMessageSender(Snapshot snapshot, UInt160 flashMessageSender, out AccountState accountState)
         {
-            accountState = snapshot.Accounts.GetAndChange(flashStateSender, () => null);
+            accountState = snapshot.Accounts.GetAndChange(flashMessageSender, () => null);
             if (accountState.IsNull()) return false;
             if (accountState.GetBalance(OXS) < FlashMinOXSBalance) return false;
             return true;

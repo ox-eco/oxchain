@@ -41,7 +41,7 @@ namespace OX.Persistence
         }
         public static UInt160[] GetBlackList()
         {
-            var kyes = Blockchain.FlashStateContractScriptHash.ToArray().Concat(System.Text.Encoding.UTF8.GetBytes("bkl")).Concat(new byte[] { 0 });
+            var kyes = Blockchain.FlashMessageContractScriptHash.ToArray().Concat(System.Text.Encoding.UTF8.GetBytes("bkl")).Concat(new byte[] { 0 });
             var kbs = Blockchain.Singleton.Store.GetAll(Prefixes.ST_Storage, kyes.ToArray());
             if (kbs.IsNotNullAndEmpty())
             {
@@ -66,7 +66,7 @@ namespace OX.Persistence
         }
         public static UInt160[] GetWhiteList()
         {
-            var kyes = Blockchain.FlashStateContractScriptHash.ToArray().Concat(System.Text.Encoding.UTF8.GetBytes("wtl")).Concat(new byte[] { 0 });
+            var kyes = Blockchain.FlashMessageContractScriptHash.ToArray().Concat(System.Text.Encoding.UTF8.GetBytes("wtl")).Concat(new byte[] { 0 });
             var kbs = Blockchain.Singleton.Store.GetAll(Prefixes.ST_Storage, kyes.ToArray());
             if (kbs.IsNotNullAndEmpty())
             {
@@ -162,7 +162,7 @@ namespace OX.Persistence
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
             {
-                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                ScriptHash = Blockchain.FlashMessageContractScriptHash,
                 Key = System.Text.Encoding.UTF8.GetBytes("dmsr").Concat(new byte[] { 0 }).Concat(address.ToArray()).ToArray(),
             });
             return item.IsNotNull() ? item.Value.Skip(20).ToArray() : default;
@@ -171,7 +171,7 @@ namespace OX.Persistence
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
             {
-                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                ScriptHash = Blockchain.FlashMessageContractScriptHash,
                 Key = System.Text.Encoding.UTF8.GetBytes("mrk").Concat(new byte[] { 0 }).Concat(address.ToArray()).ToArray(),
             });
             return item.IsNotNull() ? item.Value.Skip(20).ToArray() : default;
@@ -180,7 +180,7 @@ namespace OX.Persistence
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
             {
-                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                ScriptHash = Blockchain.FlashMessageContractScriptHash,
                 Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 0 }).ToArray(),
             });
             return item.IsNotNull() ? item.Value : default;
@@ -189,7 +189,7 @@ namespace OX.Persistence
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
             {
-                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                ScriptHash = Blockchain.FlashMessageContractScriptHash,
                 Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 3 }).ToArray(),
             });
             return item.IsNotNull() ? item.Value[0] : 0;
@@ -198,7 +198,7 @@ namespace OX.Persistence
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
             {
-                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                ScriptHash = Blockchain.FlashMessageContractScriptHash,
                 Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 1 }).ToArray(),
             });
             return item.IsNotNull() ? item.Value[0] : 0;
@@ -207,16 +207,16 @@ namespace OX.Persistence
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
             {
-                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                ScriptHash = Blockchain.FlashMessageContractScriptHash,
                 Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 2 }).ToArray(),
             });
             return item.IsNotNull() ? item.Value[0] : 0;
         }
-        public static bool AllowFlashState(this Blockchain blockchain, AccountState accountState, uint referenceLastFlashIndex = 0)
+        public static bool AllowFlashMessage(this Blockchain blockchain, AccountState accountState, uint referenceLastFlashIndex = 0)
         {
             var txPoolCount = blockchain.MemPool.Count;
             if (txPoolCount > blockchain.MemPool.RebroadcastMultiplierThreshold * blockchain.GetPoolMutiple()) return false;
-            return blockchain.StatePool.AllowFlashState(accountState, txPoolCount, referenceLastFlashIndex);
+            return blockchain.StatePool.AllowFlashMessage(accountState, txPoolCount, referenceLastFlashIndex);
         }
     }
 }

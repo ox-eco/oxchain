@@ -1034,7 +1034,7 @@ namespace OX.UI
         void t2()
         {
 
-            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashStateContractScriptHash);
+            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashMessageContractScriptHash);
             var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
             parameters[0].Value = "setintervalfunction";
             List<ContractParameter> list = new List<ContractParameter>();
@@ -1046,7 +1046,7 @@ namespace OX.UI
             byte[] scripts = default;
             using (ScriptBuilder sb = new ScriptBuilder())
             {
-                sb.EmitAppCall(Blockchain.FlashStateContractScriptHash, parameters);
+                sb.EmitAppCall(Blockchain.FlashMessageContractScriptHash, parameters);
                 scripts = sb.ToArray();
             }
             var tx = new InvocationTransaction();
@@ -1094,7 +1094,7 @@ namespace OX.UI
         void t4()
         {
             var walletAccount = Program.CurrentWallet.GetAccounts().First();
-            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashStateContractScriptHash);
+            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashMessageContractScriptHash);
             var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
             parameters[0].Value = "register";
             List<ContractParameter> list = new List<ContractParameter>();
@@ -1104,7 +1104,7 @@ namespace OX.UI
             byte[] scripts = default;
             using (ScriptBuilder sb = new ScriptBuilder())
             {
-                sb.EmitAppCall(Blockchain.FlashStateContractScriptHash, parameters);
+                sb.EmitAppCall(Blockchain.FlashMessageContractScriptHash, parameters);
                 scripts = sb.ToArray();
             }
             var tx = new InvocationTransaction();
@@ -1144,7 +1144,7 @@ namespace OX.UI
         void t5()
         {
             var walletAccount = Program.CurrentWallet.GetAccounts().First();
-            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashStateContractScriptHash);
+            ContractState contract = Blockchain.Singleton.Store.GetContracts().TryGet(Blockchain.FlashMessageContractScriptHash);
             var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
             parameters[0].Value = "removeblacklist";
             List<ContractParameter> list = new List<ContractParameter>();
@@ -1153,7 +1153,7 @@ namespace OX.UI
             byte[] scripts = default;
             using (ScriptBuilder sb = new ScriptBuilder())
             {
-                sb.EmitAppCall(Blockchain.FlashStateContractScriptHash, parameters);
+                sb.EmitAppCall(Blockchain.FlashMessageContractScriptHash, parameters);
                 scripts = sb.ToArray();
             }
             var tx = new InvocationTransaction();

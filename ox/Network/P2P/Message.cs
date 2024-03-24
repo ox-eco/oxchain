@@ -66,7 +66,7 @@ namespace OX.Network.P2P
                 _payload_deserialized = Transaction.DeserializeFrom(Payload);
             return (Transaction)_payload_deserialized;
         }
-        public FlashMessage GetFlashState()
+        public FlashMessage GetFlashMessage()
         {
             if (_payload_deserialized is null)
                 _payload_deserialized = FlashMessage.DeserializeFrom(Payload);

@@ -8,13 +8,13 @@ using OX.Network.P2P.Payloads;
 
 namespace OX
 {
-    public static class FlashStateDeserilizeHelper
+    public static class FlashMessageDeserilizeHelper
     {
-        public static FlashMessage DeserilizeFlashState(this byte[] flashData, byte flashStateType)
+        public static FlashMessage DeserilizeFlashMessage(this byte[] flashData, byte flashMessageType)
         {
             try
             {
-                FlashMessageType tt = (FlashMessageType)flashStateType;
+                FlashMessageType tt = (FlashMessageType)flashMessageType;
                 switch (tt)
                 {
                     case FlashMessageType.FlashState:

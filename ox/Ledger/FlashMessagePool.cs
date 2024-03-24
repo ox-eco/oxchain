@@ -24,7 +24,7 @@ namespace OX.Ledger
         {
             _system = system;
         }
-        public int GetAccountFlashStateInterval(int txPoolCount, Fixed8 oxsBalance)
+        public int GetAccountFlashMessageInterval(int txPoolCount, Fixed8 oxsBalance)
         {
             if (oxsBalance < Blockchain.FlashMinOXSBalance) return 0;
             var multiple = (int)(oxsBalance.GetInternalValue() / Blockchain.FlashMinOXSBalance.GetInternalValue());
@@ -37,9 +37,9 @@ namespace OX.Ledger
                 totalOXS = fas.Sum(m => m.Value.LastOXSBalance.GetInternalValue());
                 totalFS = fas.Count();
             }
-            return _getFlashStateInterval(txPoolCount, multiple, totalFS, totalOXS);
+            return _getFlashMessageInterval(txPoolCount, multiple, totalFS, totalOXS);
         }
-        int _getFlashStateInterval(int txPoolCount, int balanceMultiple, int flashStateNumber, long totalOXSBalance)
+        int _getFlashMessageInterval(int txPoolCount, int balanceMultiple, int flashStateNumber, long totalOXSBalance)
         {
             //if (balanceMultiple < 1) return 0;
             //if (balanceMultiple >= 1000) return 2;
@@ -91,10 +91,10 @@ namespace OX.Ledger
             if (engine.State.HasFlag(VMState.FAULT)) return 0;
             return (int)engine.ResultStack.Pop().GetBigInteger();
         }
-        internal bool AllowFlashState(AccountState accountState, int txPoolCount, uint referenceLastFlashIndex = 0)
+        internal bool AllowFlashMessage(AccountState accountState, int txPoolCount, uint referenceLastFlashIndex = 0)
         {
             var balance = accountState.GetBalance(Blockchain.OXS);
-            var interval = GetAccountFlashStateInterval(txPoolCount, balance);
+            var interval = GetAccountFlashMessageInterval(txPoolCount, balance);
             if (interval == 0) return false;
             if (_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
             {
@@ -105,28 +105,28 @@ namespace OX.Ledger
                 return Blockchain.Singleton.Height >= referenceLastFlashIndex + interval;
             }
         }
-        public bool TryAppend(AccountState accountState, FlashMessage flashstate, string remoteNodeKey, int txPoolCount, Action<FlashAccount> action = default)
+        public bool TryAppend(AccountState accountState, FlashMessage flashmessage, string remoteNodeKey, int txPoolCount, Action<FlashAccount> action = default)
         {
             _txRwLock.EnterReadLock();
             try
             {
                 var balance = accountState.GetBalance(Blockchain.OXS);
-                var interval = GetAccountFlashStateInterval(txPoolCount, balance);
+                var interval = GetAccountFlashMessageInterval(txPoolCount, balance);
                 if (interval == 0) return false;
                 if (!_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
                 {
                     flashAccount = new FlashAccount();
                     _flashAccounts[accountState.ScriptHash] = flashAccount;
                 }
-                if (flashstate.Hash.Equals(flashAccount.LastHash))
+                if (flashmessage.Hash.Equals(flashAccount.LastHash))
                 {
                     if (!flashAccount.InRemoteKeys.Contains(remoteNodeKey)) flashAccount.InRemoteKeys.Add(remoteNodeKey);
                 }
                 else
                 {
-                    if (flashstate.MinIndex < flashAccount.LastIndex + interval) return false;
+                    if (flashmessage.MinIndex < flashAccount.LastIndex + interval) return false;
                 }
-                var ret = flashAccount.TryAppenFlashState(flashstate, balance);
+                var ret = flashAccount.TryAppenFlashMessage(flashmessage, balance);
                 if (action != default)
                 {
                     action(flashAccount);
@@ -161,21 +161,21 @@ namespace OX.Ledger
         public FlashMessage LastFlashMessage { get; private set; }
         public List<string> InRemoteKeys = new List<string>();
         public List<string> OutRemoteKeys = new List<string>();
-        public bool TryAppenFlashState(FlashMessage flashState, Fixed8 oxsBalance)
+        public bool TryAppenFlashMessage(FlashMessage flashMessage, Fixed8 oxsBalance)
         {
-            if (flashState.MinIndex <= LastIndex) return false;
-            if (flashState.Hash.Equals(LastHash)) return false;
-            LastHash = flashState.Hash;
-            LastFlashMessage = flashState;
-            LastIndex = flashState.MinIndex;
+            if (flashMessage.MinIndex <= LastIndex) return false;
+            if (flashMessage.Hash.Equals(LastHash)) return false;
+            LastHash = flashMessage.Hash;
+            LastFlashMessage = flashMessage;
+            LastIndex = flashMessage.MinIndex;
             LastOXSBalance = oxsBalance;
             InRemoteKeys.Clear();
             OutRemoteKeys.Clear();
             return true;
         }
-        public bool VerifyRelay(UInt256 flashStateHash, string RemoteNodeKey)
+        public bool VerifyRelay(UInt256 flashMessageHash, string RemoteNodeKey)
         {
-            if (!flashStateHash.Equals(LastHash)) return false;
+            if (!flashMessageHash.Equals(LastHash)) return false;
             if (InRemoteKeys.Contains(RemoteNodeKey)) return false;
             if (OutRemoteKeys.Contains(RemoteNodeKey)) return false;
             return true;

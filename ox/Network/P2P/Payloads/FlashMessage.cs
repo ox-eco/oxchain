@@ -182,7 +182,7 @@ namespace OX.Network.P2P.Payloads
             if (MinIndex > snapshot.Height + 1) return false;
             if (MinIndex + 10 <= snapshot.Height) return false;
             var sh = Contract.CreateSignatureRedeemScript(this.Sender).ToScriptHash();
-            if (!Blockchain.Singleton.VerifyFlashStateSender(snapshot, sh, out accountState)) return false;
+            if (!Blockchain.Singleton.VerifyFlashMessageSender(snapshot, sh, out accountState)) return false;
             return this.VerifyWitnesses(snapshot);
         }
 
