@@ -9,7 +9,7 @@ namespace OX.Bapps
     {
         Wallet Wallet { get; set; }
 
-        void OnFlashState(FlashState flashState);
+        void OnFlashState(FlashMessage flashState);
         IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default) where K : ISerializable, new() where V : ISerializable, new();
         IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, ISerializable key) where K : ISerializable, new() where V : ISerializable, new();
 

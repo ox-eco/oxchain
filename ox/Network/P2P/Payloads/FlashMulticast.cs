@@ -23,12 +23,12 @@ using static Akka.Actor.ProviderSelection;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class FlashMulticast : FlashState
+    public class FlashMulticast : FlashMessage
     {
         public UInt256 TalkLine;
         public byte[] Data;
         public override int Size => base.Size + TalkLine.Size + Data.GetVarSize();
-        public FlashMulticast() : base(FlashStateType.FlashMulticast)
+        public FlashMulticast() : base(FlashMessageType.FlashMulticast)
         {
             Data = new byte[] { 0x00 };
         }

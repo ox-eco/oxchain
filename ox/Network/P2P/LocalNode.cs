@@ -19,7 +19,7 @@ namespace OX.Network.P2P
         public class Relay { public IInventory Inventory; }
         internal class RelayDirectly { public IInventory Inventory; }
         internal class SendDirectly { public IInventory Inventory; }
-        internal class RelayFlash { public string RemoteNodeKey; public FlashState FlashState; }
+        internal class RelayFlash { public string RemoteNodeKey; public FlashMessage FlashState; }
         //internal class RelayFlashDirectly { public IInventory Inventory; }
 
         public const uint ProtocolVersion = 0;
@@ -168,7 +168,7 @@ namespace OX.Network.P2P
                 system.Consensus?.Tell(transaction);
             if (inventory.InventoryType == InventoryType.FS)
             {
-                if (inventory is FlashState fs)
+                if (inventory is FlashMessage fs)
                     OnRelayFlash(new RelayFlash { FlashState = fs, RemoteNodeKey = "localhost" });
             }
             else

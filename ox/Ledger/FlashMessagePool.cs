@@ -15,12 +15,12 @@ using System.Threading;
 
 namespace OX.Ledger
 {
-    public class FlashStatePool
+    public class FlashMessagePool
     {
         private readonly OXSystem _system;
         private readonly Dictionary<UInt160, FlashAccount> _flashAccounts = new Dictionary<UInt160, FlashAccount>();
         private readonly ReaderWriterLockSlim _txRwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-        public FlashStatePool(OXSystem system)
+        public FlashMessagePool(OXSystem system)
         {
             _system = system;
         }
@@ -105,7 +105,7 @@ namespace OX.Ledger
                 return Blockchain.Singleton.Height >= referenceLastFlashIndex + interval;
             }
         }
-        public bool TryAppend(AccountState accountState, FlashState flashstate, string remoteNodeKey, int txPoolCount, Action<FlashAccount> action = default)
+        public bool TryAppend(AccountState accountState, FlashMessage flashstate, string remoteNodeKey, int txPoolCount, Action<FlashAccount> action = default)
         {
             _txRwLock.EnterReadLock();
             try
@@ -158,15 +158,15 @@ namespace OX.Ledger
         public UInt256 LastHash { get; private set; } = UInt256.Zero;
         public uint LastIndex { get; private set; } = 0;
         public Fixed8 LastOXSBalance { get; private set; } = Fixed8.Zero;
-        public FlashState LastFlashState { get; private set; }
+        public FlashMessage LastFlashMessage { get; private set; }
         public List<string> InRemoteKeys = new List<string>();
         public List<string> OutRemoteKeys = new List<string>();
-        public bool TryAppenFlashState(FlashState flashState, Fixed8 oxsBalance)
+        public bool TryAppenFlashState(FlashMessage flashState, Fixed8 oxsBalance)
         {
             if (flashState.MinIndex <= LastIndex) return false;
             if (flashState.Hash.Equals(LastHash)) return false;
             LastHash = flashState.Hash;
-            LastFlashState = flashState;
+            LastFlashMessage = flashState;
             LastIndex = flashState.MinIndex;
             LastOXSBalance = oxsBalance;
             InRemoteKeys.Clear();

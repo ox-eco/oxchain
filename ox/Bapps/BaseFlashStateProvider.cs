@@ -29,7 +29,7 @@ namespace OX.Bapps
 
         #region IBappProvider
  
-        public abstract void OnFlashState(FlashState flashState);
+        public abstract void OnFlashState(FlashMessage flashState);
         #endregion
         public IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default) where K : ISerializable, new() where V : ISerializable, new()
         {

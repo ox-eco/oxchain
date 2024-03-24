@@ -22,13 +22,13 @@ using OX.Wallets;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class FlashUnicast : FlashState
+    public class FlashUnicast : FlashMessage
     {
         public UInt256 TalkLine;
         public UInt256 RecipientHash;
         public byte[] Data;
         public override int Size => base.Size + TalkLine.Size + RecipientHash.Size + Data.GetVarSize();
-        public FlashUnicast() : base(FlashStateType.FlashUnicast)
+        public FlashUnicast() : base(FlashMessageType.FlashUnicast)
         {
             Data = new byte[] { 0x00 };
         }

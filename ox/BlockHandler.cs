@@ -29,7 +29,7 @@ namespace OX
         public abstract void OnStop();
         protected abstract void OnReceived(object message);
         protected abstract void OnBlockPersistCompleted(Block block);
-        protected abstract void OnFlashStateCaptured(FlashState flashState);
+        protected abstract void OnFlashStateCaptured(FlashMessage flashState);
 
         public BlockHandler(OXSystem system) : this(system, null)
         {
@@ -108,7 +108,7 @@ namespace OX
         {
             this.oxsystem.LocalNode.Tell(new LocalNode.SendDirectly { Inventory = inventory });
         }
-        public void RelayFlash(FlashState flashState)
+        public void RelayFlash(FlashMessage flashState)
         {
             this.oxsystem.LocalNode.Tell(new LocalNode.RelayFlash { FlashState = flashState });
         }
@@ -139,7 +139,7 @@ namespace OX
             Console.WriteLine(msg);
             return true;
         }
-        public bool SignAndRelay(FlashState fs)
+        public bool SignAndRelay(FlashMessage fs)
         {
             ContractParametersContext context;
             try

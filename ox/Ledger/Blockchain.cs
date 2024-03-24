@@ -27,7 +27,7 @@ namespace OX.Ledger
         public static UInt256 OXC => OXC_Token.Hash;
         public class ApplicationExecuted { public Transaction Transaction; public ApplicationExecutionResult[] ExecutionResults; }
         public class PersistCompleted { public Block Block; }
-        public class FlashStateCaptured { public FlashState FlashState; }
+        public class FlashStateCaptured { public FlashMessage FlashState; }
         public class Import { public IEnumerable<Block> Blocks; }
         public class ImportCompleted { }
         public class FillMemoryPool { public IEnumerable<Transaction> Transactions; }
@@ -146,7 +146,7 @@ namespace OX.Ledger
         public Snapshot CurrentSnapshot { get { return currentSnapshot; } }
         public Store Store { get; }
         public MemoryPool MemPool { get; }
-        public FlashStatePool StatePool { get; }
+        public FlashMessagePool StatePool { get; }
         public uint Height => currentSnapshot.Height;
 
         public uint HeaderHeight => currentSnapshot.HeaderHeight;
@@ -172,7 +172,7 @@ namespace OX.Ledger
         {
             this.system = system;
             this.MemPool = new MemoryPool(system, MemoryPoolMaxTransactions);
-            this.StatePool = new FlashStatePool(system);
+            this.StatePool = new FlashMessagePool(system);
             this.Store = store;
             lock (lockObj)
             {

@@ -37,7 +37,7 @@ namespace OX.Bapps
         public static event BappEventHandler<BappEvent> BappEvent;
         public static event BappEventHandler<CrossBappMessage> CrossBappMessage;
         public static event BappEventHandler<Block> BappBlockEvent;
-        public static event BappEventHandler<FlashState> FlashStateEvent;
+        public static event BappEventHandler<FlashMessage> FlashStateEvent;
         public static event BappEventHandler BappRebuildIndex;
         static Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
         public static IEnumerable<Assembly> Assemblies { get { return assemblies.Values; } }
@@ -220,7 +220,7 @@ namespace OX.Bapps
                 }
             }
         }
-        public static void OnFlashStateCaptured(FlashState flashState)
+        public static void OnFlashStateCaptured(FlashMessage flashState)
         {
             foreach (var bapp in bapps)
             {
@@ -397,7 +397,7 @@ namespace OX.Bapps
                 BizScriptHashStates[pubkey] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
             }
         }
-        void OnFlashState(FlashState flashState)
+        void OnFlashState(FlashMessage flashState)
         {
             if (this.FlashStateProvider.IsNotNull()) this.FlashStateProvider.OnFlashState(flashState);
             if (this.BappProvider.IsNotNull()) this.BappProvider.OnFlashState(flashState);

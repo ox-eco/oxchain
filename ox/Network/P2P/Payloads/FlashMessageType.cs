@@ -4,15 +4,15 @@ using OX.IO.Caching;
 
 namespace OX.Network.P2P.Payloads
 {
-    public enum FlashStateContentType : byte
+    public enum FlashMessageContentType : byte
     {
         Text = 0x00,
         Image = 0x01
     }
-    public enum FlashStateType : byte
+    public enum FlashMessageType : byte
     {
-        [ReflectionCache(typeof(FlashLog))]
-        FlashLog = 0x00,
+        [ReflectionCache(typeof(FlashState))]
+        FlashState = 0x00,
         [ReflectionCache(typeof(FlashMulticast))]
         FlashMulticast = 0x01,
         [ReflectionCache(typeof(FlashUnicast))]

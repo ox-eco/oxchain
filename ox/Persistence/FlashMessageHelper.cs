@@ -9,9 +9,9 @@ using System.Threading;
 
 namespace OX.Persistence
 {
-    public static class FlashStateHelper
+    public static class FlashMessageHelper
     {
-        static int _flashStateSizeMultiple = 0;
+        static int _flashMessageSizeMultiple = 0;
         static int _poolMultiple = 0;
         /// <summary>
         /// 1:black list
@@ -149,14 +149,14 @@ namespace OX.Persistence
             }
             return _listKind;
         }
-        public static int GetFlashStateSizeMutiple(this Blockchain blockchain)
+        public static int GetFlashMessageSizeMutiple(this Blockchain blockchain)
         {
-            if (blockchain.HeaderHeight % 100 == 0 || _flashStateSizeMultiple == 0)
+            if (blockchain.HeaderHeight % 100 == 0 || _flashMessageSizeMultiple == 0)
             {
-                _flashStateSizeMultiple = GetFlashStateSizeMutiple();
+                _flashMessageSizeMultiple = GetFlashMessageSizeMutiple();
 
             }
-            return _flashStateSizeMultiple;
+            return _flashMessageSizeMultiple;
         }
         public static byte[] GetDomain(UInt160 address)
         {
@@ -185,7 +185,7 @@ namespace OX.Persistence
             });
             return item.IsNotNull() ? item.Value : default;
         }
-        public static int GetFlashStateSizeMutiple()
+        public static int GetFlashMessageSizeMutiple()
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
             {

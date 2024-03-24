@@ -10,20 +10,20 @@ namespace OX
 {
     public static class FlashStateDeserilizeHelper
     {
-        public static FlashState DeserilizeFlashState(this byte[] flashData, byte flashStateType)
+        public static FlashMessage DeserilizeFlashState(this byte[] flashData, byte flashStateType)
         {
             try
             {
-                FlashStateType tt = (FlashStateType)flashStateType;
+                FlashMessageType tt = (FlashMessageType)flashStateType;
                 switch (tt)
                 {
-                    case FlashStateType.FlashLog:
-                        return flashData.AsSerializable<FlashLog>();
-                    case FlashStateType.FlashMulticast:
+                    case FlashMessageType.FlashState:
+                        return flashData.AsSerializable<FlashState>();
+                    case FlashMessageType.FlashMulticast:
                         return flashData.AsSerializable<FlashMulticast>();
-                    case FlashStateType.FlashUnicast:
+                    case FlashMessageType.FlashUnicast:
                         return flashData.AsSerializable<FlashUnicast>();
-                    case FlashStateType.FlashMulticastNotice:
+                    case FlashMessageType.FlashMulticastNotice:
                         return flashData.AsSerializable<FlashMulticastNotice>();
                 }
                 return default;

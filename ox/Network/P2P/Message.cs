@@ -66,11 +66,11 @@ namespace OX.Network.P2P
                 _payload_deserialized = Transaction.DeserializeFrom(Payload);
             return (Transaction)_payload_deserialized;
         }
-        public FlashState GetFlashState()
+        public FlashMessage GetFlashState()
         {
             if (_payload_deserialized is null)
-                _payload_deserialized = FlashState.DeserializeFrom(Payload);
-            return (FlashState)_payload_deserialized;
+                _payload_deserialized = FlashMessage.DeserializeFrom(Payload);
+            return (FlashMessage)_payload_deserialized;
         }
 
         void ISerializable.Serialize(BinaryWriter writer)

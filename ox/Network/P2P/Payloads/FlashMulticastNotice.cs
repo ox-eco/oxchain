@@ -39,12 +39,12 @@ namespace OX.Network.P2P.Payloads
             Data = reader.ReadVarBytes();
         }
     }
-    public class FlashMulticastNotice : FlashState
+    public class FlashMulticastNotice : FlashMessage
     {
         public byte[] Msg;
         public MulticastNoticeDest[] Destinations;
         public override int Size => base.Size + Msg.GetVarSize() + Destinations.GetVarSize();
-        public FlashMulticastNotice() : base(FlashStateType.FlashMulticastNotice)
+        public FlashMulticastNotice() : base(FlashMessageType.FlashMulticastNotice)
         {
 
         }
@@ -77,7 +77,7 @@ namespace OX.Network.P2P.Payloads
         }
 
 
-        public override bool Verify(Snapshot snapshot, FlashStatePool flashStatePool, out AccountState accountState)
+        public override bool Verify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState)
         {
             accountState = null;
             if (this.Destinations.IsNullOrEmpty()) return false;

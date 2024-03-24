@@ -1193,13 +1193,13 @@ namespace OX.UI
         void t3()
         {
             var walletAccount = Program.CurrentWallet.GetAccounts().First();
-            var m = FlashStateHelper.GetPoolMutiple();
-            var intervalSH = FlashStateHelper.GetIntervalFunctionScriptHash();
-            var lk = FlashStateHelper.GetListKind();
-            var sizeMultiple = FlashStateHelper.GetFlashStateSizeMutiple();
-            var bkl = FlashStateHelper.GetBlackList();
-            var wtl = FlashStateHelper.GetWhiteList();
-            var domain = FlashStateHelper.GetDomain(walletAccount.ScriptHash);
+            var m = FlashMessageHelper.GetPoolMutiple();
+            var intervalSH = FlashMessageHelper.GetIntervalFunctionScriptHash();
+            var lk = FlashMessageHelper.GetListKind();
+            var sizeMultiple = FlashMessageHelper.GetFlashMessageSizeMutiple();
+            var bkl = FlashMessageHelper.GetBlackList();
+            var wtl = FlashMessageHelper.GetWhiteList();
+            var domain = FlashMessageHelper.GetDomain(walletAccount.ScriptHash);
             var dm = System.Text.Encoding.UTF8.GetString(domain);
         }
 

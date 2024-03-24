@@ -136,7 +136,7 @@ namespace OX.Network.P2P
                         OnInventoryReceived(msg.GetTransaction());
                     break;
                 case "fs":
-                    if (msg.Payload.Length <= FlashState.MaxFlashStateSize)
+                    if (msg.Payload.Length <= FlashMessage.MaxFlashMessageSize)
                         OnFlashStateReceived(msg.GetFlashState());
                     break;
                 case "verack":
@@ -277,7 +277,7 @@ namespace OX.Network.P2P
             if (payload.Headers.Length == 0) return;
             system.Blockchain.Tell(payload.Headers, Context.Parent);
         }
-        private void OnFlashStateReceived(FlashState flashState)
+        private void OnFlashStateReceived(FlashMessage flashState)
         {
             system.LocalNode.Tell(new LocalNode.RelayFlash { RemoteNodeKey = this.Remote.ToString(), FlashState = flashState });
         }
