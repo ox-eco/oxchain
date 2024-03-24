@@ -1038,6 +1038,7 @@ namespace OX.UI
             var parameters = contract.ParameterList.Select(p => new ContractParameter(p)).ToArray();
             parameters[0].Value = "setintervalfunction";
             List<ContractParameter> list = new List<ContractParameter>();
+            list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = 4 });
             list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = 1 });
             list.Add(new ContractParameter { Type = ContractParameterType.Integer, Value = 4 });
             list.Add(new ContractParameter { Type = ContractParameterType.Hash160, Value = UInt160.Parse("0x5fe1f220a675fc048375871f525e3d8bcdaaa461") }); ;
@@ -1195,12 +1196,13 @@ namespace OX.UI
             var m = FlashStateHelper.GetPoolMutiple();
             var intervalSH = FlashStateHelper.GetIntervalFunctionScriptHash();
             var lk = FlashStateHelper.GetListKind();
+            var sizeMultiple = FlashStateHelper.GetFlashStateSizeMutiple();
             var bkl = FlashStateHelper.GetBlackList();
             var wtl = FlashStateHelper.GetWhiteList();
             var domain = FlashStateHelper.GetDomain(walletAccount.ScriptHash);
             var dm = System.Text.Encoding.UTF8.GetString(domain);
         }
 
-        
+       
     }
 }

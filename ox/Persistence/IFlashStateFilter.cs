@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace OX.Persistence
 {
-    public interface IFlashStateFilter
+    public interface IFlashLogFilter
     {
-        bool Filter(FlashState flashState);
+        bool InputFilter(FlashLog fl);
+        bool OutputFilter(FlashLog fl);
+    }
+    public interface IFlashMulticastFilter
+    {
+        bool Filter(FlashMulticast fm);
+    }
+    public interface IFlashUnicastFilter
+    {
+        bool Filter(FlashUnicast fu);
     }
 }

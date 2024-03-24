@@ -41,16 +41,18 @@ namespace OX.Network.P2P.Payloads
     }
     public class FlashMulticastNotice : FlashState
     {
+        public byte[] Msg;
         public MulticastNoticeDest[] Destinations;
-        public override int Size => base.Size + Destinations.GetVarSize();
+        public override int Size => base.Size + Msg.GetVarSize() + Destinations.GetVarSize();
         public FlashMulticastNotice() : base(FlashStateType.FlashMulticastNotice)
         {
 
         }
-        public FlashMulticastNotice(KeyPair local, uint minIndex, byte[] key, ECPoint[] destPubkeys) : this()
+        public FlashMulticastNotice(KeyPair local, uint minIndex, byte[] key, ECPoint[] destPubkeys, byte[] msg) : this()
         {
             this.Sender = local.PublicKey;
             this.MinIndex = minIndex;
+            this.Msg = msg;
             List<MulticastNoticeDest> list = new List<MulticastNoticeDest>();
             foreach (var dest in destPubkeys)
             {
@@ -64,11 +66,13 @@ namespace OX.Network.P2P.Payloads
         }
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
+            Msg = reader.ReadVarBytes();
             Destinations = reader.ReadSerializableArray<MulticastNoticeDest>();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
+            writer.WriteVarBytes(Msg);
             writer.Write(Destinations);
         }
 
@@ -77,7 +81,7 @@ namespace OX.Network.P2P.Payloads
         {
             accountState = null;
             if (this.Destinations.IsNullOrEmpty()) return false;
-            if (this.Destinations.Length > 10) return false;
+            if (this.Destinations.Length > 40) return false;
             return base.Verify(snapshot, flashStatePool, out accountState);
         }
     }

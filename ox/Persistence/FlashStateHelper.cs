@@ -11,6 +11,7 @@ namespace OX.Persistence
 {
     public static class FlashStateHelper
     {
+        static int _flashStateSizeMultiple = 0;
         static int _poolMultiple = 0;
         /// <summary>
         /// 1:black list
@@ -148,6 +149,15 @@ namespace OX.Persistence
             }
             return _listKind;
         }
+        public static int GetFlashStateSizeMutiple(this Blockchain blockchain)
+        {
+            if (blockchain.HeaderHeight % 100 == 0 || _flashStateSizeMultiple == 0)
+            {
+                _flashStateSizeMultiple = GetFlashStateSizeMutiple();
+
+            }
+            return _flashStateSizeMultiple;
+        }
         public static byte[] GetDomain(UInt160 address)
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
@@ -174,6 +184,15 @@ namespace OX.Persistence
                 Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 0 }).ToArray(),
             });
             return item.IsNotNull() ? item.Value : default;
+        }
+        public static int GetFlashStateSizeMutiple()
+        {
+            StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
+            {
+                ScriptHash = Blockchain.FlashStateContractScriptHash,
+                Key = System.Text.Encoding.UTF8.GetBytes("itv").Concat(new byte[] { 0 }).Concat(new byte[] { 3 }).ToArray(),
+            });
+            return item.IsNotNull() ? item.Value[0] : 0;
         }
         public static int GetPoolMutiple()
         {

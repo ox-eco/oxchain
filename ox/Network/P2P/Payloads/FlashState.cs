@@ -24,7 +24,7 @@ namespace OX.Network.P2P.Payloads
 {
     public abstract class FlashState : IEquatable<FlashState>, IInventory
     {
-        public const int MaxFlashStateSize = 1024 * 2;
+        public static int MaxFlashStateSize { get { return 1024 * Blockchain.Singleton.GetFlashStateSizeMutiple(); } }
         /// <summary>
         /// Reflection cache for FlashStateType
         /// </summary>
