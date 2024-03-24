@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace OX.Bapps
 {
-    public abstract class BaseFlashStateProvider : IFlashStateProvider
+    public abstract class BaseFlashMessageProvider : IFlashMessageProvider
     {
         public static string WalletIndexDirectory { get; set; }
         public Bapp Bapp { get; set; }
@@ -22,14 +22,14 @@ namespace OX.Bapps
 
         public DB Db { get; protected set; }
 
-        public BaseFlashStateProvider(Bapp bapp)
+        public BaseFlashMessageProvider(Bapp bapp)
         {
             this.Bapp = bapp;
         }
 
         #region IBappProvider
  
-        public abstract void OnFlashState(FlashMessage flashState);
+        public abstract void OnFlashMessage(FlashMessage flashState);
         #endregion
         public IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default) where K : ISerializable, new() where V : ISerializable, new()
         {

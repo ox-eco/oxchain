@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace OX.Bapps
 {
-    public interface IFlashStateProvider : IBappPort
+    public interface IFlashMessageProvider : IBappPort
     {
         Wallet Wallet { get; set; }
 
-        void OnFlashState(FlashMessage flashState);
+        void OnFlashMessage(FlashMessage flashState);
         IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, byte[] keys = default) where K : ISerializable, new() where V : ISerializable, new();
         IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, ISerializable key) where K : ISerializable, new() where V : ISerializable, new();
 
