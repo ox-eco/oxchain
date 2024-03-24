@@ -25,17 +25,17 @@ namespace OX.Network.P2P.Payloads
 {
     public class MulticastNoticeDest : ISerializable
     {
-        public UInt256 ToHash;
+        public UInt256 RecipientHash;
         public byte[] Data;
-        public virtual int Size => ToHash.Size + Data.GetVarSize();
+        public virtual int Size => RecipientHash.Size + Data.GetVarSize();
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write(ToHash);
+            writer.Write(RecipientHash);
             writer.WriteVarBytes(Data);
         }
         public void Deserialize(BinaryReader reader)
         {
-            ToHash = reader.ReadSerializable<UInt256>();
+            RecipientHash = reader.ReadSerializable<UInt256>();
             Data = reader.ReadVarBytes();
         }
     }
@@ -58,7 +58,7 @@ namespace OX.Network.P2P.Payloads
             {
                 list.Add(new MulticastNoticeDest()
                 {
-                    ToHash = Contract.CreateSignatureRedeemScript(dest).ToScriptHash().Hash,
+                    RecipientHash = Contract.CreateSignatureRedeemScript(dest).ToScriptHash().Hash,
                     Data = key.Encrypt(local, dest, BitConverter.GetBytes(minIndex))
                 });
             }

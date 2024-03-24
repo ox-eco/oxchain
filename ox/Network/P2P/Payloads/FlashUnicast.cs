@@ -24,9 +24,10 @@ namespace OX.Network.P2P.Payloads
 {
     public class FlashUnicast : FlashState
     {
-        public UInt256 ToHash;
+        public UInt256 TalkLine;
+        public UInt256 RecipientHash;
         public byte[] Data;
-        public override int Size => base.Size + ToHash.Size + Data.GetVarSize();
+        public override int Size => base.Size + TalkLine.Size + RecipientHash.Size + Data.GetVarSize();
         public FlashUnicast() : base(FlashStateType.FlashUnicast)
         {
             Data = new byte[] { 0x00 };
@@ -35,25 +36,28 @@ namespace OX.Network.P2P.Payloads
         {
             this.Sender = local.PublicKey;
             this.MinIndex = minIndex;
-            this.ToHash = Contract.CreateSignatureRedeemScript(remote).ToScriptHash().Hash;
+            this.TalkLine = ECDiffieHellmanHelper.ECDHDeriveKeyHash(local, remote);
+            this.RecipientHash = Contract.CreateSignatureRedeemScript(remote).ToScriptHash().Hash;
             this.Data = plaintext.Encrypt(local, remote, BitConverter.GetBytes(MinIndex));
         }
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
-            ToHash = reader.ReadSerializable<UInt256>();
+            TalkLine = reader.ReadSerializable<UInt256>();
+            RecipientHash = reader.ReadSerializable<UInt256>();
             Data = reader.ReadVarBytes();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
-            writer.Write(ToHash);
+            writer.Write(TalkLine);
+            writer.Write(RecipientHash);
             writer.WriteVarBytes(Data);
         }
 
         public override JObject ToJson()
         {
             JObject json = base.ToJson();
-            json["tohash"] = ToHash.ToString();
+            json["tohash"] = RecipientHash.ToString();
             json["data"] = Data.ToHexString();
             return json;
         }
