@@ -236,7 +236,7 @@ namespace OX.Cryptography
                 rng.GetBytes(privateKey);
             }
             //Array.Clear(privateKey, 0, privateKey.Length);
-            return new UInt256(Crypto.Default.Hash256(privateKey));
+            return new UInt256(Crypto.Default.Hash256(Crypto.Default.Hash256(privateKey)));
         }
     }
 }
