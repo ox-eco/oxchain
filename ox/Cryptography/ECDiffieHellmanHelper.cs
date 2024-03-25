@@ -228,15 +228,16 @@ namespace OX.Cryptography
                 return default;
             }
         }
-        public static UInt256 CreateRandomKey(out byte[] privateKey)
+        public static UInt256 CreateRandomKey(out string privateKey)
         {
-            privateKey = new byte[32];
+            var pk = new byte[32];
             using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {
-                rng.GetBytes(privateKey);
+                rng.GetBytes(pk);
             }
             //Array.Clear(privateKey, 0, privateKey.Length);
-            return new UInt256(Crypto.Default.Hash256(Crypto.Default.Hash256(privateKey)));
+            privateKey = pk.ToHexString();
+            return new UInt256(Crypto.Default.Hash256(Crypto.Default.Hash256(pk)));
         }
     }
 }
