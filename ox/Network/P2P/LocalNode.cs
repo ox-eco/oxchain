@@ -166,7 +166,7 @@ namespace OX.Network.P2P
         {
             if (inventory is Transaction transaction)
                 system.Consensus?.Tell(transaction);
-            if (inventory.InventoryType == InventoryType.FS)
+            if (inventory.InventoryType == InventoryType.FM)
             {
                 if (inventory is FlashMessage fs)
                     OnRelayFlash(new RelayFlash { FlashMessage = fs, RemoteNodeKey = "localhost" });

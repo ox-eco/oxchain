@@ -4,7 +4,7 @@
     {
         TX = 0x01,
         Block = 0x02,
-        FS = 0x03,
+        FM = 0x03,
         Consensus = 0xe0
     }
 }

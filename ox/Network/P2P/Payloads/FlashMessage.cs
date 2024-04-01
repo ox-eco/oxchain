@@ -49,7 +49,7 @@ namespace OX.Network.P2P.Payloads
             }
         }
 
-        InventoryType IInventory.InventoryType => InventoryType.FS;
+        InventoryType IInventory.InventoryType => InventoryType.FM;
 
 
 
