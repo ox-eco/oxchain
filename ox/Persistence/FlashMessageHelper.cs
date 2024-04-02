@@ -11,25 +11,32 @@ namespace OX.Persistence
 {
     public static class FlashMessageHelper
     {
+        static uint _flashMessageSizeMultiple_refreshIndex = 0;
         static int _flashMessageSizeMultiple = 0;
+        static uint _poolMultiple_refreshIndex = 0;
         static int _poolMultiple = 0;
+        static uint _listKind_refreshIndex = 0;
         /// <summary>
         /// 1:black list
         /// 2:white list
         /// </summary>
-        static int _listKind = 0; 
+        static int _listKind = 0;
         static ContractState _contractState = default;
+        static uint _intervalFunctionScriptHash_refreshIndex = 0;
         static byte[] _intervalFunctionScriptHash = default;
+        static uint _blackList_refreshIndex = 0;
         static UInt160[] _blackList = default;
+        static uint _whiteList_refreshIndex = 0;
         static UInt160[] _whiteList = default;
         static readonly Dictionary<UInt160, byte[]> _domains = new Dictionary<UInt160, byte[]>();
         static readonly Dictionary<UInt160, byte[]> _marks = new Dictionary<UInt160, byte[]>();
         static readonly ReaderWriterLockSlim _domainRwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         public static UInt160[] GetBlackList(this Blockchain blockchain)
         {
-            if (blockchain.HeaderHeight % 10 == 0)
+            if (_blackList_refreshIndex == 0 || blockchain.HeaderHeight > _blackList_refreshIndex + 10)
             {
                 _blackList = GetBlackList();
+                _blackList_refreshIndex = blockchain.HeaderHeight;
             }
             return _blackList;
         }
@@ -52,9 +59,10 @@ namespace OX.Persistence
 
         public static UInt160[] GetWhiteList(this Blockchain blockchain)
         {
-            if (blockchain.HeaderHeight % 10 == 0)
+            if (_whiteList_refreshIndex == 0 || blockchain.HeaderHeight > _whiteList_refreshIndex + 10)
             {
                 _whiteList = GetWhiteList();
+                _whiteList_refreshIndex = blockchain.HeaderHeight;
             }
             return _whiteList;
         }
@@ -118,9 +126,10 @@ namespace OX.Persistence
         }
         public static byte[] GetIntervalFunctionScriptHash(this Blockchain blockchain, out ContractState contractState)
         {
-            if (blockchain.HeaderHeight % 100 == 0 || _intervalFunctionScriptHash == default)
+            if (_intervalFunctionScriptHash_refreshIndex == 0 || blockchain.HeaderHeight > _intervalFunctionScriptHash_refreshIndex + 100 || _intervalFunctionScriptHash == default)
             {
                 _intervalFunctionScriptHash = GetIntervalFunctionScriptHash();
+                _intervalFunctionScriptHash_refreshIndex = blockchain.HeaderHeight;
                 if (_intervalFunctionScriptHash != default)
                 {
                     _contractState = blockchain.Store.GetContracts().TryGet(new UInt160(_intervalFunctionScriptHash));
@@ -133,27 +142,29 @@ namespace OX.Persistence
         }
         public static int GetPoolMutiple(this Blockchain blockchain)
         {
-            if (blockchain.HeaderHeight % 100 == 0 || _poolMultiple == 0)
+            if (_poolMultiple_refreshIndex == 0 || blockchain.HeaderHeight > _poolMultiple_refreshIndex + 100 || _poolMultiple == 0)
             {
                 _poolMultiple = GetPoolMutiple();
+                _poolMultiple_refreshIndex = blockchain.HeaderHeight;
 
             }
             return _poolMultiple;
         }
         public static int GetListKind(this Blockchain blockchain)
         {
-            if (blockchain.HeaderHeight % 100 == 0 || _listKind == 0)
+            if (_listKind_refreshIndex == 0 || blockchain.HeaderHeight > _listKind_refreshIndex + 100 || _listKind == 0)
             {
                 _listKind = GetListKind();
-
+                _listKind_refreshIndex = blockchain.HeaderHeight;
             }
             return _listKind;
         }
         public static int GetFlashMessageSizeMutiple(this Blockchain blockchain)
         {
-            if (blockchain.HeaderHeight % 100 == 0 || _flashMessageSizeMultiple == 0)
+            if (_flashMessageSizeMultiple_refreshIndex == 0 || blockchain.HeaderHeight > _flashMessageSizeMultiple_refreshIndex + 100 || _flashMessageSizeMultiple == 0)
             {
                 _flashMessageSizeMultiple = GetFlashMessageSizeMutiple();
+                _flashMessageSizeMultiple_refreshIndex = blockchain.HeaderHeight;
 
             }
             return _flashMessageSizeMultiple;
