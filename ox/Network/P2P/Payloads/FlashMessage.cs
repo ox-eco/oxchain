@@ -179,6 +179,7 @@ namespace OX.Network.P2P.Payloads
         public virtual bool Verify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState)
         {
             accountState = null;
+            if (Size > MaxFlashMessageSize) return false;
             if (MinIndex > snapshot.Height + 1) return false;
             if (MinIndex + 10 <= snapshot.Height) return false;
             var sh = Contract.CreateSignatureRedeemScript(this.Sender).ToScriptHash();
