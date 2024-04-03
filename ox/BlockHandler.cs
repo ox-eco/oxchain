@@ -156,6 +156,7 @@ namespace OX
             if (context.Completed)
             {
                 fs.Witnesses = context.GetWitnesses();
+                if (fs.Size > FlashMessage.MaxFlashMessageSize) return false;
                 this.Relay(fs);
                 msg = $"Signed and relayed flashmessage with hash={fs.Hash}";
                 Console.WriteLine(msg);
