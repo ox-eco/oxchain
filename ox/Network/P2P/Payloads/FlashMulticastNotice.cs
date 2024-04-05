@@ -41,6 +41,7 @@ namespace OX.Network.P2P.Payloads
     }
     public class FlashMulticastNotice : FlashMessage
     {
+        public static int MaxNoticeNumber = 10 * Blockchain.Singleton.GetFlashMessageSizeMutiple();
         public byte[] Msg;
         public MulticastNoticeDest[] Destinations;
         public override int Size => base.Size + Msg.GetVarSize() + Destinations.GetVarSize();
@@ -81,7 +82,7 @@ namespace OX.Network.P2P.Payloads
         {
             accountState = null;
             if (this.Destinations.IsNullOrEmpty()) return false;
-            if (this.Destinations.Length > 40) return false;
+            if (this.Destinations.Length > MaxNoticeNumber) return false;
             return base.Verify(snapshot, flashStatePool, out accountState);
         }
     }
