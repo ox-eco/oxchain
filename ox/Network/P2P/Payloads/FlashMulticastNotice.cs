@@ -53,14 +53,15 @@ namespace OX.Network.P2P.Payloads
         {
             this.Sender = local.PublicKey;
             this.MinIndex = minIndex;
-            this.Msg = msg;
+            var suffix = BitConverter.GetBytes(minIndex);
+            this.Msg = msg.Encrypt(key, suffix);
             List<MulticastNoticeDest> list = new List<MulticastNoticeDest>();
             foreach (var dest in destPubkeys)
             {
                 list.Add(new MulticastNoticeDest()
                 {
                     RecipientHash = Contract.CreateSignatureRedeemScript(dest).ToScriptHash().Hash,
-                    Data = key.Encrypt(local, dest, BitConverter.GetBytes(minIndex))
+                    Data = key.Encrypt(local, dest, suffix)
                 });
             }
             this.Destinations = list.ToArray();
