@@ -19,5 +19,7 @@ namespace OX.Network.P2P.Payloads
         FlashUnicast = 0x02,
         [ReflectionCache(typeof(FlashMulticastNotice))]
         FlashMulticastNotice = 0x03,
+        [ReflectionCache(typeof(FlashStateComment))]
+        FlashStateComment =0x04
     }
 }

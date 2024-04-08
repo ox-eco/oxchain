@@ -223,11 +223,12 @@ namespace OX.Persistence
             });
             return item.IsNotNull() ? item.Value[0] : 0;
         }
-        public static bool AllowFlashMessage(this Blockchain blockchain, AccountState accountState, uint referenceLastFlashIndex = 0)
+        public static bool AllowFlashMessage(this Blockchain blockchain, AccountState accountState,out uint expireIndex)
         {
+            expireIndex = 0;
             var txPoolCount = blockchain.MemPool.Count;
             if (txPoolCount > blockchain.MemPool.RebroadcastMultiplierThreshold * blockchain.GetPoolMutiple()) return false;
-            return blockchain.StatePool.AllowFlashMessage(accountState, txPoolCount, referenceLastFlashIndex);
+            return blockchain.StatePool.AllowFlashMessage(accountState, txPoolCount,out expireIndex);
         }
     }
 }

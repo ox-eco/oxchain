@@ -91,19 +91,19 @@ namespace OX.Ledger
             if (engine.State.HasFlag(VMState.FAULT)) return 0;
             return (int)engine.ResultStack.Pop().GetBigInteger();
         }
-        internal bool AllowFlashMessage(AccountState accountState, int txPoolCount, uint referenceLastFlashIndex = 0)
+        internal bool AllowFlashMessage(AccountState accountState, int txPoolCount, out uint expireIndex)
         {
+            expireIndex = 0;
             var balance = accountState.GetBalance(Blockchain.OXS);
-            var interval = GetAccountFlashMessageInterval(txPoolCount, balance);
+            var interval = (uint)GetAccountFlashMessageInterval(txPoolCount, balance);
             if (interval == 0) return false;
+
             if (_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))
             {
-                return Blockchain.Singleton.Height >= flashAccount.LastIndex + interval;
+                expireIndex = flashAccount.LastIndex;
             }
-            else
-            {
-                return Blockchain.Singleton.Height >= referenceLastFlashIndex + interval;
-            }
+            expireIndex += interval;
+            return Blockchain.Singleton.Height >= expireIndex;
         }
         public bool TryAppend(AccountState accountState, FlashMessage flashmessage, string remoteNodeKey, int txPoolCount, Action<FlashAccount> action = default)
         {
@@ -181,5 +181,5 @@ namespace OX.Ledger
             return true;
         }
     }
-     
+
 }
