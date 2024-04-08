@@ -18,46 +18,71 @@ using Nethereum.Signer;
 using Nethereum.Signer.Crypto;
 using Nethereum.Hex.HexConvertors.Extensions;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class FlashStateComment : FlashMessage
+    public class StateComment : ISerializable
     {
-        public const int MaxFlashStateCommentSize = 1024;
         public UInt256 StateHash;
         public UInt256 ParentCommentHash;
         public byte[] Data;
-        public override int Size => base.Size + Data.GetVarSize();
-        public FlashStateComment() : base(FlashMessageType.FlashStateComment)
-        {
-            Data = new byte[] { 0x00 };
-        }
-        protected override void DeserializeExclusiveData(BinaryReader reader)
-        {
-            StateHash = reader.ReadSerializable<UInt256>();
-            ParentCommentHash = reader.ReadSerializable<UInt256>();
-            Data = reader.ReadVarBytes();
-        }
-
-        protected override void SerializeExclusiveData(BinaryWriter writer)
+        public virtual int Size => StateHash.Size + ParentCommentHash.Size + Data.GetVarSize();
+        public void Serialize(BinaryWriter writer)
         {
             writer.Write(StateHash);
             writer.Write(ParentCommentHash);
             writer.WriteVarBytes(Data);
         }
+        public void Deserialize(BinaryReader reader)
+        {
+            StateHash = reader.ReadSerializable<UInt256>();
+            ParentCommentHash = reader.ReadSerializable<UInt256>();
+            Data = reader.ReadVarBytes();
+        }
+        public JObject ToJson()
+        {
+            JObject json = new JObject();  
+            json["statehash"] = StateHash.ToString();
+            json["parentcommenthash"] = ParentCommentHash.ToString();
+            json["data"] = Data.ToHexString();
+            return json;
+        }
+    }
+    public class FlashStateComment : FlashMessage
+    {
+        public static int MaxCommentNumber = Blockchain.Singleton.GetFlashMessageSizeMutiple() - 1;
+        public const int MaxFlashStateCommentSize = 1024;
+        public StateComment[] Comments;
+        public override int Size => base.Size + Comments.GetVarSize();
+        public FlashStateComment() : base(FlashMessageType.FlashStateComment)
+        {
+        }
+        protected override void DeserializeExclusiveData(BinaryReader reader)
+        {
+            Comments = reader.ReadSerializableArray<StateComment>();
+        }
+
+        protected override void SerializeExclusiveData(BinaryWriter writer)
+        {
+            writer.Write(Comments);
+        }
         public override bool Verify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState)
         {
             accountState = null;
-            if (Size > MaxFlashStateCommentSize) return false;
-            if (this.ContentType!= FlashMessageContentType.Text) return false;
+            if (Comments.IsNullOrEmpty()) return false;
+            if (Comments.Length > MaxCommentNumber) return false;
+            foreach (var comment in Comments)
+            {
+                if (comment.Size > MaxFlashStateCommentSize) return false;
+            }
+            if (this.ContentType != FlashMessageContentType.Text) return false;
             return base.Verify(snapshot, flashStatePool, out accountState);
         }
         public override JObject ToJson()
         {
             JObject json = base.ToJson();
-            json["statehash"] = StateHash.ToString();
-            json["parentcommenthash"] = ParentCommentHash.ToString();
-            json["data"] = Data.ToHexString();
+            json["comments"] = new JArray(Comments.Select(p => p.ToJson()).ToArray());
             return json;
         }
     }
