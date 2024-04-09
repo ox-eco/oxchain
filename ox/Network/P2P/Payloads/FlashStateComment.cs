@@ -28,6 +28,18 @@ namespace OX.Network.P2P.Payloads
         public UInt256 ParentCommentHash;
         public byte[] Data;
         public virtual int Size => StateHash.Size + ParentCommentHash.Size + Data.GetVarSize();
+        private UInt256 _hash = null;
+        public UInt256 Hash
+        {
+            get
+            {
+                if (_hash == null)
+                {
+                    _hash = new UInt256(Crypto.Default.Hash256(this.GetHashData()));
+                }
+                return _hash;
+            }
+        }
         public void Serialize(BinaryWriter writer)
         {
             writer.Write(StateHash);
