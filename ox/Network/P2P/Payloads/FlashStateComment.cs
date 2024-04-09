@@ -54,7 +54,7 @@ namespace OX.Network.P2P.Payloads
         }
         public JObject ToJson()
         {
-            JObject json = new JObject();  
+            JObject json = new JObject();
             json["statehash"] = StateHash.ToString();
             json["parentcommenthash"] = ParentCommentHash.ToString();
             json["data"] = Data.ToHexString();
@@ -69,6 +69,13 @@ namespace OX.Network.P2P.Payloads
         public override int Size => base.Size + Comments.GetVarSize();
         public FlashStateComment() : base(FlashMessageType.FlashStateComment)
         {
+        }
+        public FlashStateComment(ECPoint sender, uint minIndex, StateComment[] comments) : this()
+        {
+            this.Sender = sender;
+            this.MinIndex = minIndex;
+            this.Comments = comments;
+            this.ContentType = FlashMessageContentType.Text;
         }
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {

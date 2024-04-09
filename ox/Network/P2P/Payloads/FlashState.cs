@@ -18,6 +18,7 @@ using Nethereum.Signer;
 using Nethereum.Signer.Crypto;
 using Nethereum.Hex.HexConvertors.Extensions;
 using System.Runtime.CompilerServices;
+using OX.Wallets;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -28,6 +29,12 @@ namespace OX.Network.P2P.Payloads
         public FlashState() : base(FlashMessageType.FlashState)
         {
             Data = new byte[] { 0x00 };
+        }
+        public FlashState(ECPoint sender, uint minIndex, byte[] plaintext) : this()
+        {
+            this.Sender = sender;
+            this.MinIndex = minIndex;
+            this.Data = plaintext;
         }
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
