@@ -9,8 +9,13 @@ namespace OX.Persistence
 {
     public interface IFlashStateFilter
     {
-        bool InputFilter(FlashState fl);
-        bool OutputFilter(FlashState fl);
+        bool InputFilter(FlashState fs);
+        bool OutputFilter(FlashState fs);
+    }
+    public interface IFlashStateCommentFilter
+    {
+        bool InputFilter(FlashStateComment fsc);
+        bool OutputFilter(FlashStateComment fsc);
     }
     public interface IFlashMulticastFilter
     {
