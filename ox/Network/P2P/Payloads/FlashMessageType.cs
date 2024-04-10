@@ -7,7 +7,9 @@ namespace OX.Network.P2P.Payloads
     public enum FlashMessageContentType : byte
     {
         Text = 0x00,
-        Image = 0x01
+        Image = 0x01,
+        Video = 0x02,
+        Mix = 0x03
     }
     public enum FlashMessageType : byte
     {
@@ -20,6 +22,6 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(FlashMulticastNotice))]
         FlashMulticastNotice = 0x03,
         [ReflectionCache(typeof(FlashStateComment))]
-        FlashStateComment =0x04
+        FlashStateComment = 0x04
     }
 }

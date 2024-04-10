@@ -24,32 +24,38 @@ namespace OX.Network.P2P.Payloads
 {
     public class FlashState : FlashMessage
     {
-        public byte[] Data;
-        public override int Size => base.Size + Data.GetVarSize();
+        public byte[] TextData;
+        public byte[] ImageData;
+        public override int Size => base.Size + TextData.GetVarSize() + ImageData.GetVarSize();
         public FlashState() : base(FlashMessageType.FlashState)
         {
-            Data = new byte[] { 0x00 };
+            TextData = new byte[] { 0x00 };
+            ImageData = new byte[] { 0x00 };
         }
-        public FlashState(ECPoint sender, uint minIndex, byte[] plaintext) : this()
+        public FlashState(ECPoint sender, uint minIndex, byte[] textData, byte[] imageData) : this()
         {
             this.Sender = sender;
             this.MinIndex = minIndex;
-            this.Data = plaintext;
+            this.TextData = textData;
+            this.ImageData = imageData;
         }
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
-            Data = reader.ReadVarBytes();
+            TextData = reader.ReadVarBytes();
+            ImageData = reader.ReadVarBytes();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
-            writer.WriteVarBytes(Data);
+            writer.WriteVarBytes(TextData);
+            writer.WriteVarBytes(ImageData);
         }
 
         public override JObject ToJson()
         {
             JObject json = base.ToJson();
-            json["data"] = Data.ToHexString();
+            json["textdata"] = TextData.ToHexString();
+            json["imagedata"] = ImageData.ToHexString();
             return json;
         }
     }
