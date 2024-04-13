@@ -30,7 +30,7 @@ namespace OX.Ledger
             var multiple = (int)(oxsBalance.GetInternalValue() / Blockchain.FlashMinOXSBalance.GetInternalValue());
 
             long totalOXS = 0;
-            int totalFS = 0;
+            int totalFS = 1;
             var fas = this._flashAccounts.Where(m => m.Value.LastIndex > Blockchain.Singleton.HeaderHeight - 10);
             if (fas.IsNotNullAndEmpty())
             {
