@@ -39,6 +39,14 @@ namespace OX.Network.P2P.Payloads
                 return _hash;
             }
         }
+        public FlashStateTag()
+        {
+
+        }
+        public FlashStateTag(string tag) : this()
+        {
+            this.Data = System.Text.Encoding.UTF8.GetBytes(tag);
+        }
         public void Serialize(BinaryWriter writer)
         {
             writer.WriteVarBytes(Data);
@@ -52,6 +60,22 @@ namespace OX.Network.P2P.Payloads
             JObject json = new JObject();
             json["data"] = Data.ToHexString();
             return json;
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is FlashStateTag fst)
+            {
+                return fst.Data.SequenceEqual(this.Data);
+            }
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return this.Data.GetHashCode();
+        }
+        public override string ToString()
+        {
+            return this.Data.ToHexString();
         }
     }
     public class FlashState : FlashMessage
@@ -104,10 +128,10 @@ namespace OX.Network.P2P.Payloads
             if (this.ContentType != FlashMessageContentType.Mix) return false;
             if (this.Tags.IsNotNullAndEmpty())
             {
-                if(Tags.Length>MaxTagsNumber) return false;
-                foreach(var tag in Tags)
+                if (Tags.Length > MaxTagsNumber) return false;
+                foreach (var tag in Tags)
                 {
-                    if(tag.Size>MaxTagSize) return false;
+                    if (tag.Size > MaxTagSize) return false;
                 }
             }
             return base.Verify(snapshot, flashStatePool, out accountState);
