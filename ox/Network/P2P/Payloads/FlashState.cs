@@ -75,7 +75,7 @@ namespace OX.Network.P2P.Payloads
         }
         public override string ToString()
         {
-            return this.Data.ToHexString();
+            return System.Text.Encoding.UTF8.GetString(this.Data);
         }
     }
     public class FlashState : FlashMessage
