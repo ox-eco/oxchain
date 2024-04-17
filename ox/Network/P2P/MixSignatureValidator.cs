@@ -170,9 +170,21 @@ namespace OX.Network.P2P
             }
             return base.Equals(obj);
         }
+        public static bool operator ==(NFSHolder left, NFSHolder right)
+        {
+            if (ReferenceEquals(left, right))
+                return true;
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                return false;
+            return left.Equals(right);
+        }
+        public static bool operator !=(NFSHolder left, NFSHolder right)
+        {
+            return !(left == right);
+        }
         public override int GetHashCode()
         {
-            return this.Target.GetHashCode();
+            return this.Target.ToInt32(0);
         }
     }
 }

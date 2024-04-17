@@ -37,6 +37,18 @@ namespace OX.Network.P2P.Payloads
             }
             return base.Equals(obj);
         }
+        public static bool operator ==(BlockBonusSetting left, BlockBonusSetting right)
+        {
+            if (ReferenceEquals(left, right))
+                return true;
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                return false;
+            return left.Equals(right);
+        }
+        public static bool operator !=(BlockBonusSetting left, BlockBonusSetting right)
+        {
+            return !(left == right);
+        }
         public override int GetHashCode()
         {
             return (Index + NumPerBlock).GetHashCode();

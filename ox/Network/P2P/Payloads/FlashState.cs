@@ -69,9 +69,21 @@ namespace OX.Network.P2P.Payloads
             }
             return base.Equals(obj);
         }
+        public static bool operator ==(FlashStateTag left, FlashStateTag right)
+        {
+            if (ReferenceEquals(left, right))
+                return true;
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                return false;
+            return left.Equals(right);
+        }
+        public static bool operator !=(FlashStateTag left, FlashStateTag right)
+        {
+            return !(left == right);
+        }
         public override int GetHashCode()
         {
-            return this.Data.GetHashCode();
+            return this.Data.ToInt32(0);
         }
         public override string ToString()
         {
