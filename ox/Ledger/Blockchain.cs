@@ -35,7 +35,7 @@ namespace OX.Ledger
 
         public static readonly uint SecondsPerBlock = ProtocolSettings.Default.SecondsPerBlock;
         public static readonly Fixed8 BappDetainOXS = ProtocolSettings.Default.BappDetainOXS;
-        public static readonly Fixed8 FlashMinOXSBalance = ProtocolSettings.Default.FlashMinOXSBalance;
+        public static readonly Fixed8 FlashMinOXCBalance = ProtocolSettings.Default.FlashMinOXCBalance;
         public const uint DecrementInterval = 2000000;
         public const int MaxValidators = 1024;
         public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
@@ -440,7 +440,21 @@ namespace OX.Ledger
             var flashMessage = RelayFlash.FlashMessage;
             if (!flashMessage.Verify(currentSnapshot, StatePool, out AccountState accountState))
                 return RelayResultReason.Invalid;
-            var sender = Contract.CreateSignatureRedeemScript(flashMessage.Sender).ToScriptHash();
+            UInt160 sender = default;
+            if (flashMessage is FlashBroadcast fb)
+            {
+                sender = fb.Author;
+            }
+            else if (flashMessage is FlashDirectcast fd)
+            {
+                sender = Contract.CreateSignatureRedeemScript(fd.Sender).ToScriptHash();
+                if (!this.GetDomain(sender, out byte[] domain))
+                    return RelayResultReason.Invalid;
+            }
+            else
+            {
+                return RelayResultReason.Invalid;
+            }
             var listkind = this.GetListKind();
             switch (listkind)
             {
@@ -455,8 +469,7 @@ namespace OX.Ledger
                 default:
                     return RelayResultReason.Invalid;
             }
-            if (!this.GetDomain(sender, out byte[] domain))
-                return RelayResultReason.Invalid;
+
             if (StatePool.TryAppend(accountState, flashMessage, RelayFlash.RemoteNodeKey, this.MemPool.Count, flashAccount =>
             {
                 foreach (var remoteNode in LocalNode.Singleton.RemoteNodes)
@@ -466,7 +479,7 @@ namespace OX.Ledger
                     {
                         remoteNode.Key.Tell(flashMessage);
                         if (!flashAccount.OutRemoteKeys.Contains(nodeKey)) flashAccount.OutRemoteKeys.Add(nodeKey);
-                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /  {nodeKey}  /   {OX.SmartContract.Contract.CreateSignatureRedeemScript(flashMessage.Sender).ToScriptHash().ToAddress()}   /   {flashMessage.Hash.ToString()}");
+                        Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}    /  {nodeKey}  /   {sender.ToAddress()}   /   {flashMessage.Hash.ToString()}");
                     }
                     else
                     {
@@ -597,7 +610,7 @@ namespace OX.Ledger
                                 }
                             }
                             account.Balances[out_prev.AssetId] -= out_prev.Value;
-                            if (out_prev.AssetId.Equals(OXS_Token.Hash) && account.Balances[out_prev.AssetId] < Blockchain.FlashMinOXSBalance)
+                            if (out_prev.AssetId.Equals(OXS_Token.Hash) && account.Balances[out_prev.AssetId] < Blockchain.FlashMinOXCBalance)
                             {
                                 this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
                             }
@@ -966,7 +979,7 @@ namespace OX.Ledger
         {
             accountState = snapshot.Accounts.GetAndChange(flashMessageSender, () => null);
             if (accountState.IsNull()) return false;
-            if (accountState.GetBalance(OXS) < FlashMinOXSBalance) return false;
+            if (accountState.GetBalance(OXC) < FlashMinOXCBalance) return false;
             return true;
         }
         public bool IsFrozen(UInt160 scriptHash, out uint ExpireIndex)

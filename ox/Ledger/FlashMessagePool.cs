@@ -24,10 +24,10 @@ namespace OX.Ledger
         {
             _system = system;
         }
-        public int GetAccountFlashMessageInterval(int txPoolCount, Fixed8 oxsBalance)
+        public int GetAccountFlashMessageInterval(int txPoolCount, Fixed8 oxcBalance)
         {
-            if (oxsBalance < Blockchain.FlashMinOXSBalance) return 0;
-            var multiple = (int)(oxsBalance.GetInternalValue() / Blockchain.FlashMinOXSBalance.GetInternalValue());
+            if (oxcBalance < Blockchain.FlashMinOXCBalance) return 0;
+            var multiple = (int)(oxcBalance.GetInternalValue() / Blockchain.FlashMinOXCBalance.GetInternalValue());
 
             long totalOXS = 0;
             int totalFS = 1;
@@ -94,7 +94,7 @@ namespace OX.Ledger
         internal bool AllowFlashMessage(AccountState accountState, int txPoolCount, out uint expireIndex)
         {
             expireIndex = 0;
-            var balance = accountState.GetBalance(Blockchain.OXS);
+            var balance = accountState.GetBalance(Blockchain.OXC);
             var interval = (uint)GetAccountFlashMessageInterval(txPoolCount, balance);
             if (interval == 0) return false;
 
@@ -110,7 +110,7 @@ namespace OX.Ledger
             _txRwLock.EnterReadLock();
             try
             {
-                var balance = accountState.GetBalance(Blockchain.OXS);
+                var balance = accountState.GetBalance(Blockchain.OXC);
                 var interval = GetAccountFlashMessageInterval(txPoolCount, balance);
                 if (interval == 0) return false;
                 if (!_flashAccounts.TryGetValue(accountState.ScriptHash, out FlashAccount flashAccount))

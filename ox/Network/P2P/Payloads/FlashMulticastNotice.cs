@@ -39,7 +39,7 @@ namespace OX.Network.P2P.Payloads
             Data = reader.ReadVarBytes();
         }
     }
-    public class FlashMulticastNotice : FlashMessage
+    public class FlashMulticastNotice : FlashDirectcast
     {
         public static int MaxNoticeNumber = 10 * Blockchain.Singleton.GetFlashMessageSizeMutiple();
         public byte[] Msg;
@@ -66,13 +66,13 @@ namespace OX.Network.P2P.Payloads
             }
             this.Destinations = list.ToArray();
         }
-        protected override void DeserializeExclusiveData(BinaryReader reader)
+        protected override void DeserializeExclusiveDataForCast(BinaryReader reader)
         {
             Msg = reader.ReadVarBytes();
             Destinations = reader.ReadSerializableArray<MulticastNoticeDest>();
         }
 
-        protected override void SerializeExclusiveData(BinaryWriter writer)
+        protected override void SerializeExclusiveDataForCast(BinaryWriter writer)
         {
             writer.WriteVarBytes(Msg);
             writer.Write(Destinations);

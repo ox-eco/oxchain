@@ -61,7 +61,7 @@ namespace OX.Network.P2P.Payloads
             return json;
         }
     }
-    public class FlashStateComment : FlashMessage
+    public class FlashStateComment : FlashBroadcast
     {
         public static int MaxCommentNumber = Blockchain.Singleton.GetFlashMessageSizeMutiple() - 1;
         public const int MaxFlashStateCommentSize = 1024;
@@ -70,19 +70,19 @@ namespace OX.Network.P2P.Payloads
         public FlashStateComment() : base(FlashMessageType.FlashStateComment)
         {
         }
-        public FlashStateComment(ECPoint sender, uint minIndex, StateComment[] comments) : this()
+        public FlashStateComment(UInt160 author, uint minIndex, StateComment[] comments) : this()
         {
-            this.Sender = sender;
+            this.Author = author;
             this.MinIndex = minIndex;
             this.Comments = comments;
             this.ContentType = FlashMessageContentType.Text;
         }
-        protected override void DeserializeExclusiveData(BinaryReader reader)
+        protected override void DeserializeExclusiveDataForBroadcast(BinaryReader reader)
         {
             Comments = reader.ReadSerializableArray<StateComment>();
         }
 
-        protected override void SerializeExclusiveData(BinaryWriter writer)
+        protected override void SerializeExclusiveDataForBroadcast(BinaryWriter writer)
         {
             writer.Write(Comments);
         }

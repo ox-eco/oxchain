@@ -90,7 +90,7 @@ namespace OX.Network.P2P.Payloads
             return System.Text.Encoding.UTF8.GetString(this.Data);
         }
     }
-    public class FlashState : FlashMessage
+    public class FlashState : FlashBroadcast
     {
         public const int MaxTagSize = 20;
         public const int MaxTagsNumber = 5;
@@ -108,9 +108,9 @@ namespace OX.Network.P2P.Payloads
             ImageData = new byte[] { 0x00 };
             Tags = new FlashStateTag[0];
         }
-        public FlashState(ECPoint sender, uint minIndex, byte[] textData, byte[] imageData, FlashStateTag[] tags) : this()
+        public FlashState(UInt160 author, uint minIndex, byte[] textData, byte[] imageData, FlashStateTag[] tags) : this()
         {
-            this.Sender = sender;
+            this.Author = author;
             this.MinIndex = minIndex;
             if (textData.IsNotNullAndEmpty())
                 this.TextData = textData;
@@ -119,14 +119,14 @@ namespace OX.Network.P2P.Payloads
             if (tags.IsNotNullAndEmpty())
                 this.Tags = tags;
         }
-        protected override void DeserializeExclusiveData(BinaryReader reader)
+        protected override void DeserializeExclusiveDataForBroadcast(BinaryReader reader)
         {
             TextData = reader.ReadVarBytes();
             ImageData = reader.ReadVarBytes();
             Tags = reader.ReadSerializableArray<FlashStateTag>();
         }
 
-        protected override void SerializeExclusiveData(BinaryWriter writer)
+        protected override void SerializeExclusiveDataForBroadcast(BinaryWriter writer)
         {
             writer.WriteVarBytes(TextData);
             writer.WriteVarBytes(ImageData);

@@ -31,7 +31,6 @@ namespace OX.Network.P2P.Payloads
         private static ReflectionCache<byte> ReflectionCache = ReflectionCache<byte>.CreateFromEnum<FlashMessageType>();
 
         public readonly FlashMessageType Type;
-        public ECPoint Sender;
         public uint MinIndex;
         public FlashMessageContentType ContentType;
         public Witness[] Witnesses { get; set; }
@@ -53,7 +52,7 @@ namespace OX.Network.P2P.Payloads
 
 
 
-        public virtual int Size => sizeof(TransactionType) + Sender.Size + sizeof(uint) + sizeof(FlashMessageContentType) + Witnesses.GetVarSize();
+        public virtual int Size => sizeof(TransactionType) + sizeof(uint) + sizeof(FlashMessageContentType) + Witnesses.GetVarSize();
 
         protected FlashMessage(FlashMessageType type)
         {
@@ -64,12 +63,10 @@ namespace OX.Network.P2P.Payloads
         {
             ((IVerifiable)this).DeserializeUnsigned(reader);
             Witnesses = reader.ReadSerializableArray<Witness>();
-            OnDeserialized();
         }
 
-        protected virtual void DeserializeExclusiveData(BinaryReader reader)
-        {
-        }
+        protected abstract void DeserializeExclusiveData(BinaryReader reader);
+
 
         public static FlashMessage DeserializeFrom(byte[] value, int offset = 0)
         {
@@ -88,7 +85,6 @@ namespace OX.Network.P2P.Payloads
 
             flashState.DeserializeUnsignedWithoutType(reader);
             flashState.Witnesses = reader.ReadSerializableArray<Witness>();
-            flashState.OnDeserialized();
             return flashState;
         }
 
@@ -101,7 +97,6 @@ namespace OX.Network.P2P.Payloads
 
         private void DeserializeUnsignedWithoutType(BinaryReader reader)
         {
-            Sender = reader.ReadSerializable<ECPoint>();
             MinIndex = reader.ReadUInt32();
             ContentType = (FlashMessageContentType)reader.ReadByte();
             DeserializeExclusiveData(reader);
@@ -129,16 +124,7 @@ namespace OX.Network.P2P.Payloads
             return this.GetHashData();
         }
 
-        public virtual UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
-        {
-            return [Contract.CreateSignatureRedeemScript(this.Sender).ToScriptHash()];
-        }
-
-
-
-        protected virtual void OnDeserialized()
-        {
-        }
+        public abstract UInt160[] GetScriptHashesForVerifying(Snapshot snapshot);
 
         void ISerializable.Serialize(BinaryWriter writer)
         {
@@ -146,14 +132,12 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Witnesses);
         }
 
-        protected virtual void SerializeExclusiveData(BinaryWriter writer)
-        {
-        }
+        protected abstract void SerializeExclusiveData(BinaryWriter writer);
 
         void IVerifiable.SerializeUnsigned(BinaryWriter writer)
         {
             writer.Write((byte)Type);
-            writer.Write(Sender);
+
             writer.Write(MinIndex);
             writer.Write((byte)ContentType);
             SerializeExclusiveData(writer);
@@ -165,7 +149,6 @@ namespace OX.Network.P2P.Payloads
             json["fsid"] = Hash.ToString();
             json["size"] = Size;
             json["type"] = Type;
-            json["sender"] = Sender.ToString();
             json["minindex"] = MinIndex.ToString();
             json["contenttype"] = ContentType.Value().ToString();
             return json;
@@ -182,11 +165,10 @@ namespace OX.Network.P2P.Payloads
             if (Size > MaxFlashMessageSize) return false;
             if (MinIndex > snapshot.Height + 1) return false;
             if (MinIndex + 10 <= snapshot.Height) return false;
-            var sh = Contract.CreateSignatureRedeemScript(this.Sender).ToScriptHash();
-            if (!Blockchain.Singleton.VerifyFlashMessageSender(snapshot, sh, out accountState)) return false;
-            return this.VerifyWitnesses(snapshot);
+            return SignatureVerify(snapshot, flashStatePool, out accountState);
+           
         }
-
+        public abstract bool SignatureVerify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState);
 
     }
 }

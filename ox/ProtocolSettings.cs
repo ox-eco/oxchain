@@ -17,7 +17,7 @@ namespace OX
         public Fixed8 LowPriorityThreshold { get; }
         public uint SecondsPerBlock { get; }
         public Fixed8 BappDetainOXS { get; }
-        public Fixed8 FlashMinOXSBalance { get; }
+        public Fixed8 FlashMinOXCBalance { get; }
         static ProtocolSettings _default;
 
         public static ProtocolSettings Default
@@ -68,7 +68,7 @@ namespace OX
             this.SystemFee = sys_fee;
             this.SecondsPerBlock = 15;
             this.BappDetainOXS = Fixed8.One * 100_000;
-            this.FlashMinOXSBalance = Fixed8.One * 100;
+            this.FlashMinOXCBalance = Fixed8.One * 300;
             this.LowPriorityThreshold = Fixed8.Satoshi * 100_000;
         }
         public IEnumerable<IPEndPoint> GetSeedIPs()

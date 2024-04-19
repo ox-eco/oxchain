@@ -22,7 +22,7 @@ using OX.Wallets;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class FlashUnicast : FlashMessage
+    public class FlashUnicast : FlashDirectcast
     {
         public UInt256 TalkLine;
         public UInt256 RecipientHash;
@@ -40,14 +40,14 @@ namespace OX.Network.P2P.Payloads
             this.RecipientHash = Contract.CreateSignatureRedeemScript(remote).ToScriptHash().Hash;
             this.Data = plaintext.Encrypt(local, remote, BitConverter.GetBytes(MinIndex));
         }
-        protected override void DeserializeExclusiveData(BinaryReader reader)
+        protected override void DeserializeExclusiveDataForCast(BinaryReader reader)
         {
             TalkLine = reader.ReadSerializable<UInt256>();
             RecipientHash = reader.ReadSerializable<UInt256>();
             Data = reader.ReadVarBytes();
         }
 
-        protected override void SerializeExclusiveData(BinaryWriter writer)
+        protected override void SerializeExclusiveDataForCast(BinaryWriter writer)
         {
             writer.Write(TalkLine);
             writer.Write(RecipientHash);

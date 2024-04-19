@@ -23,7 +23,7 @@ using static Akka.Actor.ProviderSelection;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class FlashMulticast : FlashMessage
+    public class FlashMulticast : FlashDirectcast
     {
         public UInt256 TalkLine;
         public byte[] Data;
@@ -39,13 +39,13 @@ namespace OX.Network.P2P.Payloads
             this.TalkLine = new UInt256(Crypto.Default.Hash256(Crypto.Default.Hash256(shareKey)));
             this.Data = plaintext.Encrypt(shareKey, BitConverter.GetBytes(MinIndex));
         }
-        protected override void DeserializeExclusiveData(BinaryReader reader)
+        protected override void DeserializeExclusiveDataForCast(BinaryReader reader)
         {
             TalkLine = reader.ReadSerializable<UInt256>();
             Data = reader.ReadVarBytes();
         }
 
-        protected override void SerializeExclusiveData(BinaryWriter writer)
+        protected override void SerializeExclusiveDataForCast(BinaryWriter writer)
         {
             writer.Write(TalkLine);
             writer.WriteVarBytes(Data);
