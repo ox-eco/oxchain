@@ -57,16 +57,23 @@ namespace OX.Network.P2P.Payloads
         public override bool SignatureVerify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState)
         {
             if (!Blockchain.Singleton.VerifyFlashMessageSender(snapshot, this.Author, out accountState)) return false;
-            if (this.VerifyWitnesses(snapshot)) return true;
-            if (this.EthSignature.IsNullOrEmpty()) return false;
-            var stringToSign = this.GetRequireEthSignatureData().ToHex(true);
-            var signer = new Nethereum.Signer.EthereumMessageSigner();
-            var ethaddress = signer.EncodeUTF8AndEcRecover(stringToSign, this.EthSignature.ToHex());
-            if (ethaddress.IsNullOrEmpty()) return false;
-            //ethAddress.HexToByteArray()
-            return ethaddress.BuildMapAddress() == this.Author;
+            try
+            {
+                if (this.VerifyWitnesses(snapshot)) return true;
+                if (this.EthSignature.IsNullOrEmpty()) return false;
+                var stringToSign = this.GetRequireEthSignatureData().ToHex(true);
+                var signer = new Nethereum.Signer.EthereumMessageSigner();
+                var ethaddress = signer.EncodeUTF8AndEcRecover(stringToSign, this.EthSignature.ToHex());
+                if (ethaddress.IsNullOrEmpty()) return false;
+                //ethAddress.HexToByteArray()
+                return ethaddress.BuildMapAddress() == this.Author;
+            }
+            catch
+            {
+                return false;
+            }
         }
-        byte[] GetRequireEthSignatureData()
+        public byte[] GetRequireEthSignatureData()
         {
             using (MemoryStream ms = new MemoryStream())
             using (BinaryWriter writer = new BinaryWriter(ms))

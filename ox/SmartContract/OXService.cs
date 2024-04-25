@@ -120,24 +120,38 @@ namespace OX.SmartContract
         }
         private bool Ethereum_EcRecover(ExecutionEngine engine)
         {
-            var message = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
-            var signature = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
-            var signer = new Nethereum.Signer.EthereumMessageSigner();
-            var address = signer.EncodeUTF8AndEcRecover(message.ToHexString(), signature);
-            if (address.IsNullOrEmpty()) return false;
-            engine.CurrentContext.EvaluationStack.Push(address.ToLower());
-            return true;
+            try
+            {
+                var message = engine.CurrentContext.EvaluationStack.Pop().GetByteArray();
+                var signature = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+                var signer = new Nethereum.Signer.EthereumMessageSigner();
+                var address = signer.EncodeUTF8AndEcRecover(message.ToHexString(), signature);
+                if (address.IsNullOrEmpty()) return false;
+                engine.CurrentContext.EvaluationStack.Push(address.ToLower());
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
         private bool Ethereum_EcRecoverString(ExecutionEngine engine)
         {
             var message = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
             var signature = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
             var signer = new Nethereum.Signer.EthereumMessageSigner();
-            var address = signer.EncodeUTF8AndEcRecover(message, signature);
-            if (address.IsNullOrEmpty()) return false;
-            engine.CurrentContext.EvaluationStack.Push(address.ToLower());
-            return true;
-        }
+            try
+            {
+                var address = signer.EncodeUTF8AndEcRecover(message, signature);
+                if (address.IsNullOrEmpty()) return false;
+                engine.CurrentContext.EvaluationStack.Push(address.ToLower());
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            }
         private bool Blockchain_IsInSide(ExecutionEngine engine)
         {
             UInt160 side_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
