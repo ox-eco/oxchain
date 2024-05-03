@@ -41,7 +41,7 @@ namespace OX.Network.P2P.Payloads
             Key = reader.ReadSerializable<NFSStateKey>();
             Validator = reader.ReadSerializable<MixSignatureValidator<NftTransferAuthentication>>();
         }
-        
+
     }
     public class FlashNFTPending : FlashBroadcast
     {
@@ -73,7 +73,21 @@ namespace OX.Network.P2P.Payloads
             accountState = null;
             if (this.ContentType != FlashMessageContentType.Protocol) return false;
             if (this.Pendings.IsNullOrEmpty()) return false;
+            foreach (var pending in Pendings)
+            {
+                if (pending.Validator.IsNull() || pending.Key.IsNull() || !pending.Validator.Verify()) return false;
+                if (pending.Validator.Target.Amount < Fixed8.Zero || pending.Validator.Target.MaxIndex < pending.Validator.Target.MinIndex) return false;
+                var nft = snapshot.GetNftState(pending.Key.NFCID);
+                if ((nft.IsNull())) return false;
+                var donateState = snapshot.GetNftTransfer(pending.Key);
+                if (donateState.IsNull()) return false;
+                if (donateState.LastNFS.Hash != pending.Validator.Target.PreHash) return false;
+                if (donateState.LastNFS.NftChangeType == NftChangeType.Issue && nft.NFC.FirstResaleLock > 0)
+                {
+                    if (Blockchain.Singleton.Height <= pending.Key.IssueBlockIndex + nft.NFC.FirstResaleLock * 10000) return false;
+                }
+            }
             return base.Verify(snapshot, flashStatePool, out accountState);
-        }        
+        }
     }
 }
