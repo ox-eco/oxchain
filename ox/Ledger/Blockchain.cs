@@ -83,7 +83,7 @@ namespace OX.Ledger
             PrevHash = UInt256.Zero,
             Timestamp = (new DateTime(2016, 7, 15, 15, 8, 21, DateTimeKind.Utc)).ToTimestamp(),
             Index = 0,
-            ConsensusData = 201014021116, //for my love
+            ConsensusData = 101411161205, //for my love
             NextConsensus = GetConsensusAddress(StandbyValidators),
             Witness = new Witness
             {
@@ -729,34 +729,16 @@ namespace OX.Ledger
                             }
                             break;
 
-                        case DetainTransaction tx_detain:
-                            switch (tx_detain.DetainState)
-                            {
-                                case DetainStatus.Freeze:
-                                    var sh = tx_detain.ScriptHash;
-                                    var accountState = new AccountState(sh) { DetainState = tx_detain.DetainState, DetainExpire = block.Index, AskFee = tx_detain.AskFee };
-                                    AccountState acts = snapshot.Accounts.GetAndChange(sh, () => accountState);
-                                    var expire = acts.DetainExpire;
-                                    if (expire < block.Index)
-                                        expire = block.Index;
-                                    expire += tx_detain.DetainDuration;
-                                    acts.AskFee = tx_detain.AskFee;
-                                    acts.DetainState = tx_detain.DetainState;
-                                    acts.DetainExpire = expire;
-                                    break;
-                                case DetainStatus.UnFreeze:
-                                    var sh2 = tx_detain.ScriptHash;
-                                    AccountState acts2 = snapshot.Accounts.GetAndChange(sh2, () => null);
-                                    if (acts2.IsNotNull())
-                                    {
-                                        if (acts2.DetainExpire < block.Index)
-                                        {
-                                            acts2.DetainState = DetainStatus.UnFreeze;
-                                            acts2.DetainExpire = 0;
-                                        }
-                                    }
-                                    break;
-                            }
+                        case SlotRentTransaction tx_detain:
+                            var sh = tx_detain.ScriptHash;
+                            var accountState = new AccountState(sh) { SlotExpireIndex = block.Index, AskFee = tx_detain.AskFee };
+                            AccountState acts = snapshot.Accounts.GetAndChange(sh, () => accountState);
+                            var expire = acts.SlotExpireIndex;
+                            if (expire < block.Index)
+                                expire = block.Index;
+                            expire += tx_detain.RentDuration;
+                            acts.AskFee = tx_detain.AskFee;
+                            acts.SlotExpireIndex = expire;
                             break;
                         case SideTransaction tx_side:
                             var recipientScriptHash = Contract.CreateSignatureRedeemScript(tx_side.Recipient).ToScriptHash();
@@ -966,8 +948,7 @@ namespace OX.Ledger
             var balance = acts.GetBalance(OXS);
             OXSBalance = balance;
             AskFee = acts.AskFee;
-            if (acts.DetainState == DetainStatus.UnFreeze) return false;
-            if (acts.DetainExpire < currentSnapshot.Height) return false;
+            if (acts.SlotExpireIndex < currentSnapshot.Height) return false;
             if (balance < BappDetainOXS) return false;
             return true;
         }
@@ -982,21 +963,15 @@ namespace OX.Ledger
             if (accountState.GetBalance(OXC) < FlashMinOXCBalance) return false;
             return true;
         }
-        public bool IsFrozen(UInt160 scriptHash, out uint ExpireIndex)
+        public uint GetSlotExpireIndex(UInt160 scriptHash)
         {
             var acts = currentSnapshot.Accounts.GetAndChange(scriptHash, () => null);
             if (acts.IsNull())
             {
-                ExpireIndex = 0;
-                return false;
+                return 0;
             }
-
-            bool isFrozen = acts.DetainState == DetainStatus.Freeze;
-            if (isFrozen)
-                ExpireIndex = acts.DetainExpire;
-            else
-                ExpireIndex = 0;
-            return isFrozen;
+            return acts.SlotExpireIndex;
+            
         }
 
     }

@@ -145,7 +145,7 @@ namespace OX.Persistence
 
         public virtual void Commit()
         {
-            Accounts.DeleteWhere((k, v) => v.DetainState == DetainStatus.UnFreeze && v.Votes.Length == 0 && v.Balances.All(p => p.Value <= Fixed8.Zero));
+            Accounts.DeleteWhere((k, v) => v.Votes.Length == 0 && v.Balances.All(p => p.Value <= Fixed8.Zero));
             UnspentCoins.DeleteWhere((k, v) => v.Items.All(p => p.HasFlag(CoinState.Spent)));
             SpentCoins.DeleteWhere((k, v) => v.Items.Count == 0);
             Blocks.Commit();

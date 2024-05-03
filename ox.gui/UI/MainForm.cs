@@ -620,7 +620,7 @@ namespace OX.UI
         private void DetainToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
             if (Program.CurrentWallet.IsNull()) return;
-            using (DetainDialog dialog = new DetainDialog())
+            using (SlotRentDialog dialog = new SlotRentDialog())
             {
                 if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
 

@@ -35,7 +35,7 @@ namespace OX
 
         private ProtocolSettings()
         {
-            this.Magic = 10141116;
+            this.Magic = 30141605;
             this.AddressVersion = 23;
             this.StandbyValidators = new[]
             {
@@ -68,7 +68,7 @@ namespace OX
             this.SystemFee = sys_fee;
             this.SecondsPerBlock = 15;
             this.BappDetainOXS = Fixed8.One * 100_000;
-            this.FlashMinOXCBalance = Fixed8.One * 300;
+            this.FlashMinOXCBalance = Fixed8.One * 500;
             this.LowPriorityThreshold = Fixed8.Satoshi * 100_000;
         }
         public IEnumerable<IPEndPoint> GetSeedIPs()

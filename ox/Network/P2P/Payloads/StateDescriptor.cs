@@ -125,7 +125,6 @@ namespace OX.Network.P2P.Payloads
                     }
                     UInt160 hash = new UInt160(Key);
                     AccountState account = snapshot.Accounts.TryGet(hash);
-                    if (account?.DetainState != DetainStatus.UnFreeze) return false;
                     if (pubkeys.Length > 0)
                     {
                         if (account.GetBalance(Blockchain.OXS_Token.Hash).Equals(Fixed8.Zero)) return false;

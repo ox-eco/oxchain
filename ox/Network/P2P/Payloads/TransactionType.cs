@@ -33,8 +33,8 @@ namespace OX.Network.P2P.Payloads
         CharitableTransaction = 0xc3,
         [ReflectionCache(typeof(GovementTransaction))]
         GovementTransaction = 0xc4,
-        [ReflectionCache(typeof(DetainTransaction))]
-        DetainTransaction = 0xc5,
+        [ReflectionCache(typeof(SlotRentTransaction))]
+        SlotRentTransaction = 0xc5,
         [ReflectionCache(typeof(EventTransaction))]
         EventTransaction = 0xc6,
         [ReflectionCache(typeof(ReplyTransaction))]

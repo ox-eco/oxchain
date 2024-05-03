@@ -53,7 +53,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="UI\DetainDialog.cs">
+    <Compile Update="UI\SlotRentDialog.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
@@ -63,7 +63,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="UI\DetainDialog.resx">
+    <EmbeddedResource Update="UI\SlotRentDialog.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
