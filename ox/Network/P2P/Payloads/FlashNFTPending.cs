@@ -1,0 +1,79 @@
+//using Org.BouncyCastle.Math.EC;
+using OX.Cryptography;
+using OX.IO;
+using OX.IO.Caching;
+using OX.IO.Json;
+using OX.Ledger;
+using OX.Persistence;
+using OX.SmartContract;
+using OX.VM;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using OX.Cryptography.ECC;
+using Org.BouncyCastle.Security.Certificates;
+using Nethereum.Signer;
+using Nethereum.Signer.Crypto;
+using Nethereum.Hex.HexConvertors.Extensions;
+using System.Runtime.CompilerServices;
+using OX.Wallets;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace OX.Network.P2P.Payloads
+{
+    public class NFTPending : ISerializable
+    {
+        public NFSStateKey Key;
+        public MixSignatureValidator<NftTransferAuthentication> Validator;
+
+        public virtual int Size => Key.Size + Validator.Size;
+
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write(Key);
+            writer.Write(Validator);
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            Key = reader.ReadSerializable<NFSStateKey>();
+            Validator = reader.ReadSerializable<MixSignatureValidator<NftTransferAuthentication>>();
+        }
+        
+    }
+    public class FlashNFTPending : FlashBroadcast
+    {
+        public NFTPending[] Pendings;
+        public override int Size => base.Size + Pendings.GetVarSize();
+        public FlashNFTPending() : base(FlashMessageType.FlashNFTPending)
+        {
+            this.ContentType = FlashMessageContentType.Protocol;
+            Pendings = new NFTPending[0];
+        }
+        public FlashNFTPending(UInt160 author, uint minIndex, NFTPending[] pendings) : this()
+        {
+            this.Author = author;
+            this.MinIndex = minIndex;
+            this.Pendings = pendings;
+            this.ContentType = FlashMessageContentType.Protocol;
+        }
+        protected override void DeserializeExclusiveDataForBroadcast(BinaryReader reader)
+        {
+            Pendings = reader.ReadSerializableArray<NFTPending>();
+        }
+
+        protected override void SerializeExclusiveDataForBroadcast(BinaryWriter writer)
+        {
+            writer.Write(Pendings);
+        }
+        public override bool Verify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState)
+        {
+            accountState = null;
+            if (this.ContentType != FlashMessageContentType.Protocol) return false;
+            if (this.Pendings.IsNullOrEmpty()) return false;
+            return base.Verify(snapshot, flashStatePool, out accountState);
+        }        
+    }
+}
