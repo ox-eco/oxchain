@@ -25,6 +25,6 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(FlashStateComment))]
         FlashStateComment = 0x04,
         [ReflectionCache(typeof(FlashNFTPending))]
-        FlashNFTPending = 0x04
+        FlashNFTPending = 0x05
     }
 }

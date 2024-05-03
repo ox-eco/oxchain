@@ -27,6 +27,8 @@ namespace OX
                         return flashData.AsSerializable<FlashUnicast>();
                     case FlashMessageType.FlashMulticastNotice:
                         return flashData.AsSerializable<FlashMulticastNotice>();
+                    case FlashMessageType.FlashNFTPending:
+                        return flashData.AsSerializable<FlashNFTPending>();
                 }
                 return default;
 
