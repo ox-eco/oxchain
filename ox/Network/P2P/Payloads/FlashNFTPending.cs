@@ -21,6 +21,8 @@ using System.Runtime.CompilerServices;
 using OX.Wallets;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Nethereum.Util;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -85,6 +87,22 @@ namespace OX.Network.P2P.Payloads
                 if (donateState.LastNFS.NftChangeType == NftChangeType.Issue && nft.NFC.FirstResaleLock > 0)
                 {
                     if (Blockchain.Singleton.Height <= pending.Key.IssueBlockIndex + nft.NFC.FirstResaleLock * 10000) return false;
+                }
+                try
+                {
+                    if (pending.Validator.Target.Target.MixAccountType == MixAccountType.OX)
+                    {
+                        if (Contract.CreateSignatureRedeemScript(ECPoint.DecodePoint(pending.Validator.Target.Target.Target, ECCurve.Secp256r1)).ToScriptHash() != this.Author) return false;
+                    }
+                    else if (pending.Validator.Target.Target.MixAccountType == MixAccountType.Ethereum)
+                    {
+                        var address = new AddressUtil().ConvertToChecksumAddress(pending.Validator.Target.Target.Target.ToHex());
+                        if (address.BuildMapAddress() != this.Author) return false;
+                    }
+                }
+                catch
+                {
+                    return false;
                 }
             }
             return base.Verify(snapshot, flashStatePool, out accountState);
