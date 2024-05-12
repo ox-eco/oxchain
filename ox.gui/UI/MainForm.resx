@@ -260,10 +260,10 @@
   <data name="toolStripSeparator11.Size" type="System.Drawing.Size, System.Drawing">
     <value>318, 6</value>
   </data>
-  <data name="DetainToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="SlotToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>321, 34</value>
   </data>
-  <data name="DetainToolStripMenuItem.Text" xml:space="preserve">
+  <data name="SlotToolStripMenuItem.Text" xml:space="preserve">
     <value>&amp;Business Channel Lease...</value>
   </data>
   <data name="选举EToolStripMenuItem.Enabled" type="System.Boolean, mscorlib">
@@ -1140,10 +1140,10 @@
   <data name="&gt;&gt;toolStripSeparator11.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;DetainToolStripMenuItem.Name" xml:space="preserve">
-    <value>DetainToolStripMenuItem</value>
+  <data name="&gt;&gt;SlotToolStripMenuItem.Name" xml:space="preserve">
+    <value>SlotToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;DetainToolStripMenuItem.Type" xml:space="preserve">
+  <data name="&gt;&gt;SlotToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;选举EToolStripMenuItem.Name" xml:space="preserve">

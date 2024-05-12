@@ -8,16 +8,16 @@ using System.Windows.Forms;
 
 namespace OX.UI
 {
-    public partial class DetainDialog : Form
+    public partial class SlotDialog : Form
     {
-        public DetainDialog()
+        public SlotDialog()
         {
             InitializeComponent();
         }
-        DetainTransaction transaction;
-        public DetainTransaction GetTransaction()
+        SlotRentTransaction transaction;
+        public SlotRentTransaction GetTransaction()
         {
-            DetainTransaction tx;
+            SlotRentTransaction tx;
             BuildTransaction(out tx);
             return Program.CurrentWallet.MakeTransaction(tx);
         }
@@ -25,8 +25,8 @@ namespace OX.UI
         private void ElectionDialog_Load(object sender, EventArgs e)
         {
             comboBox1.Items.AddRange(Program.CurrentWallet.GetAccounts().Where(p => !p.WatchOnly && p.Contract.Script.IsStandardContract()).Select(p => p.Address).ToArray());
-            comboBox2.Items.Add(DetainStatus.Freeze.ToString());
-            comboBox2.Items.Add(DetainStatus.UnFreeze.ToString());
+            comboBox2.Items.Add(SlotStatus.Freeze.ToString());
+            comboBox2.Items.Add(SlotStatus.UnFreeze.ToString());
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -36,7 +36,7 @@ namespace OX.UI
                 BuildTransaction(out transaction);
             }
         }
-        bool BuildTransaction(out DetainTransaction tx)
+        bool BuildTransaction(out SlotRentTransaction tx)
         {
             try
             {
@@ -56,11 +56,11 @@ namespace OX.UI
                 }
                 var address = comboBox1.SelectedItem as string;
                 var s = comboBox2.SelectedItem as string;
-                var state = Enum.Parse<DetainStatus>(s);
-                tx = new DetainTransaction(address.ToScriptHash())
+                var state = Enum.Parse<SlotStatus>(s);
+                tx = new SlotRentTransaction(address.ToScriptHash())
                 {
-                    DetainDuration = d,
-                    DetainState = state,
+                    SlotRentDuration = d,
+                    SlotState = state,
                     AskFee = Fixed8.OXU * f
                 };
                 label3.Text = $"{tx.SystemFee} OXC";

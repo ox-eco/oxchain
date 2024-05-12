@@ -1,6 +1,6 @@
 ﻿namespace OX.UI
 {
-    partial class DetainDialog
+    partial class SlotDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DetainDialog));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SlotDialog));
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -113,7 +113,7 @@
             resources.ApplyResources(this.label7, "label7");
             this.label7.Name = "label7";
             // 
-            // DetainDialog
+            // SlotDialog
             // 
             this.AcceptButton = this.button1;
             resources.ApplyResources(this, "$this");
@@ -133,7 +133,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "DetainDialog";
+            this.Name = "SlotDialog";
             this.ShowInTaskbar = false;
             this.Load += new System.EventHandler(this.ElectionDialog_Load);
             this.ResumeLayout(false);

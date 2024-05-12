@@ -8,30 +8,30 @@ using System.Linq;
 
 namespace OX.Network.P2P.Payloads
 {
-    public class DetainTransaction : Transaction
+    public class SlotRentTransaction : Transaction
     {
         public UInt160 ScriptHash;
-        public DetainStatus DetainState;
-        public uint DetainDuration;
+        public SlotStatus SlotState;
+        public uint SlotRentDuration;
         public Fixed8 AskFee;
         public byte[] Data;
 
-        public override int Size => base.Size + ScriptHash.Size + sizeof(DetainStatus) + sizeof(uint) + AskFee.Size + Data.GetVarSize();
+        public override int Size => base.Size + ScriptHash.Size + sizeof(SlotStatus) + sizeof(uint) + AskFee.Size + Data.GetVarSize();
         public override Fixed8 SystemFee
         {
             get
             {
-                switch (DetainState)
+                switch (SlotState)
                 {
-                    case DetainStatus.Freeze:
-                        return Fixed8.One * DetainDuration;
+                    case SlotStatus.Freeze:
+                        return Fixed8.One * SlotRentDuration;
                     default:
                         return Fixed8.One * 100;
                 }
             }
         }
-        public DetainTransaction()
-          : base(TransactionType.DetainTransaction)
+        public SlotRentTransaction()
+          : base(TransactionType.SlotRentTransaction)
         {
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
@@ -39,7 +39,7 @@ namespace OX.Network.P2P.Payloads
             AskFee = Fixed8.Zero;
             Data = new byte[] { 0x00 };
         }
-        public DetainTransaction(UInt160 scriptHash)
+        public SlotRentTransaction(UInt160 scriptHash)
             : this()
         {
             ScriptHash = scriptHash;
@@ -57,8 +57,8 @@ namespace OX.Network.P2P.Payloads
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             ScriptHash = reader.ReadSerializable<UInt160>();
-            DetainState = (DetainStatus)reader.ReadByte();
-            DetainDuration = reader.ReadUInt32();
+            SlotState = (SlotStatus)reader.ReadByte();
+            SlotRentDuration = reader.ReadUInt32();
             AskFee = reader.ReadSerializable<Fixed8>();
             Data = reader.ReadVarBytes();
         }
@@ -66,8 +66,8 @@ namespace OX.Network.P2P.Payloads
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
             writer.Write(ScriptHash);
-            writer.Write((byte)DetainState);
-            writer.Write(DetainDuration);
+            writer.Write((byte)SlotState);
+            writer.Write(SlotRentDuration);
             writer.Write(AskFee);
             writer.WriteVarBytes(Data);
         }
@@ -76,8 +76,8 @@ namespace OX.Network.P2P.Payloads
         {
             JObject json = base.ToJson();
             json["scripthash"] = ScriptHash.ToAddress();
-            json["detaintype"] = DetainState.Value();
-            json["detainduration"] = DetainDuration.ToString();
+            json["slotstate"] = SlotState.Value();
+            json["slotrentduration"] = SlotRentDuration.ToString();
             json["flag"] = AskFee.ToString();
             json["data"] = Data.ToHexString();
             return json;
@@ -90,7 +90,7 @@ namespace OX.Network.P2P.Payloads
                 if (this.AskFee < Fixed8.OXU) return false;
                 if (this.AskFee > Fixed8.One * 10) return false;
             }
-            if (this.DetainState == DetainStatus.Freeze && this.DetainDuration < 100) return false;
+            if (this.SlotState == SlotStatus.Freeze && this.SlotRentDuration < 100) return false;
             return base.Verify(snapshot, mempool);
         }
     }

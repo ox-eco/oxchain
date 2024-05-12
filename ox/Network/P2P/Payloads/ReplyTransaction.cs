@@ -13,6 +13,7 @@ namespace OX.Network.P2P.Payloads
         public byte[] Data;
 
         public override int Size => base.Size + To.Size + sizeof(byte) + sizeof(byte) + Data.GetVarSize();
+        public override Fixed8 SystemFee => this.Data.Length > FreeDataSize ? Fixed8.One : Fixed8.Zero;
 
         public ReplyTransaction()
             : base(TransactionType.ReplyTransaction)

@@ -404,7 +404,7 @@
     <value>5</value>
   </data>
   <data name="label5.Text" xml:space="preserve">
-    <value>Detain State:</value>
+    <value>Slot State:</value>
   </data>
   <data name="&gt;&gt;label5.Name" xml:space="preserve">
     <value>label5</value>

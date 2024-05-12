@@ -195,7 +195,7 @@ namespace OX.UI
             deployContractToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             invokeContractToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             选举EToolStripMenuItem.Enabled = Program.CurrentWallet != null;
-            DetainToolStripMenuItem.Enabled = Program.CurrentWallet != null;
+            SlotToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             创建新地址NToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             导入私钥IToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             创建智能合约SToolStripMenuItem.Enabled = Program.CurrentWallet != null;
@@ -617,10 +617,10 @@ namespace OX.UI
                 dialog.ShowDialog();
             }
         }
-        private void DetainToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void SlotToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
             if (Program.CurrentWallet.IsNull()) return;
-            using (DetainDialog dialog = new DetainDialog())
+            using (SlotDialog dialog = new SlotDialog())
             {
                 if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
 

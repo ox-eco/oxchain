@@ -254,7 +254,7 @@
     <value>0</value>
   </data>
   <data name="label4.Text" xml:space="preserve">
-    <value>Detain State:</value>
+    <value>Slot State:</value>
   </data>
   <data name="&gt;&gt;label4.Name" xml:space="preserve">
     <value>label4</value>
@@ -432,10 +432,10 @@
     <value>CenterScreen</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
-    <value>Business Channel Lease</value>
+    <value>Slot Rent</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>DetainDialog</value>
+    <value>SlotDialog</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
     <value>System.Windows.Forms.Form, System.Windows.Forms, Version=5.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

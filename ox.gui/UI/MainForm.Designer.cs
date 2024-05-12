@@ -54,7 +54,7 @@
             deployContractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             invokeContractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
-            DetainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            SlotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             选举EToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             signDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
@@ -206,7 +206,7 @@
             // 
             // 高级AToolStripMenuItem
             // 
-            高级AToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { 提取OXCCToolStripMenuItem, toolStripSeparator7, requestCertificateToolStripMenuItem, 注册资产RToolStripMenuItem, 资产分发IToolStripMenuItem, toolStripSeparator8, deployContractToolStripMenuItem, invokeContractToolStripMenuItem, toolStripSeparator11, DetainToolStripMenuItem, 选举EToolStripMenuItem, signDataToolStripMenuItem, toolStripSeparator9, optionsToolStripMenuItem });
+            高级AToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { 提取OXCCToolStripMenuItem, toolStripSeparator7, requestCertificateToolStripMenuItem, 注册资产RToolStripMenuItem, 资产分发IToolStripMenuItem, toolStripSeparator8, deployContractToolStripMenuItem, invokeContractToolStripMenuItem, toolStripSeparator11, SlotToolStripMenuItem, 选举EToolStripMenuItem, signDataToolStripMenuItem, toolStripSeparator9, optionsToolStripMenuItem });
             高级AToolStripMenuItem.Name = "高级AToolStripMenuItem";
             resources.ApplyResources(高级AToolStripMenuItem, "高级AToolStripMenuItem");
             // 
@@ -261,11 +261,11 @@
             toolStripSeparator11.Name = "toolStripSeparator11";
             resources.ApplyResources(toolStripSeparator11, "toolStripSeparator11");
             // 
-            // DetainToolStripMenuItem
+            // SlotToolStripMenuItem
             // 
-            DetainToolStripMenuItem.Name = "DetainToolStripMenuItem";
-            resources.ApplyResources(DetainToolStripMenuItem, "DetainToolStripMenuItem");
-            DetainToolStripMenuItem.Click += DetainToolStripMenuItem_Click;
+            SlotToolStripMenuItem.Name = "SlotToolStripMenuItem";
+            resources.ApplyResources(SlotToolStripMenuItem, "SlotToolStripMenuItem");
+            SlotToolStripMenuItem.Click += SlotToolStripMenuItem_Click;
             // 
             // 选举EToolStripMenuItem
             // 
@@ -697,7 +697,7 @@
         private System.Windows.Forms.ToolStripMenuItem 提取OXCCToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripMenuItem 选举EToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem DetainToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SlotToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 重建钱包数据库RToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 交易TToolStripMenuItem1;
         private System.Windows.Forms.TabPage tabPage3;

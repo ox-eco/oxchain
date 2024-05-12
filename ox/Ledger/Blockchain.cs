@@ -34,7 +34,7 @@ namespace OX.Ledger
         public class FillCompleted { }
 
         public static readonly uint SecondsPerBlock = ProtocolSettings.Default.SecondsPerBlock;
-        public static readonly Fixed8 BappDetainOXS = ProtocolSettings.Default.BappDetainOXS;
+        public static readonly Fixed8 BappSlotRentOXS = ProtocolSettings.Default.BappSlotRentOXS;
         public static readonly Fixed8 FlashMinOXCBalance = ProtocolSettings.Default.FlashMinOXCBalance;
         public const uint DecrementInterval = 2000000;
         public const int MaxValidators = 1024;
@@ -729,30 +729,30 @@ namespace OX.Ledger
                             }
                             break;
 
-                        case DetainTransaction tx_detain:
-                            switch (tx_detain.DetainState)
+                        case SlotRentTransaction tx_slot:
+                            switch (tx_slot.SlotState)
                             {
-                                case DetainStatus.Freeze:
-                                    var sh = tx_detain.ScriptHash;
-                                    var accountState = new AccountState(sh) { DetainState = tx_detain.DetainState, DetainExpire = block.Index, AskFee = tx_detain.AskFee };
+                                case SlotStatus.Freeze:
+                                    var sh = tx_slot.ScriptHash;
+                                    var accountState = new AccountState(sh) { SlotState = tx_slot.SlotState, SlotExpire = block.Index, AskFee = tx_slot.AskFee };
                                     AccountState acts = snapshot.Accounts.GetAndChange(sh, () => accountState);
-                                    var expire = acts.DetainExpire;
+                                    var expire = acts.SlotExpire;
                                     if (expire < block.Index)
                                         expire = block.Index;
-                                    expire += tx_detain.DetainDuration;
-                                    acts.AskFee = tx_detain.AskFee;
-                                    acts.DetainState = tx_detain.DetainState;
-                                    acts.DetainExpire = expire;
+                                    expire += tx_slot.SlotRentDuration;
+                                    acts.AskFee = tx_slot.AskFee;
+                                    acts.SlotState = tx_slot.SlotState;
+                                    acts.SlotExpire = expire;
                                     break;
-                                case DetainStatus.UnFreeze:
-                                    var sh2 = tx_detain.ScriptHash;
+                                case SlotStatus.UnFreeze:
+                                    var sh2 = tx_slot.ScriptHash;
                                     AccountState acts2 = snapshot.Accounts.GetAndChange(sh2, () => null);
                                     if (acts2.IsNotNull())
                                     {
-                                        if (acts2.DetainExpire < block.Index)
+                                        if (acts2.SlotExpire < block.Index)
                                         {
-                                            acts2.DetainState = DetainStatus.UnFreeze;
-                                            acts2.DetainExpire = 0;
+                                            acts2.SlotState = SlotStatus.UnFreeze;
+                                            acts2.SlotExpire = 0;
                                         }
                                     }
                                     break;
@@ -966,9 +966,9 @@ namespace OX.Ledger
             var balance = acts.GetBalance(OXS);
             OXSBalance = balance;
             AskFee = acts.AskFee;
-            if (acts.DetainState == DetainStatus.UnFreeze) return false;
-            if (acts.DetainExpire < currentSnapshot.Height) return false;
-            if (balance < BappDetainOXS) return false;
+            if (acts.SlotState == SlotStatus.UnFreeze) return false;
+            if (acts.SlotExpire < currentSnapshot.Height) return false;
+            if (balance < BappSlotRentOXS) return false;
             return true;
         }
         public bool VerifyFlashMessageSender(UInt160 flashMessageSender, out Fixed8 OXSBalance)
@@ -991,9 +991,9 @@ namespace OX.Ledger
                 return false;
             }
 
-            bool isFrozen = acts.DetainState == DetainStatus.Freeze;
+            bool isFrozen = acts.SlotState == SlotStatus.Freeze;
             if (isFrozen)
-                ExpireIndex = acts.DetainExpire;
+                ExpireIndex = acts.SlotExpire;
             else
                 ExpireIndex = 0;
             return isFrozen;

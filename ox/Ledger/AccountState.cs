@@ -11,13 +11,13 @@ namespace OX.Ledger
     public class AccountState : StateBase, ICloneable<AccountState>
     {
         public UInt160 ScriptHash;
-        public DetainStatus DetainState;
-        public uint DetainExpire;
+        public SlotStatus SlotState;
+        public uint SlotExpire;
         public Fixed8 AskFee;
         public ECPoint[] Votes;
         public Dictionary<UInt256, Fixed8> Balances;
 
-        public override int Size => base.Size + ScriptHash.Size + sizeof(DetainStatus) + sizeof(uint) + AskFee.Size + Votes.GetVarSize()
+        public override int Size => base.Size + ScriptHash.Size + sizeof(SlotStatus) + sizeof(uint) + AskFee.Size + Votes.GetVarSize()
             + IO.Helper.GetVarSize(Balances.Count) + Balances.Count * (32 + 8);
 
         public AccountState() { }
@@ -25,8 +25,8 @@ namespace OX.Ledger
         public AccountState(UInt160 hash)
         {
             this.ScriptHash = hash;
-            this.DetainState = DetainStatus.UnFreeze;
-            this.DetainExpire = 0;
+            this.SlotState = SlotStatus.UnFreeze;
+            this.SlotExpire = 0;
             this.AskFee = Fixed8.Zero;
             this.Votes = new ECPoint[0];
             this.Balances = new Dictionary<UInt256, Fixed8>();
@@ -37,8 +37,8 @@ namespace OX.Ledger
             return new AccountState
             {
                 ScriptHash = ScriptHash,
-                DetainState = DetainState,
-                DetainExpire = DetainExpire,
+                SlotState = SlotState,
+                SlotExpire = SlotExpire,
                 AskFee = AskFee,
                 Votes = Votes,
                 Balances = Balances.ToDictionary(p => p.Key, p => p.Value)
@@ -49,8 +49,8 @@ namespace OX.Ledger
         {
             base.Deserialize(reader);
             ScriptHash = reader.ReadSerializable<UInt160>();
-            DetainState = (DetainStatus)reader.ReadByte();
-            DetainExpire = reader.ReadUInt32();
+            SlotState = (SlotStatus)reader.ReadByte();
+            SlotExpire = reader.ReadUInt32();
             AskFee = reader.ReadSerializable<Fixed8>();
             Votes = new ECPoint[reader.ReadVarInt()];
             for (int i = 0; i < Votes.Length; i++)
@@ -68,8 +68,8 @@ namespace OX.Ledger
         void ICloneable<AccountState>.FromReplica(AccountState replica)
         {
             ScriptHash = replica.ScriptHash;
-            DetainState = replica.DetainState;
-            DetainExpire = replica.DetainExpire;
+            SlotState = replica.SlotState;
+            SlotExpire = replica.SlotExpire;
             AskFee = replica.AskFee;
             Votes = replica.Votes;
             Balances = replica.Balances;
@@ -86,8 +86,8 @@ namespace OX.Ledger
         {
             base.Serialize(writer);
             writer.Write(ScriptHash);
-            writer.Write((byte)DetainState);
-            writer.Write(DetainExpire);
+            writer.Write((byte)SlotState);
+            writer.Write(SlotExpire);
             writer.Write(AskFee);
             writer.Write(Votes);
             var balances = Balances.Where(p => p.Value > Fixed8.Zero).ToArray();
@@ -103,8 +103,8 @@ namespace OX.Ledger
         {
             JObject json = base.ToJson();
             json["script_hash"] = ScriptHash.ToString();
-            json["detainstate"] = DetainState.Value();
-            json["detainexpire"] = DetainExpire.ToString();
+            json["slotstate"] = SlotState.Value();
+            json["slotexpire"] = SlotExpire.ToString();
             json["magic"] = AskFee.ToString();
             json["votes"] = Votes.Select(p => (JObject)p.ToString()).ToArray();
             json["balances"] = Balances.Select(p =>

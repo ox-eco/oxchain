@@ -16,7 +16,7 @@ namespace OX
         public IReadOnlyDictionary<TransactionType, Fixed8> SystemFee { get; }
         public Fixed8 LowPriorityThreshold { get; }
         public uint SecondsPerBlock { get; }
-        public Fixed8 BappDetainOXS { get; }
+        public Fixed8 BappSlotRentOXS { get; }
         public Fixed8 FlashMinOXCBalance { get; }
         static ProtocolSettings _default;
 
@@ -50,8 +50,8 @@ namespace OX
             Dictionary<TransactionType, Fixed8> sys_fee = new Dictionary<TransactionType, Fixed8>
             {
                 [TransactionType.BillTransaction] = Fixed8.One,
-                [TransactionType.ReplyTransaction] = Fixed8.One,
-                [TransactionType.AskTransaction] = Fixed8.One,
+                //[TransactionType.ReplyTransaction] = Fixed8.One,
+                //[TransactionType.AskTransaction] = Fixed8.One,
                 [TransactionType.NftTransferTransaction] = Fixed8.One * 10,
                 [TransactionType.BookTransferTransaction] = Fixed8.One*10,
                 [TransactionType.BookSectionTransaction] = Fixed8.One * 100,
@@ -67,7 +67,7 @@ namespace OX
 
             this.SystemFee = sys_fee;
             this.SecondsPerBlock = 15;
-            this.BappDetainOXS = Fixed8.One * 100_000;
+            this.BappSlotRentOXS = Fixed8.One * 100_000;
             this.FlashMinOXCBalance = Fixed8.One * 300;
             this.LowPriorityThreshold = Fixed8.Satoshi * 100_000;
         }

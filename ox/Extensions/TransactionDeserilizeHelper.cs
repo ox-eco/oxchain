@@ -41,8 +41,8 @@ namespace OX
                         return TxData.AsSerializable<CharitableTransaction>();
                     case TransactionType.GovementTransaction:
                         return TxData.AsSerializable<GovementTransaction>();
-                    case TransactionType.DetainTransaction:
-                        return TxData.AsSerializable<DetainTransaction>();
+                    case TransactionType.SlotRentTransaction:
+                        return TxData.AsSerializable<SlotRentTransaction>();
                     case TransactionType.EventTransaction:
                         return TxData.AsSerializable<EventTransaction>();
                     case TransactionType.ReplyTransaction:

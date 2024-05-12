@@ -17,6 +17,7 @@ namespace OX.Network.P2P.Payloads
         public byte DataType;
         public byte[] Data;
         public override int Size => base.Size + sizeof(byte) + sizeof(byte) + From.Size + Data.GetVarSize();
+        public override Fixed8 SystemFee => this.Data.Length > FreeDataSize ? Fixed8.One : Fixed8.Zero;
         public EdgeTransaction(TransactionType type)
             : base(type)
         {
@@ -49,7 +50,7 @@ namespace OX.Network.P2P.Payloads
         private IEnumerable<UInt160> GetScriptHashesForVerifying_Validator()
         {
             yield return Contract.CreateSignatureRedeemScript(this.From).ToScriptHash();
-        }    
+        }
 
         public bool GetDataModel<T>(UInt160[] bizScriptHashs, byte dataType, out T model) where T : ISerializable, new()
         {
