@@ -35,7 +35,7 @@ namespace OX
 
         private ProtocolSettings()
         {
-            this.Magic = 10141116;
+            this.Magic = 30141605;
             this.AddressVersion = 23;
             this.StandbyValidators = new[]
             {

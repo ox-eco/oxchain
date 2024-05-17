@@ -83,7 +83,7 @@ namespace OX.Ledger
             PrevHash = UInt256.Zero,
             Timestamp = (new DateTime(2016, 7, 15, 15, 8, 21, DateTimeKind.Utc)).ToTimestamp(),
             Index = 0,
-            ConsensusData = 201014021116, //for my love
+            ConsensusData = 101411161205, //for my love
             NextConsensus = GetConsensusAddress(StandbyValidators),
             Witness = new Witness
             {
@@ -91,46 +91,46 @@ namespace OX.Ledger
                 VerificationScript = new[] { (byte)OpCode.PUSHT }
             },
             Transactions = new Transaction[]
-            {
-                new MinerTransaction
-                {
-                    Nonce = 788289,
-                    Attributes = new TransactionAttribute[0],
-                    Inputs = new CoinReference[0],
-                    Outputs = new TransactionOutput[0],
-                    Witnesses = new Witness[0]
-                },
-                OXS_Token,
-                OXC_Token,
-                new IssueTransaction
-                {
-                    Attributes = new TransactionAttribute[0],
-                    Inputs = new CoinReference[0],
-                    Outputs = new[]
-                    {
-                        new TransactionOutput
-                        {
-                            AssetId = OXS_Token.Hash,
-                            Value = OXS_Token.Amount,
-                            ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
-                        },
-                        new TransactionOutput
-                        {
-                            AssetId = OXC_Token.Hash,
-                            Value = Fixed8.One* 40000000,
-                            ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
-                        }
-                    },
-                    Witnesses = new[]
-                    {
-                        new Witness
-                        {
-                            InvocationScript = new byte[0],
-                            VerificationScript = new[] { (byte)OpCode.PUSHT }
-                        }
-                    }
-                }
-            }
+        {
+           new MinerTransaction
+           {
+               Nonce = 788289,
+               Attributes = new TransactionAttribute[0],
+               Inputs = new CoinReference[0],
+               Outputs = new TransactionOutput[0],
+               Witnesses = new Witness[0]
+           },
+           OXS_Token,
+           OXC_Token,
+           new IssueTransaction
+           {
+               Attributes = new TransactionAttribute[0],
+               Inputs = new CoinReference[0],
+               Outputs = new[]
+               {
+                   new TransactionOutput
+                   {
+                       AssetId = OXS_Token.Hash,
+                       Value = OXS_Token.Amount,
+                       ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
+                   },
+                   new TransactionOutput
+                   {
+                       AssetId = OXC_Token.Hash,
+                       Value = Fixed8.One* 40000000,
+                       ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
+                   }
+               },
+               Witnesses = new[]
+               {
+                   new Witness
+                   {
+                       InvocationScript = new byte[0],
+                       VerificationScript = new[] { (byte)OpCode.PUSHT }
+                   }
+               }
+           }
+        }
         };
         public static bool Debug = false;
         private const int MemoryPoolMaxTransactions = 50_000;
