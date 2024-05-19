@@ -17,7 +17,6 @@
       "SslCertPassword": ""
     },
     "Seeds": [
-      "116.196.111.249:11333",
       "seed.oxchain.link:11333",
       "seed1.oxchain.link:11333",
       "seed2.oxchain.link:11333",
