@@ -14,6 +14,7 @@ using System;
 using Nethereum.Util;
 using Nethereum.Hex.HexConvertors.Extensions;
 using System.Collections.Concurrent;
+using System.Threading.Channels;
 
 namespace OX.Network.P2P.Payloads
 {
@@ -30,13 +31,14 @@ namespace OX.Network.P2P.Payloads
     public class SlotSideTransaction : Transaction
     {
         public ECPoint Slot;
+        public byte Channel;
         public SideType SideType;
         public byte[] Data;
         public byte Flag;
         public UInt160 AuthContract;
         public byte[] Attach;
 
-        public override int Size => base.Size + Slot.Size + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + AuthContract.Size + Attach.GetVarSize();
+        public override int Size => base.Size + Slot.Size + sizeof(byte) + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + AuthContract.Size + Attach.GetVarSize();
         public override Fixed8 SystemFee => Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero + AttributesFee + OutputFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => true;
@@ -54,6 +56,7 @@ namespace OX.Network.P2P.Payloads
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             Slot = reader.ReadSerializable<ECPoint>();
+            Channel = reader.ReadByte();
             SideType = (SideType)reader.ReadByte();
             Data = reader.ReadVarBytes();
             Flag = reader.ReadByte();
@@ -64,6 +67,7 @@ namespace OX.Network.P2P.Payloads
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
             writer.Write(Slot);
+            writer.Write(Channel);
             writer.Write((byte)SideType);
             writer.WriteVarBytes(Data);
             writer.Write(Flag);
@@ -74,7 +78,8 @@ namespace OX.Network.P2P.Payloads
         public override JObject ToJson()
         {
             JObject json = base.ToJson();
-            json["recipient"] = Slot.ToString();
+            json["slot"] = Slot.ToString();
+            json["channel"] = Channel.ToString();
             json["sidetype"] = SideType.ToString();
             json["data"] = Data.ToHexString();
             json["flag"] = Flag.ToString();
@@ -90,6 +95,7 @@ namespace OX.Network.P2P.Payloads
                 sb.EmitPush(this.Flag);
                 sb.EmitPush(this.Data);
                 sb.EmitPush((byte)this.SideType);
+                sb.EmitPush((byte)this.Channel);
                 sb.EmitAppCall(this.AuthContract);
                 return Contract.Create(new[] { ContractParameterType.Signature }, sb.ToArray());
             }
@@ -107,7 +113,7 @@ namespace OX.Network.P2P.Payloads
             }
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
-            if (!snapshot.VerifySlotValidator( Contract.CreateSignatureRedeemScript(this.Slot).ToScriptHash(), out Fixed8 balance, out Fixed8 askFee)) return false;
+            if (!snapshot.VerifySlotValidator(Contract.CreateSignatureRedeemScript(this.Slot).ToScriptHash(), out Fixed8 balance, out Fixed8 askFee)) return false;
             return base.Verify(snapshot, mempool);
         }
         bool VerifyData()

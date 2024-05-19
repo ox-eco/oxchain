@@ -39,8 +39,8 @@ namespace OX.Ledger
         public const uint DecrementInterval = 2000000;
         public const int MaxValidators = 1024;
         public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
-        public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0xef30ec8e833e8c828f4f20c690e607790897dfec");
-        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0x8a783ae5385f7e534ae1644d78e0d8144a984600");
+        public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0x83f4036ded80cce463ae81e02328fc3e028ac892");
+        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0x789ee733b58932b97dc960260ca1647dfcb8808a");
         public static UInt160 EthereumMapContractScriptHash = UInt160.Parse("0x508c5bd9a4a5fd62ea2b0d1c853aff2cec5d5ea7");
         public static UInt160 FlashMessageContractScriptHash = UInt160.Parse("0xdadf55efc35334d438897ae6bf8f5ea51d2ef5f5");
         static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
