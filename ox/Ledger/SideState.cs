@@ -51,7 +51,7 @@ namespace OX.Ledger
     public class SideState : StateBase, ICloneable<SideState>
     {
         public UInt160 SideScriptHash;
-        public SideTransaction SideTransaction;
+        public SlotSideTransaction SideTransaction;
 
         public override int Size => base.Size + SideScriptHash.Size + SideTransaction.Size;
 
@@ -68,7 +68,7 @@ namespace OX.Ledger
         {
             base.Deserialize(reader);
             SideScriptHash = reader.ReadSerializable<UInt160>();
-            SideTransaction = reader.ReadSerializable<SideTransaction>();
+            SideTransaction = reader.ReadSerializable<SlotSideTransaction>();
         }
 
         void ICloneable<SideState>.FromReplica(SideState replica)

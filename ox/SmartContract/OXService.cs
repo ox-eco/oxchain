@@ -22,7 +22,6 @@ namespace OX.SmartContract
         public OXService(TriggerType trigger, Snapshot snapshot)
             : base(trigger, snapshot)
         {
-            
             Register("OX.Runtime.GetTrigger", Runtime_GetTrigger, 1);
             Register("OX.Runtime.CreateSignatureRedeemScriptHash", Runtime_CreateSignatureRedeemScriptHash, 1);
             Register("OX.Runtime.CheckWitness", Runtime_CheckWitness, 200);
@@ -52,8 +51,8 @@ namespace OX.SmartContract
             Register("OX.Block.GetTransactions", Block_GetTransactions, 1);
             Register("OX.Block.GetTransaction", Block_GetTransaction, 1);
             Register("OX.Transaction.GetHash", Transaction_GetHash, 1);
-            Register("OX.Transaction.GetInputHash", Transaction_GetInputHash, 1);
-            Register("OX.Transaction.GetOutputHash", Transaction_GetOutputHash, 1);
+            //Register("OX.Transaction.GetInputHash", Transaction_GetInputHash, 1);
+            //Register("OX.Transaction.GetOutputHash", Transaction_GetOutputHash, 1);
             Register("OX.Transaction.GetInputOutputHash", Transaction_GetInputAndOutputHash, 1);
             Register("OX.Transaction.GetType", Transaction_GetType, 1);
             Register("OX.Transaction.GetAttributes", Transaction_GetAttributes, 1);
@@ -109,6 +108,8 @@ namespace OX.SmartContract
             Register("OX.Iterator.Concat", Iterator_Concat, 1);
             Register("OX.Blockchain.GetSides", Blockchain_GetSides, 1);
             Register("OX.Blockchain.IsInSide", Blockchain_IsInSide, 1);
+            Register("OX.Blockchain.VerifySlotScriptHash", Blockchain_VerifySlotScriptHash, 1);
+            Register("OX.Blockchain.VerifySlotPubKey", Blockchain_VerifySlotPubKey, 1);
             Register("OX.Ethereum.EcRecover", Ethereum_EcRecover, 1);
             Register("OX.Ethereum.EcRecoverString", Ethereum_EcRecoverString, 1);
             #region Aliases
@@ -151,7 +152,7 @@ namespace OX.SmartContract
             {
                 return false;
             }
-            }
+        }
         private bool Blockchain_IsInSide(ExecutionEngine engine)
         {
             UInt160 side_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
@@ -182,6 +183,21 @@ namespace OX.SmartContract
                 }
             }
             engine.CurrentContext.EvaluationStack.Push(ss);
+            return true;
+        }
+        private bool Blockchain_VerifySlotScriptHash(ExecutionEngine engine)
+        {
+            UInt160 slot_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out Fixed8 _, out Fixed8 _);
+            engine.CurrentContext.EvaluationStack.Push(valid);
+            return true;
+        }
+        private bool Blockchain_VerifySlotPubKey(ExecutionEngine engine)
+        {
+            ECPoint slot_pubkey = ECPoint.DecodePoint(engine.CurrentContext.EvaluationStack.Pop().GetByteArray(), ECCurve.Secp256r1);
+            var slot_script_hash = Contract.CreateSignatureRedeemScript(slot_pubkey).ToScriptHash();
+            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out Fixed8 _, out Fixed8 _);
+            engine.CurrentContext.EvaluationStack.Push(valid);
             return true;
         }
         private bool Blockchain_GetAccount(ExecutionEngine engine)

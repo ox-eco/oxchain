@@ -51,7 +51,7 @@ namespace OX.Network.P2P.Payloads
         public override bool SignatureVerify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState)
         {
             var sh = Contract.CreateSignatureRedeemScript(this.Sender).ToScriptHash();
-            if (!Blockchain.Singleton.VerifyFlashMessageSender(snapshot, sh, out accountState)) return false;
+            if (!snapshot.VerifyFlashMessageSender( sh, out accountState)) return false;
             return this.VerifyWitnesses(snapshot);
         }
         public override JObject ToJson()

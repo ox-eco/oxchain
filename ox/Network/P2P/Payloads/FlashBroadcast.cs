@@ -56,7 +56,7 @@ namespace OX.Network.P2P.Payloads
         }
         public override bool SignatureVerify(Snapshot snapshot, FlashMessagePool flashStatePool, out AccountState accountState)
         {
-            if (!Blockchain.Singleton.VerifyFlashMessageSender(snapshot, this.Author, out accountState)) return false;
+            if (!snapshot.VerifyFlashMessageSender( this.Author, out accountState)) return false;
             try
             {
                 if (this.VerifyWitnesses(snapshot)) return true;

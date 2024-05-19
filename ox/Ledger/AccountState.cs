@@ -13,11 +13,12 @@ namespace OX.Ledger
         public UInt160 ScriptHash;
         public SlotStatus SlotState;
         public uint SlotExpire;
+        public byte[] SlotMark;
         public Fixed8 AskFee;
         public ECPoint[] Votes;
         public Dictionary<UInt256, Fixed8> Balances;
 
-        public override int Size => base.Size + ScriptHash.Size + sizeof(SlotStatus) + sizeof(uint) + AskFee.Size + Votes.GetVarSize()
+        public override int Size => base.Size + ScriptHash.Size + sizeof(SlotStatus) + sizeof(uint) + SlotMark.GetVarSize() + AskFee.Size + Votes.GetVarSize()
             + IO.Helper.GetVarSize(Balances.Count) + Balances.Count * (32 + 8);
 
         public AccountState() { }
@@ -27,6 +28,7 @@ namespace OX.Ledger
             this.ScriptHash = hash;
             this.SlotState = SlotStatus.UnFreeze;
             this.SlotExpire = 0;
+            this.SlotMark = new byte[] { 0x00 };
             this.AskFee = Fixed8.Zero;
             this.Votes = new ECPoint[0];
             this.Balances = new Dictionary<UInt256, Fixed8>();
@@ -39,6 +41,7 @@ namespace OX.Ledger
                 ScriptHash = ScriptHash,
                 SlotState = SlotState,
                 SlotExpire = SlotExpire,
+                SlotMark = SlotMark,
                 AskFee = AskFee,
                 Votes = Votes,
                 Balances = Balances.ToDictionary(p => p.Key, p => p.Value)
@@ -51,6 +54,7 @@ namespace OX.Ledger
             ScriptHash = reader.ReadSerializable<UInt160>();
             SlotState = (SlotStatus)reader.ReadByte();
             SlotExpire = reader.ReadUInt32();
+            SlotMark = reader.ReadVarBytes();
             AskFee = reader.ReadSerializable<Fixed8>();
             Votes = new ECPoint[reader.ReadVarInt()];
             for (int i = 0; i < Votes.Length; i++)
@@ -70,6 +74,7 @@ namespace OX.Ledger
             ScriptHash = replica.ScriptHash;
             SlotState = replica.SlotState;
             SlotExpire = replica.SlotExpire;
+             SlotMark = replica.SlotMark;
             AskFee = replica.AskFee;
             Votes = replica.Votes;
             Balances = replica.Balances;
@@ -88,6 +93,7 @@ namespace OX.Ledger
             writer.Write(ScriptHash);
             writer.Write((byte)SlotState);
             writer.Write(SlotExpire);
+            writer.WriteVarBytes(SlotMark);
             writer.Write(AskFee);
             writer.Write(Votes);
             var balances = Balances.Where(p => p.Value > Fixed8.Zero).ToArray();
@@ -105,6 +111,7 @@ namespace OX.Ledger
             json["script_hash"] = ScriptHash.ToString();
             json["slotstate"] = SlotState.Value();
             json["slotexpire"] = SlotExpire.ToString();
+            json["slotmark"] = SlotMark.ToHexString();
             json["magic"] = AskFee.ToString();
             json["votes"] = Votes.Select(p => (JObject)p.ToString()).ToArray();
             json["balances"] = Balances.Select(p =>

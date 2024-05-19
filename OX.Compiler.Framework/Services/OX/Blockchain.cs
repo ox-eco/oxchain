@@ -35,5 +35,9 @@ namespace OX.SmartContract.Framework.Services
         public static extern byte[][] GetSides(byte[] script_hash, string contractScriptHash);
         [Syscall("OX.Blockchain.IsInSide")]
         public static extern bool IsInSide(byte[] side_script_hash,byte[] scope_script_hash, string contractScriptHash);
+        [Syscall("OX.Blockchain.VerifySlotScriptHash")]
+        public static extern bool VerifySlotScriptHash(byte[] script_hash);
+        [Syscall("OX.Blockchain.VerifySlotPubKey")]
+        public static extern bool VerifySlotPubKey(byte[] script_hash);
     }
 }

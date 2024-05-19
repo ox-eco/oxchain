@@ -27,21 +27,21 @@ namespace OX.Network.P2P.Payloads
         PublicKey = 0x06,
         EthereumAddress = 0x77
     }
-    public class SideTransaction : Transaction
+    public class SlotSideTransaction : Transaction
     {
-        public ECPoint Recipient;
+        public ECPoint Slot;
         public SideType SideType;
         public byte[] Data;
         public byte Flag;
         public UInt160 AuthContract;
         public byte[] Attach;
 
-        public override int Size => base.Size + Recipient.Size + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + AuthContract.Size + Attach.GetVarSize();
-        public override Fixed8 SystemFee => Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero + AttributesFee+OutputFee;
+        public override int Size => base.Size + Slot.Size + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + AuthContract.Size + Attach.GetVarSize();
+        public override Fixed8 SystemFee => Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero + AttributesFee + OutputFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => true;
-        public SideTransaction()
-          : base(TransactionType.SideTransaction)
+        public SlotSideTransaction()
+          : base(TransactionType.SlotSideTransaction)
         {
             this.AuthContract = Blockchain.SideAssetContractScriptHash;
             this.Inputs = new CoinReference[0];
@@ -53,7 +53,7 @@ namespace OX.Network.P2P.Payloads
 
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
-            Recipient = reader.ReadSerializable<ECPoint>();
+            Slot = reader.ReadSerializable<ECPoint>();
             SideType = (SideType)reader.ReadByte();
             Data = reader.ReadVarBytes();
             Flag = reader.ReadByte();
@@ -63,7 +63,7 @@ namespace OX.Network.P2P.Payloads
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
-            writer.Write(Recipient);
+            writer.Write(Slot);
             writer.Write((byte)SideType);
             writer.WriteVarBytes(Data);
             writer.Write(Flag);
@@ -74,7 +74,7 @@ namespace OX.Network.P2P.Payloads
         public override JObject ToJson()
         {
             JObject json = base.ToJson();
-            json["recipient"] = Recipient.ToString();
+            json["recipient"] = Slot.ToString();
             json["sidetype"] = SideType.ToString();
             json["data"] = Data.ToHexString();
             json["flag"] = Flag.ToString();
@@ -86,7 +86,7 @@ namespace OX.Network.P2P.Payloads
         {
             using (ScriptBuilder sb = new ScriptBuilder())
             {
-                sb.EmitPush(this.Recipient);
+                sb.EmitPush(this.Slot);
                 sb.EmitPush(this.Flag);
                 sb.EmitPush(this.Data);
                 sb.EmitPush((byte)this.SideType);
@@ -107,6 +107,7 @@ namespace OX.Network.P2P.Payloads
             }
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
+            if (!snapshot.VerifySlotValidator( Contract.CreateSignatureRedeemScript(this.Slot).ToScriptHash(), out Fixed8 balance, out Fixed8 askFee)) return false;
             return base.Verify(snapshot, mempool);
         }
         bool VerifyData()

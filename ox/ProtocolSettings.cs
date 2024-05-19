@@ -67,7 +67,7 @@ namespace OX
 
             this.SystemFee = sys_fee;
             this.SecondsPerBlock = 15;
-            this.BappSlotRentOXS = Fixed8.One * 100_000;
+            this.BappSlotRentOXS = Fixed8.One * 1000_000;
             this.FlashMinOXCBalance = Fixed8.One * 300;
             this.LowPriorityThreshold = Fixed8.Satoshi * 100_000;
         }

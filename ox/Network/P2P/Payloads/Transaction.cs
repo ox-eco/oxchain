@@ -69,30 +69,30 @@ namespace OX.Network.P2P.Payloads
                 return _hash;
             }
         }
-        private UInt256 _inputhash = null;
-        public UInt256 InputHash
-        {
-            get
-            {
-                if (_inputhash == null)
-                {
-                    _inputhash = new UInt256(Crypto.Default.Hash256(this.GetInputHashData()));
-                }
-                return _inputhash;
-            }
-        }
-        private UInt256 _outputhash = null;
-        public UInt256 OutputHash
-        {
-            get
-            {
-                if (_outputhash == null)
-                {
-                    _outputhash = new UInt256(Crypto.Default.Hash256(this.GetOutputHashData()));
-                }
-                return _outputhash;
-            }
-        }
+        //private UInt256 _inputhash = null;
+        //public UInt256 InputHash
+        //{
+        //    get
+        //    {
+        //        if (_inputhash == null)
+        //        {
+        //            _inputhash = new UInt256(Crypto.Default.Hash256(this.GetInputHashData()));
+        //        }
+        //        return _inputhash;
+        //    }
+        //}
+        //private UInt256 _outputhash = null;
+        //public UInt256 OutputHash
+        //{
+        //    get
+        //    {
+        //        if (_outputhash == null)
+        //        {
+        //            _outputhash = new UInt256(Crypto.Default.Hash256(this.GetOutputHashData()));
+        //        }
+        //        return _outputhash;
+        //    }
+        //}
         private UInt256 _inputOutputhash = null;
         public UInt256 InputOutputHash
         {
@@ -320,32 +320,32 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Inputs);
             writer.Write(Outputs);
         }
-        public byte[] GetInputHashData()
-        {
-            using (MemoryStream ms = new MemoryStream())
-            using (BinaryWriter writer = new BinaryWriter(ms))
-            {
-                foreach (var input in this.Inputs)
-                {
-                    writer.Write(input);
-                }
-                writer.Flush();
-                return ms.ToArray();
-            }
-        }
-        public byte[] GetOutputHashData()
-        {
-            using (MemoryStream ms = new MemoryStream())
-            using (BinaryWriter writer = new BinaryWriter(ms))
-            {
-                foreach (var output in this.Outputs)
-                {
-                    writer.Write(output);
-                }
-                writer.Flush();
-                return ms.ToArray();
-            }
-        }
+        //public byte[] GetInputHashData()
+        //{
+        //    using (MemoryStream ms = new MemoryStream())
+        //    using (BinaryWriter writer = new BinaryWriter(ms))
+        //    {
+        //        foreach (var input in this.Inputs)
+        //        {
+        //            writer.Write(input);
+        //        }
+        //        writer.Flush();
+        //        return ms.ToArray();
+        //    }
+        //}
+        //public byte[] GetOutputHashData()
+        //{
+        //    using (MemoryStream ms = new MemoryStream())
+        //    using (BinaryWriter writer = new BinaryWriter(ms))
+        //    {
+        //        foreach (var output in this.Outputs)
+        //        {
+        //            writer.Write(output);
+        //        }
+        //        writer.Flush();
+        //        return ms.ToArray();
+        //    }
+        //}
         public byte[] GetInputAndOutputHashData()
         {
             using (MemoryStream ms = new MemoryStream())

@@ -104,37 +104,39 @@ namespace OX.Bapps
         public virtual string Name => GetType().Name;
 
         public bool IsMatchKernel => KernelVersion == MatchKernelVersion;
-        public bool IsActive => BizAddresses.IsNullOrEmpty() || BizScriptHashStates.ContainsValue(true);
-        public bool IsValid => IsMatchKernel && IsActive;
+        //public bool IsActive => BizAddresses.IsNullOrEmpty() || BizScriptHashStates.ContainsValue(true);
+        public bool ValidSlot { get; protected set; }
+        public bool IsValid => IsMatchKernel && ValidSlot;
 
-        Dictionary<ECPoint, bool> _bizScriptHashState;
-        public Dictionary<ECPoint, bool> BizScriptHashStates
-        {
-            get
-            {
-                if (_bizScriptHashState.IsNullOrEmpty())
-                {
-                    _bizScriptHashState = new Dictionary<ECPoint, bool>(); // BizAddresses.Select(m => m.ToScriptHash()).ToDictionary();
-                    if (BizAddresses.IsNotNullAndEmpty())
-                        foreach (var address in BizPublicKeys)
-                        {
-                            _bizScriptHashState[address] = false;
-                        }
-                }
-                return _bizScriptHashState;
-            }
-        }
-        public ECPoint[] ValidBizScriptHashs
-        {
-            get
-            {
-                var bs = BizScriptHashStates.Where(m => m.Value);
-                if (bs.IsNullOrEmpty()) return default;
-                return bs.Select(m => m.Key).ToArray();
-            }
-        }
-        public abstract ECPoint[] BizPublicKeys { get; }
-        public UInt160[] BizAddresses => BizPublicKeys.IsNullOrEmpty() ? default : BizPublicKeys.Select(m => Contract.CreateSignatureRedeemScript(m).ToScriptHash()).ToArray();
+        //Dictionary<ECPoint, bool> _bizScriptHashState;
+        //public Dictionary<ECPoint, bool> BizScriptHashStates
+        //{
+        //    get
+        //    {
+        //        if (_bizScriptHashState.IsNullOrEmpty())
+        //        {
+        //            _bizScriptHashState = new Dictionary<ECPoint, bool>(); // BizAddresses.Select(m => m.ToScriptHash()).ToDictionary();
+        //            if (BizAddresses.IsNotNullAndEmpty())
+        //                foreach (var address in BizPublicKeys)
+        //                {
+        //                    _bizScriptHashState[address] = false;
+        //                }
+        //        }
+        //        return _bizScriptHashState;
+        //    }
+        //}
+        //public ECPoint[] ValidBizScriptHashs
+        //{
+        //    get
+        //    {
+        //        var bs = BizScriptHashStates.Where(m => m.Value);
+        //        if (bs.IsNullOrEmpty()) return default;
+        //        return bs.Select(m => m.Key).ToArray();
+        //    }
+        //}
+        //public abstract ECPoint[] BizPublicKeys { get; }
+        //public UInt160[] BizAddresses => BizPublicKeys.IsNullOrEmpty() ? default : BizPublicKeys.Select(m => Contract.CreateSignatureRedeemScript(m).ToScriptHash()).ToArray();
+        public abstract UInt160 SlotScriptHash { get; }
         public abstract string MatchKernelVersion { get; }
         public abstract IBappProvider BuildBappProvider();
         public abstract IFlashMessageProvider BuildFlashMessageProvider();
@@ -282,45 +284,45 @@ namespace OX.Bapps
             if (Bapp.BappUi is UiType) return Bapp.BappUi as UiType;
             return default;
         }
-        public static bool ContainBizScriptHash<T>(UInt160 scriptHash) where T : Bapp
-        {
-            var sys = Bapp.GetBapp<T>();
-            if (sys.IsNull()) return false;
-            return sys.BizAddresses.Contains(scriptHash);
-        }
-        public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
-        {
-            if (tx is BizTransaction bt)
-            {
-                if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(bt.BizScriptHash))
-                {
-                    BT = bt;
-                    return true;
-                }
-            }
-            BT = default;
-            return false;
-        }
-        public bool ContainBizTransaction(Block block, out BizTransaction[] bts)
-        {
-            bts = default;
-            bool find = false;
-            List<BizTransaction> list = new List<BizTransaction>();
-            foreach (var tx in block.Transactions)
-            {
-                if (tx is BizTransaction bt)
-                {
-                    if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(bt.BizScriptHash))
-                    {
-                        find = true;
-                        list.Add(bt);
-                    }
-                }
-            }
-            if (find)
-                bts = list.ToArray();
-            return find;
-        }
+        //public static bool ContainBizScriptHash<T>(UInt160 scriptHash) where T : Bapp
+        //{
+        //    var sys = Bapp.GetBapp<T>();
+        //    if (sys.IsNull()) return false;
+        //    return sys.BizAddresses.Contains(scriptHash);
+        //}
+        //public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
+        //{
+        //    if (tx is BizTransaction bt)
+        //    {
+        //        if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(bt.BizScriptHash))
+        //        {
+        //            BT = bt;
+        //            return true;
+        //        }
+        //    }
+        //    BT = default;
+        //    return false;
+        //}
+        //public bool ContainBizTransaction(Block block, out BizTransaction[] bts)
+        //{
+        //    bts = default;
+        //    bool find = false;
+        //    List<BizTransaction> list = new List<BizTransaction>();
+        //    foreach (var tx in block.Transactions)
+        //    {
+        //        if (tx is BizTransaction bt)
+        //        {
+        //            if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(bt.BizScriptHash))
+        //            {
+        //                find = true;
+        //                list.Add(bt);
+        //            }
+        //        }
+        //    }
+        //    if (find)
+        //        bts = list.ToArray();
+        //    return find;
+        //}
         internal static void ResetBappState()
         {
             foreach (var bapp in bapps)
@@ -335,8 +337,6 @@ namespace OX.Bapps
             foreach (var pathName in Directory.EnumerateDirectories(BappsRootPath))
             {
                 var di = new DirectoryInfo(pathName);
-                //if (uint.TryParse(di.Name, out uint magic))
-                //{
                 foreach (string filename in Directory.EnumerateFiles(pathName, "*.dll", SearchOption.TopDirectoryOnly))
                 {
                     var file = File.ReadAllBytes(filename);
@@ -346,7 +346,6 @@ namespace OX.Bapps
                     {
                         if (!type.IsSubclassOf(typeof(Bapp))) continue;
                         if (type.IsAbstract) continue;
-
                         ConstructorInfo constructor = type.GetConstructor(Type.EmptyTypes);
                         try
                         {
@@ -357,8 +356,28 @@ namespace OX.Bapps
                             Plugin.Log(nameof(Bapp), LogLevel.Error, $"Failed to initialize bapp: {ex.Message}");
                         }
                     }
-                    //}
                 }
+                //foreach (string filename in Directory.EnumerateFiles(pathName, "*.oxslot", SearchOption.TopDirectoryOnly))
+                //{
+                //    var file = File.ReadAllBytes(filename);
+                //    Assembly assembly = Assembly.Load(file);
+                //    var version = assembly.GetVersion();
+                //    assemblies[assembly.FullName] = assembly;
+                //    foreach (Type type in assembly.ExportedTypes)
+                //    {
+                //        if (!type.IsSubclassOf(typeof(Bapp))) continue;
+                //        if (type.IsAbstract) continue;
+                //        ConstructorInfo constructor = type.GetConstructor(Type.EmptyTypes);
+                //        try
+                //        {
+                //            constructor?.Invoke(null);
+                //        }
+                //        catch (Exception ex)
+                //        {
+                //            Plugin.Log(nameof(Bapp), LogLevel.Error, $"Failed to initialize bapp: {ex.Message}");
+                //        }
+                //    }
+                //}
             }
 
         }
@@ -390,12 +409,8 @@ namespace OX.Bapps
         #endregion
         void setBappState()
         {
-            foreach (var ad in BizScriptHashStates)
-            {
-                var pubkey = ad.Key;
-                var sh = Contract.CreateSignatureRedeemScript(pubkey).ToScriptHash();
-                BizScriptHashStates[pubkey] = Blockchain.Singleton.VerifyBizValidator(sh, out Fixed8 balance, out Fixed8 askFee);
-            }
+            if (this.SlotScriptHash.IsNotNull() && this.SlotScriptHash != UInt160.Zero)
+                this.ValidSlot = Blockchain.Singleton.VerifySlotValidator(this.SlotScriptHash, out Fixed8 balance, out Fixed8 askFee);
         }
         void OnFlashMessage(FlashMessage flashMessage)
         {
@@ -412,7 +427,7 @@ namespace OX.Bapps
                 bool ok2 = false;
                 foreach (var reference in tx.References)
                 {
-                    if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(reference.Value.ScriptHash) && reference.Value.AssetId == Blockchain.OXS)
+                    if (reference.Value.ScriptHash == this.SlotScriptHash && reference.Value.AssetId == Blockchain.OXS)
                     {
                         ok2 = true;
                         break;
@@ -420,7 +435,7 @@ namespace OX.Bapps
                 }
                 foreach (var output in tx.Outputs)
                 {
-                    if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(output.ScriptHash) && output.AssetId == Blockchain.OXS)
+                    if (output.ScriptHash == this.SlotScriptHash && output.AssetId == Blockchain.OXS)
                     {
                         ok2 = true;
                         break;

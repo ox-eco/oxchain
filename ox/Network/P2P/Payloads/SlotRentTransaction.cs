@@ -1,4 +1,5 @@
-﻿using OX.IO;
+﻿using OX.Cryptography;
+using OX.IO;
 using OX.IO.Json;
 using OX.Persistence;
 using OX.Wallets;
@@ -8,15 +9,51 @@ using System.Linq;
 
 namespace OX.Network.P2P.Payloads
 {
+    public class SlotMark : ISerializable
+    {
+        public byte[] EnTitle;
+        public byte[] EnMark;
+        public byte[] CnTitle;
+        public byte[] CnMark;
+
+        public virtual int Size => EnTitle.GetVarSize() + EnMark.GetVarSize() + CnTitle.GetVarSize() + CnMark.GetVarSize();
+        private UInt256 _hash = null;
+        public UInt256 Hash
+        {
+            get
+            {
+                if (_hash == null)
+                {
+                    _hash = new UInt256(Crypto.Default.Hash256(this.GetHashData()));
+                }
+                return _hash;
+            }
+        }
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.WriteVarBytes(EnTitle);
+            writer.WriteVarBytes(EnMark);
+            writer.WriteVarBytes(CnTitle);
+            writer.WriteVarBytes(CnMark);
+        }
+        public void Deserialize(BinaryReader reader)
+        {
+            EnTitle = reader.ReadVarBytes();
+            EnMark = reader.ReadVarBytes();
+            CnTitle = reader.ReadVarBytes();
+            CnMark = reader.ReadVarBytes();
+        }
+
+    }
     public class SlotRentTransaction : Transaction
     {
         public UInt160 ScriptHash;
         public SlotStatus SlotState;
         public uint SlotRentDuration;
         public Fixed8 AskFee;
-        public byte[] Data;
+        public byte[] SlotMark;
 
-        public override int Size => base.Size + ScriptHash.Size + sizeof(SlotStatus) + sizeof(uint) + AskFee.Size + Data.GetVarSize();
+        public override int Size => base.Size + ScriptHash.Size + sizeof(SlotStatus) + sizeof(uint) + AskFee.Size + SlotMark.GetVarSize();
         public override Fixed8 SystemFee
         {
             get
@@ -36,13 +73,15 @@ namespace OX.Network.P2P.Payloads
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];
-            AskFee = Fixed8.Zero;
-            Data = new byte[] { 0x00 };
+            this.AskFee = Fixed8.Zero;
+            this.SlotMark = new byte[] { 0x00 };
         }
-        public SlotRentTransaction(UInt160 scriptHash)
+        public SlotRentTransaction(UInt160 scriptHash, SlotMark mark = default)
             : this()
         {
-            ScriptHash = scriptHash;
+            this.ScriptHash = scriptHash;
+            if (mark.IsNotNull())
+                this.SlotMark = mark.ToArray();
         }
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
         {
@@ -60,7 +99,7 @@ namespace OX.Network.P2P.Payloads
             SlotState = (SlotStatus)reader.ReadByte();
             SlotRentDuration = reader.ReadUInt32();
             AskFee = reader.ReadSerializable<Fixed8>();
-            Data = reader.ReadVarBytes();
+            SlotMark = reader.ReadVarBytes();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
@@ -69,7 +108,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write((byte)SlotState);
             writer.Write(SlotRentDuration);
             writer.Write(AskFee);
-            writer.WriteVarBytes(Data);
+            writer.WriteVarBytes(SlotMark);
         }
 
         public override JObject ToJson()
@@ -79,7 +118,7 @@ namespace OX.Network.P2P.Payloads
             json["slotstate"] = SlotState.Value();
             json["slotrentduration"] = SlotRentDuration.ToString();
             json["flag"] = AskFee.ToString();
-            json["data"] = Data.ToHexString();
+            json["data"] = SlotMark.ToHexString();
             return json;
         }
 

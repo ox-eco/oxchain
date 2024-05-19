@@ -39,8 +39,8 @@ namespace OX.Ledger
         public const uint DecrementInterval = 2000000;
         public const int MaxValidators = 1024;
         public static UInt160 LockAssetContractScriptHash = UInt160.Parse("0x41a48aa8f3982151136eeeabbfa97ec9b3f56b5a");
-        public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0x1bb1483c8c1175b37062d7d586bd4b67abb255e2");
-        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0xe64586c07a90ec1a1b0c8fc22868cf3eff94560b");
+        public static UInt160 SideAssetContractScriptHash = UInt160.Parse("0xef30ec8e833e8c828f4f20c690e607790897dfec");
+        public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0x8a783ae5385f7e534ae1644d78e0d8144a984600");
         public static UInt160 EthereumMapContractScriptHash = UInt160.Parse("0x508c5bd9a4a5fd62ea2b0d1c853aff2cec5d5ea7");
         public static UInt160 FlashMessageContractScriptHash = UInt160.Parse("0xdadf55efc35334d438897ae6bf8f5ea51d2ef5f5");
         static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
@@ -742,6 +742,7 @@ namespace OX.Ledger
                                     acts.AskFee = tx_slot.AskFee;
                                     acts.SlotState = tx_slot.SlotState;
                                     acts.SlotExpire = expire;
+                                    acts.SlotMark = tx_slot.SlotMark;
                                     break;
                                 case SlotStatus.UnFreeze:
                                     var sh2 = tx_slot.ScriptHash;
@@ -757,8 +758,8 @@ namespace OX.Ledger
                                     break;
                             }
                             break;
-                        case SideTransaction tx_side:
-                            var recipientScriptHash = Contract.CreateSignatureRedeemScript(tx_side.Recipient).ToScriptHash();
+                        case SlotSideTransaction tx_side:
+                            var recipientScriptHash = Contract.CreateSignatureRedeemScript(tx_side.Slot).ToScriptHash();
                             var sideState = new SideState { SideScriptHash = tx_side.GetContract().ScriptHash, SideTransaction = tx_side };
                             var sideList = snapshot.Sides.TryGet(recipientScriptHash);
                             if (sideList.IsNotNull())
@@ -952,35 +953,7 @@ namespace OX.Ledger
         {
             Interlocked.Exchange(ref currentSnapshot, GetSnapshot())?.Dispose();
         }
-        public bool VerifyBizValidator(UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
-        {
-            return VerifyBizValidator(currentSnapshot, bizValidatorScriptHash, out OXSBalance, out AskFee);
-        }
-        public bool VerifyBizValidator(Snapshot snapshot, UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
-        {
-            OXSBalance = Fixed8.Zero;
-            AskFee = Fixed8.Zero;
-            var acts = snapshot.Accounts.GetAndChange(bizValidatorScriptHash, () => null);
-            if (acts.IsNull()) return false;
-            var balance = acts.GetBalance(OXS);
-            OXSBalance = balance;
-            AskFee = acts.AskFee;
-            if (acts.SlotState == SlotStatus.UnFreeze) return false;
-            if (acts.SlotExpire < currentSnapshot.Height) return false;
-            if (balance < BappSlotRentOXS) return false;
-            return true;
-        }
-        public bool VerifyFlashMessageSender(UInt160 flashMessageSender, out Fixed8 OXSBalance)
-        {
-            return VerifyFlashMessageSender(flashMessageSender, out OXSBalance);
-        }
-        public bool VerifyFlashMessageSender(Snapshot snapshot, UInt160 flashMessageSender, out AccountState accountState)
-        {
-            accountState = snapshot.Accounts.GetAndChange(flashMessageSender, () => null);
-            if (accountState.IsNull()) return false;
-            if (accountState.GetBalance(OXC) < FlashMinOXCBalance) return false;
-            return true;
-        }
+        
         public bool IsFrozen(UInt160 scriptHash, out uint ExpireIndex)
         {
             var acts = currentSnapshot.Accounts.GetAndChange(scriptHash, () => null);
