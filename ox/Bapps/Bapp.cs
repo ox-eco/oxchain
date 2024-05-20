@@ -290,19 +290,19 @@ namespace OX.Bapps
         //    if (sys.IsNull()) return false;
         //    return sys.BizAddresses.Contains(scriptHash);
         //}
-        //public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
-        //{
-        //    if (tx is BizTransaction bt)
-        //    {
-        //        if (this.BizScriptHashStates.IsNotNullAndEmpty() && this.BizScriptHashStates.Select(m => Contract.CreateSignatureRedeemScript(m.Key).ToScriptHash()).Contains(bt.BizScriptHash))
-        //        {
-        //            BT = bt;
-        //            return true;
-        //        }
-        //    }
-        //    BT = default;
-        //    return false;
-        //}
+        public bool IsBizTransaction(Transaction tx, out BizTransaction BT)
+        {
+            if (tx is BizTransaction bt)
+            {
+                if (bt.BizScriptHash == this.SlotScriptHash)
+                {
+                    BT = bt;
+                    return true;
+                }
+            }
+            BT = default;
+            return false;
+        }
         //public bool ContainBizTransaction(Block block, out BizTransaction[] bts)
         //{
         //    bts = default;
