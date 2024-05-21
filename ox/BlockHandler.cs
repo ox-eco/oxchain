@@ -54,7 +54,7 @@ namespace OX
             foreach (var ad in BizAddresses)
             {
                 var sh = ad.ToScriptHash();
-                if (Blockchain.Singleton.VerifySlotValidator(sh, out Fixed8 balance, out Fixed8 askFee))
+                if (Blockchain.Singleton.VerifySlotValidator(sh, out AccountState _, out Fixed8 _, out Fixed8 _))
                 {
                     this.Permits.Add(sh);
                 }

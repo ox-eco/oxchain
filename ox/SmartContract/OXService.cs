@@ -188,7 +188,7 @@ namespace OX.SmartContract
         private bool Blockchain_VerifySlotScriptHash(ExecutionEngine engine)
         {
             UInt160 slot_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
-            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out Fixed8 _, out Fixed8 _);
+            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out AccountState _, out Fixed8 _, out Fixed8 _);
             engine.CurrentContext.EvaluationStack.Push(valid);
             return true;
         }
@@ -196,7 +196,7 @@ namespace OX.SmartContract
         {
             ECPoint slot_pubkey = ECPoint.DecodePoint(engine.CurrentContext.EvaluationStack.Pop().GetByteArray(), ECCurve.Secp256r1);
             var slot_script_hash = Contract.CreateSignatureRedeemScript(slot_pubkey).ToScriptHash();
-            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out Fixed8 _, out Fixed8 _);
+            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out AccountState _, out Fixed8 _, out Fixed8 _);
             engine.CurrentContext.EvaluationStack.Push(valid);
             return true;
         }

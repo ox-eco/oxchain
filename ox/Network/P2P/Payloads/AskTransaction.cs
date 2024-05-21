@@ -44,7 +44,7 @@ namespace OX.Network.P2P.Payloads
             {
                 if (MinIndex > snapshot.Height + 1) return false;
             }
-            if (!snapshot.VerifySlotValidator(this.BizScriptHash, out Fixed8 _, out Fixed8 askFee)) return false;
+            if (!snapshot.VerifySlotValidator(this.BizScriptHash,out AccountState _,out Fixed8 _, out Fixed8 askFee)) return false;
             if (askFee == Fixed8.Zero) return true;
             var outputs = this.Outputs.Where(m => m.AssetId == Blockchain.OXC && m.ScriptHash.Equals(this.BizScriptHash));
             if (outputs.IsNullOrEmpty()) return false;

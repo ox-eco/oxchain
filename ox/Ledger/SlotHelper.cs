@@ -8,23 +8,23 @@ namespace OX.Ledger
     {
         public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 slotScriptHash)
         {
-            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out Fixed8 _, out Fixed8 _);
+            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out AccountState _, out Fixed8 _, out Fixed8 _);
         }
-        public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 slotScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
+        public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 slotScriptHash, out AccountState accountState, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
-            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out OXSBalance, out AskFee);
+            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out accountState, out OXSBalance, out AskFee);
         }
-        public static bool VerifySlotValidator(this Snapshot snapshot, UInt160 slotScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
+        public static bool VerifySlotValidator(this Snapshot snapshot, UInt160 slotScriptHash, out AccountState accountState, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
             OXSBalance = Fixed8.Zero;
             AskFee = Fixed8.Zero;
-            var acts = snapshot.Accounts.GetAndChange(slotScriptHash, () => null);
-            if (acts.IsNull()) return false;
-            var balance = acts.GetBalance(Blockchain.OXS);
+            accountState = snapshot.Accounts.GetAndChange(slotScriptHash, () => null);
+            if (accountState.IsNull()) return false;
+            var balance = accountState.GetBalance(Blockchain.OXS);
             OXSBalance = balance;
-            AskFee = acts.AskFee;
-            if (acts.SlotState == SlotStatus.UnFreeze) return false;
-            if (acts.SlotExpire < snapshot.Height) return false;
+            AskFee = accountState.AskFee;
+            if (accountState.SlotState == SlotStatus.UnFreeze) return false;
+            if (accountState.SlotExpire < snapshot.Height) return false;
             if (balance < Blockchain.BappSlotRentOXS) return false;
             return true;
         }

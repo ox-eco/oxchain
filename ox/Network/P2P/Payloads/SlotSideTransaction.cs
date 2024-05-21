@@ -114,7 +114,7 @@ namespace OX.Network.P2P.Payloads
             }
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
-            if (!snapshot.VerifySlotValidator(Contract.CreateSignatureRedeemScript(this.Slot).ToScriptHash(), out Fixed8 balance, out Fixed8 askFee)) return false;
+            if (!snapshot.VerifySlotValidator(Contract.CreateSignatureRedeemScript(this.Slot).ToScriptHash(), out AccountState _, out Fixed8 balance, out Fixed8 askFee)) return false;
             return base.Verify(snapshot, mempool);
         }
         bool VerifyData()

@@ -44,7 +44,7 @@ namespace OX.Network.P2P.Payloads
         {
             if (!base.Verify(snapshot, mempool))
                 return false;
-            return snapshot.VerifySlotValidator( this.BizScriptHash, out Fixed8 _, out Fixed8 _);
+            return snapshot.VerifySlotValidator( this.BizScriptHash, out AccountState _, out Fixed8 _, out Fixed8 _);
         }
     }
 }
