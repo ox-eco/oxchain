@@ -6,19 +6,19 @@ namespace OX.Ledger
 {
     public static class SlotHelper
     {
-        public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 bizValidatorScriptHash)
+        public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 slotScriptHash)
         {
-            return VerifySlotValidator(blockchain.CurrentSnapshot, bizValidatorScriptHash, out Fixed8 _, out Fixed8 _);
+            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out Fixed8 _, out Fixed8 _);
         }
-        public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
+        public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 slotScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
-            return VerifySlotValidator(blockchain.CurrentSnapshot, bizValidatorScriptHash, out OXSBalance, out AskFee);
+            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out OXSBalance, out AskFee);
         }
-        public static bool VerifySlotValidator(this Snapshot snapshot, UInt160 bizValidatorScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
+        public static bool VerifySlotValidator(this Snapshot snapshot, UInt160 slotScriptHash, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
             OXSBalance = Fixed8.Zero;
             AskFee = Fixed8.Zero;
-            var acts = snapshot.Accounts.GetAndChange(bizValidatorScriptHash, () => null);
+            var acts = snapshot.Accounts.GetAndChange(slotScriptHash, () => null);
             if (acts.IsNull()) return false;
             var balance = acts.GetBalance(Blockchain.OXS);
             OXSBalance = balance;

@@ -52,9 +52,9 @@ namespace OX.Network.P2P.Payloads
             yield return Contract.CreateSignatureRedeemScript(this.From).ToScriptHash();
         }
 
-        public bool GetDataModel<T>(UInt160 slotScriptHash, byte dataType, out T model) where T : ISerializable, new()
+        public bool GetDataModel<T>(UInt160[] bizScriptHashs, byte dataType, out T model) where T : ISerializable, new()
         {
-            if (slotScriptHash.IsNull() || this.BizScriptHash != slotScriptHash || this.DataType != dataType)
+            if (bizScriptHashs.IsNullOrEmpty() || !bizScriptHashs.Contains(this.BizScriptHash) || this.DataType != dataType)
             {
                 model = default;
                 return false;

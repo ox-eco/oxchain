@@ -45,6 +45,7 @@ namespace OX.Network.P2P.Payloads
         public SlotSideTransaction()
           : base(TransactionType.SlotSideTransaction)
         {
+            this.Channel = 0;
             this.AuthContract = Blockchain.SideAssetContractScriptHash;
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
