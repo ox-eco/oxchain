@@ -12,7 +12,7 @@ namespace OX.Network.P2P.Payloads
     {
         public uint BizNo;
         public override int Size => base.Size + sizeof(uint);
-
+        public override Fixed8 NetworkFee => Fixed8.Zero;
         public CenterTransaction(TransactionType type)
             : base(type)
         {

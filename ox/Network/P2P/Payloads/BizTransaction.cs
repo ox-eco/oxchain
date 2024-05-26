@@ -10,7 +10,7 @@ namespace OX.Network.P2P.Payloads
         public const int FreeDataSize = 64;
         public UInt160 BizScriptHash;
         public BizTransactionStatus BizTxState { get; protected set; }
-        //public override Fixed8 NetworkFee => Fixed8.Zero;
+      
         public override int Size => base.Size + BizScriptHash.Size + sizeof(BizTransactionStatus);
 
         public BizTransaction(TransactionType type)
