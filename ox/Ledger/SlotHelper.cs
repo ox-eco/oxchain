@@ -1,6 +1,8 @@
 ﻿using OX.Network.P2P.Payloads;
 using System;
 using OX.Persistence;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OX.Ledger
 {
@@ -8,11 +10,11 @@ namespace OX.Ledger
     {
         public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 slotScriptHash)
         {
-            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out AccountState _, out Fixed8 _, out Fixed8 _);
+            return blockchain.CurrentSnapshot.VerifySlotValidator(slotScriptHash, out AccountState _, out Fixed8 _, out Fixed8 _);
         }
         public static bool VerifySlotValidator(this Blockchain blockchain, UInt160 slotScriptHash, out AccountState accountState, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
-            return VerifySlotValidator(blockchain.CurrentSnapshot, slotScriptHash, out accountState, out OXSBalance, out AskFee);
+            return blockchain.CurrentSnapshot.VerifySlotValidator(slotScriptHash, out accountState, out OXSBalance, out AskFee);
         }
         public static bool VerifySlotValidator(this Snapshot snapshot, UInt160 slotScriptHash, out AccountState accountState, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
@@ -27,6 +29,19 @@ namespace OX.Ledger
             if (accountState.SlotExpire < snapshot.Height) return false;
             if (balance < Blockchain.BappSlotRentOXS) return false;
             return true;
+        }
+        public static IEnumerable<AccountState> GetAllValidSlots(this Blockchain blockchain)
+        {
+            return blockchain.CurrentSnapshot.GetAllValidSlots();
+        }
+        public static IEnumerable<AccountState> GetAllValidSlots(this Snapshot snapshot)
+        {
+            foreach (var ats in snapshot.Accounts.Find().Select(m => m.Value))
+            {
+                var balance = ats.GetBalance(Blockchain.OXS);
+                if (balance >= Blockchain.BappSlotRentOXS && ats.SlotState == SlotStatus.Freeze && ats.SlotExpire >= snapshot.Height)
+                    yield return ats;
+            }
         }
     }
 }
