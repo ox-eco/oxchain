@@ -49,7 +49,7 @@ namespace OX
                 };
             Dictionary<TransactionType, Fixed8> sys_fee = new Dictionary<TransactionType, Fixed8>
             {
-                [TransactionType.BillTransaction] = Fixed8.One,
+                //[TransactionType.BillTransaction] = Fixed8.One,
                 //[TransactionType.ReplyTransaction] = Fixed8.One,
                 //[TransactionType.AskTransaction] = Fixed8.One,
                 [TransactionType.NftTransferTransaction] = Fixed8.One * 10,
