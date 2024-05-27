@@ -535,6 +535,7 @@ namespace OX.SmartContract
             if (engine.CurrentContext.EvaluationStack.Peek().GetByteArray().Length > 1024)
                 return false;
             string name = Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            if (Snapshot.Assets.Find().Select(m => m.Value).FirstOrDefault(m => m.Name.ToLower() == name.ToLower()).IsNotNull()) return false;
             Fixed8 amount = new Fixed8((long)engine.CurrentContext.EvaluationStack.Pop().GetBigInteger());
             if (amount == Fixed8.Zero || amount < -Fixed8.Satoshi) return false;
             if (asset_type == AssetType.Invoice && amount != -Fixed8.Satoshi)
