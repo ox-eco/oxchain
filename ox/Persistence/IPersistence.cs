@@ -23,6 +23,8 @@ namespace OX.Persistence
         DataCache<StorageKey, StorageItem> Storages { get; }
         DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
         DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
+        DataCache<UInt160, SlotOffVoteList> SlotOffVoteList { get; }
+        DataCache<UInt256, DaoVoteList> DaoVoteList { get; }
         MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         MetaDataCache<HashIndexState> BlockHashIndex { get; }
         MetaDataCache<HashIndexState> HeaderHashIndex { get; }

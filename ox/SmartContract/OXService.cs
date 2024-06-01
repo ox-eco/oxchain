@@ -110,6 +110,7 @@ namespace OX.SmartContract
             Register("OX.Blockchain.IsInSide", Blockchain_IsInSide, 1);
             Register("OX.Blockchain.VerifySlotScriptHash", Blockchain_VerifySlotScriptHash, 1);
             Register("OX.Blockchain.VerifySlotPubKey", Blockchain_VerifySlotPubKey, 1);
+            Register("OX.Blockchain.GetDaoVote", Blockchain_GetDaoVote, 1);
             Register("OX.Ethereum.EcRecover", Ethereum_EcRecover, 1);
             Register("OX.Ethereum.EcRecoverString", Ethereum_EcRecoverString, 1);
             #region Aliases
@@ -188,7 +189,7 @@ namespace OX.SmartContract
         private bool Blockchain_VerifySlotScriptHash(ExecutionEngine engine)
         {
             UInt160 slot_script_hash = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
-            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out AccountState _, out Fixed8 _, out Fixed8 _);
+            var valid = Snapshot.OnlyVerifySlotValidator(slot_script_hash, out AccountState _, out Fixed8 _, out Fixed8 _) && Snapshot.ValidSlotInVote_50000000(slot_script_hash);
             engine.CurrentContext.EvaluationStack.Push(valid);
             return true;
         }
@@ -196,8 +197,15 @@ namespace OX.SmartContract
         {
             ECPoint slot_pubkey = ECPoint.DecodePoint(engine.CurrentContext.EvaluationStack.Pop().GetByteArray(), ECCurve.Secp256r1);
             var slot_script_hash = Contract.CreateSignatureRedeemScript(slot_pubkey).ToScriptHash();
-            var valid = Snapshot.VerifySlotValidator(slot_script_hash, out AccountState _, out Fixed8 _, out Fixed8 _);
+            var valid = Snapshot.OnlyVerifySlotValidator(slot_script_hash, out AccountState _, out Fixed8 _, out Fixed8 _) && Snapshot.ValidSlotInVote_50000000(slot_script_hash);
             engine.CurrentContext.EvaluationStack.Push(valid);
+            return true;
+        }
+        private bool Blockchain_GetDaoVote(ExecutionEngine engine)
+        {
+            UInt256 assetId = new UInt256(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var height = BitConverter.ToUInt32(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            engine.CurrentContext.EvaluationStack.Push(Snapshot.GetAssetVoteValue(assetId, height).GetData());
             return true;
         }
         private bool Blockchain_GetAccount(ExecutionEngine engine)

@@ -29,6 +29,8 @@ namespace OX.Persistence.LevelDB
         public override DataCache<StorageKey, StorageItem> Storages { get; }
         public override DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
         public override DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
+      public override DataCache<UInt160,SlotOffVoteList> SlotOffVoteList { get; }
+        public override DataCache<UInt256, DaoVoteList> DaoVoteList { get; }
         public override MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         public override MetaDataCache<HashIndexState> BlockHashIndex { get; }
         public override MetaDataCache<HashIndexState> HeaderHashIndex { get; }
@@ -54,6 +56,8 @@ namespace OX.Persistence.LevelDB
             Storages = new DbCache<StorageKey, StorageItem>(db, options, batch, Prefixes.ST_Storage);
             HeaderHashList = new DbCache<UInt32Wrapper, HeaderHashList>(db, options, batch, Prefixes.IX_HeaderHashList);
             BlockBonusVoteList = new DbCache<UInt32Wrapper, BlockBonusVoteList>(db, options, batch, Prefixes.IX_BlockBonusVoteList);
+            SlotOffVoteList = new DbCache<UInt160, SlotOffVoteList>(db, options, batch, Prefixes.IX_SlotOffVoteList);
+            DaoVoteList = new DbCache<UInt256, DaoVoteList>(db, options, batch, Prefixes.IX_DaoVoteList);
             ValidatorsCount = new DbMetaDataCache<ValidatorsCountState>(db, options, batch, Prefixes.IX_ValidatorsCount);
             BlockHashIndex = new DbMetaDataCache<HashIndexState>(db, options, batch, Prefixes.IX_CurrentBlock);
             HeaderHashIndex = new DbMetaDataCache<HashIndexState>(db, options, batch, Prefixes.IX_CurrentHeader);

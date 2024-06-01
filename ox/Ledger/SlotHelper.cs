@@ -3,6 +3,7 @@ using System;
 using OX.Persistence;
 using System.Collections.Generic;
 using System.Linq;
+using OX;
 
 namespace OX.Ledger
 {
@@ -18,6 +19,10 @@ namespace OX.Ledger
         }
         public static bool VerifySlotValidator(this Snapshot snapshot, UInt160 slotScriptHash, out AccountState accountState, out Fixed8 OXSBalance, out Fixed8 AskFee)
         {
+            return snapshot.OnlyVerifySlotValidator(slotScriptHash, out accountState, out OXSBalance, out AskFee)&&snapshot.ValidSlotInVote_35000000(slotScriptHash);
+        }
+        public static bool OnlyVerifySlotValidator(this Snapshot snapshot, UInt160 slotScriptHash, out AccountState accountState, out Fixed8 OXSBalance, out Fixed8 AskFee)
+        {
             OXSBalance = Fixed8.Zero;
             AskFee = Fixed8.Zero;
             accountState = snapshot.Accounts.GetAndChange(slotScriptHash, () => null);
@@ -29,6 +34,28 @@ namespace OX.Ledger
             if (accountState.SlotExpire < snapshot.Height) return false;
             if (balance < Blockchain.BappSlotRentOXS) return false;
             return true;
+        }
+        public static bool ValidSlotInVote_35000000(this Snapshot snapshot, UInt160 slotScriptHash)
+        {
+            bool ok = true;
+            var slotOffVoteList = snapshot.SlotOffVoteList.TryGet(slotScriptHash);
+            if (slotOffVoteList.IsNotNull())
+            {
+                var v = slotOffVoteList.Votes.FirstOrDefault(m => m.Value > Fixed8.One * 35000000);
+                ok = default(KeyValuePair<uint, Fixed8>).Equals(v);
+            }
+            return ok;
+        }
+        public static bool ValidSlotInVote_50000000(this Snapshot snapshot, UInt160 slotScriptHash)
+        {
+            bool ok = true;
+            var slotOffVoteList = snapshot.SlotOffVoteList.TryGet(slotScriptHash);
+            if (slotOffVoteList.IsNotNull())
+            {
+                var v = slotOffVoteList.Votes.FirstOrDefault(m => m.Value > Fixed8.One * 50000000);
+                ok = default(KeyValuePair<uint, Fixed8>).Equals(v);
+            }
+            return ok;
         }
         public static IEnumerable<AccountState> GetAllValidSlots(this Blockchain blockchain)
         {

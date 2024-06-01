@@ -123,6 +123,14 @@ namespace OX.Persistence.LevelDB
         {
             return new DbCache<UInt32Wrapper, BlockBonusVoteList>(db, null, null, Prefixes.IX_BlockBonusVoteList);
         }
+        public override DataCache<UInt160, SlotOffVoteList> GetSlotOffVoteList()
+        {
+            return new DbCache<UInt160, SlotOffVoteList>(db, null, null, Prefixes.IX_SlotOffVoteList);
+        }
+        public override DataCache<UInt256, DaoVoteList> GetDaoVoteList()
+        {
+            return new DbCache<UInt256, DaoVoteList>(db, null, null, Prefixes.IX_DaoVoteList);
+        }
         public override MetaDataCache<ValidatorsCountState> GetValidatorsCount()
         {
             return new DbMetaDataCache<ValidatorsCountState>(db, null, null, Prefixes.IX_ValidatorsCount);

@@ -29,6 +29,8 @@ namespace OX.Persistence
         public abstract DataCache<StorageKey, StorageItem> Storages { get; }
         public abstract DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
         public abstract DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
+        public abstract DataCache<UInt160, SlotOffVoteList> SlotOffVoteList { get; }
+        public abstract DataCache<UInt256, DaoVoteList> DaoVoteList { get; }
         public abstract MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         public abstract MetaDataCache<HashIndexState> BlockHashIndex { get; }
         public abstract MetaDataCache<HashIndexState> HeaderHashIndex { get; }
@@ -163,6 +165,8 @@ namespace OX.Persistence
             Storages.Commit();
             HeaderHashList.Commit();
             BlockBonusVoteList.Commit();
+            SlotOffVoteList.Commit();
+            DaoVoteList.Commit();
             ValidatorsCount.Commit();
             BlockHashIndex.Commit();
             HeaderHashIndex.Commit();

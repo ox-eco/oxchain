@@ -26,6 +26,8 @@ namespace OX.Persistence
         DataCache<StorageKey, StorageItem> IPersistence.Storages => GetStorages();
         DataCache<UInt32Wrapper, HeaderHashList> IPersistence.HeaderHashList => GetHeaderHashList();
         DataCache<UInt32Wrapper, BlockBonusVoteList> IPersistence.BlockBonusVoteList => GetBlockBonusVoteList();
+        DataCache<UInt160, SlotOffVoteList> IPersistence.SlotOffVoteList => GetSlotOffVoteList();
+        DataCache<UInt256, DaoVoteList> IPersistence.DaoVoteList => GetDaoVoteList();
         MetaDataCache<ValidatorsCountState> IPersistence.ValidatorsCount => GetValidatorsCount();
         MetaDataCache<HashIndexState> IPersistence.BlockHashIndex => GetBlockHashIndex();
         MetaDataCache<HashIndexState> IPersistence.HeaderHashIndex => GetHeaderHashIndex();
@@ -46,6 +48,8 @@ namespace OX.Persistence
         public abstract DataCache<StorageKey, StorageItem> GetStorages();
         public abstract DataCache<UInt32Wrapper, HeaderHashList> GetHeaderHashList();
         public abstract DataCache<UInt32Wrapper, BlockBonusVoteList> GetBlockBonusVoteList();
+        public abstract DataCache<UInt160, SlotOffVoteList> GetSlotOffVoteList();
+        public abstract DataCache<UInt256, DaoVoteList> GetDaoVoteList();
         public abstract MetaDataCache<ValidatorsCountState> GetValidatorsCount();
         public abstract MetaDataCache<HashIndexState> GetBlockHashIndex();
         public abstract MetaDataCache<HashIndexState> GetHeaderHashIndex();
@@ -58,7 +62,7 @@ namespace OX.Persistence
 
         public abstract IEnumerable<KeyValuePair<K, V>> GetAll<K, V>(byte prefix, ISerializable key) where K : ISerializable, new() where V : ISerializable, new();
 
-       
+
 
 
     }

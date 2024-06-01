@@ -649,21 +649,75 @@ namespace OX.Ledger
                         case LockAssetTransaction lat:
                             foreach (TransactionResult result in lat.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
-                            if (lat.LockContract.Equals(LockAssetContractScriptHash) && lat.ValidBlockBonusVote(out BlockBonusSetting bonusSetting, out Fixed8 voteAmount))
+                            if (lat.LockContract.Equals(LockAssetContractScriptHash) && lat.TryGetLockVote(out ILockVote lockVote))
                             {
-                                var blockBonusVote = new BlockBonusVote { Amount = voteAmount, Voter = lat.Recipient, NumPerBlock = bonusSetting.NumPerBlock };
-                                var bonusVoteList = snapshot.BlockBonusVoteList.TryGet((UInt32Wrapper)bonusSetting.Index);
-                                if (bonusVoteList.IsNotNull())
+                                if (lockVote is BlockBonusSetting bonusSetting)
                                 {
-                                    var list = bonusVoteList.Votes.ToList();
-                                    list.Add(blockBonusVote);
-                                    bonusVoteList.Votes = list.ToArray();
-                                    snapshot.BlockBonusVoteList.GetAndChange((UInt32Wrapper)bonusSetting.Index, () => bonusVoteList);
+                                    var contract = lat.GetContract();
+                                    var voteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).Value;
+                                    if (voteAmount > Fixed8.Zero)
+                                    {
+                                        var blockBonusVote = new BlockBonusVote { Amount = voteAmount, Voter = lat.Recipient, NumPerBlock = bonusSetting.NumPerBlock };
+                                        var bonusVoteList = snapshot.BlockBonusVoteList.TryGet((UInt32Wrapper)bonusSetting.Index);
+                                        if (bonusVoteList.IsNotNull())
+                                        {
+                                            var list = bonusVoteList.Votes.ToList();
+                                            list.Add(blockBonusVote);
+                                            bonusVoteList.Votes = list.ToArray();
+                                            snapshot.BlockBonusVoteList.GetAndChange((UInt32Wrapper)bonusSetting.Index, () => bonusVoteList);
+                                        }
+                                        else
+                                        {
+                                            BlockBonusVoteList blockBonusVoteList = new BlockBonusVoteList { Votes = new BlockBonusVote[] { blockBonusVote } };
+                                            snapshot.BlockBonusVoteList.Add((UInt32Wrapper)bonusSetting.Index, blockBonusVoteList);
+                                        }
+                                    }
                                 }
-                                else
+                                else if (lockVote is SlotOffVote slotOffVote)
                                 {
-                                    BlockBonusVoteList blockBonusVoteList = new BlockBonusVoteList { Votes = new BlockBonusVote[] { blockBonusVote } };
-                                    snapshot.BlockBonusVoteList.Add((UInt32Wrapper)bonusSetting.Index, blockBonusVoteList);
+                                    var contract = lat.GetContract();
+                                    var slotvoteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).Value;
+                                    if (slotvoteAmount > Fixed8.Zero)
+                                    {
+                                        var slotVoteList = snapshot.SlotOffVoteList.TryGet(slotOffVote.Slot);
+                                        if (slotVoteList.IsNotNull() && slotVoteList.Votes.IsNotNullAndEmpty())
+                                        {
+                                            Fixed8 v = slotvoteAmount;
+                                            if (slotVoteList.Votes.TryGetValue(slotOffVote.Index, out Fixed8 voteValue))
+                                                v += voteValue;
+                                            slotVoteList.Votes[slotOffVote.Index] = v;
+                                            snapshot.SlotOffVoteList.GetAndChange(slotOffVote.Slot, () => slotVoteList);
+                                        }
+                                        else
+                                        {
+                                            slotVoteList = new SlotOffVoteList();
+                                            slotVoteList.Votes[slotOffVote.Index] = slotvoteAmount;
+                                            snapshot.SlotOffVoteList.Add(slotOffVote.Slot, slotVoteList);
+                                        }
+                                    }
+                                }
+                                else if (lockVote is DaoVote daoVote)
+                                {
+                                    var contract = lat.GetContract();
+                                    var daovoteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(daoVote.AssetId)).Value;
+                                    if (daovoteAmount > Fixed8.Zero)
+                                    {
+                                        var daoVoteList = snapshot.DaoVoteList.TryGet(daoVote.AssetId);
+                                        if (daoVoteList.IsNotNull() && daoVoteList.Votes.IsNotNullAndEmpty())
+                                        {
+                                            Fixed8 v = daovoteAmount;
+                                            if (daoVoteList.Votes.TryGetValue(daoVote.Index, out Fixed8 voteValue))
+                                                v += voteValue;
+                                            daoVoteList.Votes[daoVote.Index] = v;
+                                            snapshot.DaoVoteList.GetAndChange(daoVote.AssetId, () => daoVoteList);
+                                        }
+                                        else
+                                        {
+                                            daoVoteList = new DaoVoteList();
+                                            daoVoteList.Votes[daoVote.Index] = daovoteAmount;
+                                            snapshot.DaoVoteList.Add(daoVote.AssetId, daoVoteList);
+                                        }
+                                    }
                                 }
                             }
                             break;
@@ -953,7 +1007,7 @@ namespace OX.Ledger
         {
             Interlocked.Exchange(ref currentSnapshot, GetSnapshot())?.Dispose();
         }
-        
+
         public bool IsFrozen(UInt160 scriptHash, out uint ExpireIndex)
         {
             var acts = currentSnapshot.Accounts.GetAndChange(scriptHash, () => null);
