@@ -642,9 +642,31 @@ namespace OX.Ledger
                             foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
                             break;
-                        case EthereumMapTransaction _:
+                        case EthereumMapTransaction emt:
                             foreach (TransactionResult result in tx.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
                                 snapshot.Assets.GetAndChange(result.AssetId).Available -= result.Amount;
+                            if (emt.EthMapContract == Blockchain.EthereumMapContractScriptHash && emt.TryGetDaoVote(out DaoVote dv))
+                            {
+                                var daovoteAmount = emt.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(emt.GetContract().ScriptHash) && m.AssetId.Equals(dv.AssetId)).Value;
+                                if (daovoteAmount > Fixed8.Zero)
+                                {
+                                    var daoVoteList = snapshot.DaoVoteList.TryGet(dv.AssetId);
+                                    if (daoVoteList.IsNotNull() && daoVoteList.Votes.IsNotNullAndEmpty())
+                                    {
+                                        Fixed8 v = daovoteAmount;
+                                        if (daoVoteList.Votes.TryGetValue(dv.Index, out Fixed8 voteValue))
+                                            v += voteValue;
+                                        daoVoteList.Votes[dv.Index] = v;
+                                        snapshot.DaoVoteList.GetAndChange(dv.AssetId, () => daoVoteList);
+                                    }
+                                    else
+                                    {
+                                        daoVoteList = new DaoVoteList();
+                                        daoVoteList.Votes[dv.Index] = daovoteAmount;
+                                        snapshot.DaoVoteList.Add(dv.AssetId, daoVoteList);
+                                    }
+                                }
+                            }
                             break;
                         case LockAssetTransaction lat:
                             foreach (TransactionResult result in lat.GetTransactionResults().Where(p => p.Amount < Fixed8.Zero))
@@ -653,8 +675,7 @@ namespace OX.Ledger
                             {
                                 if (lockVote is BlockBonusSetting bonusSetting)
                                 {
-                                    var contract = lat.GetContract();
-                                    var voteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).Value;
+                                    var voteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(lat.GetContract().ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).Value;
                                     if (voteAmount > Fixed8.Zero)
                                     {
                                         var blockBonusVote = new BlockBonusVote { Amount = voteAmount, Voter = lat.Recipient, NumPerBlock = bonusSetting.NumPerBlock };
@@ -675,8 +696,7 @@ namespace OX.Ledger
                                 }
                                 else if (lockVote is SlotOffVote slotOffVote)
                                 {
-                                    var contract = lat.GetContract();
-                                    var slotvoteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).Value;
+                                    var slotvoteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(lat.GetContract().ScriptHash) && m.AssetId.Equals(Blockchain.OXS)).Value;
                                     if (slotvoteAmount > Fixed8.Zero)
                                     {
                                         var slotVoteList = snapshot.SlotOffVoteList.TryGet(slotOffVote.Slot);
@@ -698,8 +718,7 @@ namespace OX.Ledger
                                 }
                                 else if (lockVote is DaoVote daoVote)
                                 {
-                                    var contract = lat.GetContract();
-                                    var daovoteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(daoVote.AssetId)).Value;
+                                    var daovoteAmount = lat.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(lat.GetContract().ScriptHash) && m.AssetId.Equals(daoVote.AssetId)).Value;
                                     if (daovoteAmount > Fixed8.Zero)
                                     {
                                         var daoVoteList = snapshot.DaoVoteList.TryGet(daoVote.AssetId);

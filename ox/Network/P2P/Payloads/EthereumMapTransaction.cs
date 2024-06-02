@@ -20,8 +20,8 @@ namespace OX.Network.P2P.Payloads
         public uint LockExpirationIndex;
         public UInt160 EthMapContract;
         public override int Size => base.Size + EthereumAddress.GetVarSize() + sizeof(uint) + EthMapContract.Size;
-        public override Fixed8 SystemFee => AttributesFee+OutputFee;
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public override Fixed8 SystemFee => AttributesFee + OutputFee;
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => true;
         #region append for Issue
         public bool IsIssue
@@ -34,7 +34,16 @@ namespace OX.Network.P2P.Payloads
                 return true;
             }
         }
-
+        public DaoVote[] DaoVotes
+        {
+            get
+            {
+                if (this.Attributes.IsNullOrEmpty()) return default;
+                var attrs = this.Attributes.Where(p => p.Usage == TransactionAttributeUsage.DaoVote);
+                if (attrs.IsNullOrEmpty()) return default;
+                return attrs.Select(p => p.Data.AsSerializable<DaoVote>()).ToArray();
+            }
+        }
         #endregion
         public EthereumMapTransaction()
           : base(TransactionType.EthereumMapTransaction)
@@ -45,6 +54,18 @@ namespace OX.Network.P2P.Payloads
             this.Attributes = new TransactionAttribute[0];
             this.LockExpirationIndex = 0;
         }
+        #region append for dao vote
+        public bool TryGetDaoVote(out DaoVote vote)
+        {
+            vote = default;
+            if (DaoVotes.IsNotNullAndEmpty() && DaoVotes.Length == 1)
+            {
+                vote = DaoVotes[0];
+                return true;
+            }
+            return false;
+        }
+        #endregion
         #region append for Issue
         public override UInt160[] GetScriptHashesForVerifying(Snapshot snapshot)
         {
@@ -77,6 +98,7 @@ namespace OX.Network.P2P.Payloads
         {
             JObject json = base.ToJson();
             json["ethereumaddress"] = EthereumAddress.ToLower();
+            json["lockexpirationindex"] = LockExpirationIndex.ToString();
             return json;
         }
         public Contract GetContract()
@@ -92,12 +114,23 @@ namespace OX.Network.P2P.Payloads
 
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
+            if (this.EthMapContract != Blockchain.EthereumMapContractScriptHash) return false;
             if (this.EthereumAddress.IsNullOrEmpty()) return false;
             if (this.Outputs.Length > 2) return false;
             var contract = GetContract();
             var output = this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash));
             if (output.IsNull()) return false;
             if (output.AssetId.Equals(Blockchain.OXS)) return false;
+            #region append for dao vote
+            if (this.DaoVotes.IsNotNullAndEmpty() && this.DaoVotes.Length > 1) return false;
+            if (this.TryGetDaoVote(out DaoVote daoVote))
+            {
+                if (daoVote.Index % 10000 > 0) return false;
+                if (daoVote.Index <= Blockchain.Singleton.HeaderHeight) return false;
+                if (this.LockExpirationIndex < daoVote.Index) return false;
+                if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash) && m.AssetId.Equals(daoVote.AssetId)).IsNull()) return false;
+            }
+            #endregion
             #region append for Issue
             if (!base.Verify(snapshot, mempool)) return false;
             if (IsIssue)

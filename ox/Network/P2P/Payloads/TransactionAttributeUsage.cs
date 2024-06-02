@@ -30,7 +30,7 @@
         Hash14 = 0xae,
         RelatedTransactionHash = 0xaf,
 
-        Remark = 0xf0,
+        DaoVote = 0xf0,
         Remark1 = 0xf1,
         Remark2 = 0xf2,
         Remark3 = 0xf3,

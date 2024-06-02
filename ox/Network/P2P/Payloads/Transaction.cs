@@ -69,30 +69,7 @@ namespace OX.Network.P2P.Payloads
                 return _hash;
             }
         }
-        //private UInt256 _inputhash = null;
-        //public UInt256 InputHash
-        //{
-        //    get
-        //    {
-        //        if (_inputhash == null)
-        //        {
-        //            _inputhash = new UInt256(Crypto.Default.Hash256(this.GetInputHashData()));
-        //        }
-        //        return _inputhash;
-        //    }
-        //}
-        //private UInt256 _outputhash = null;
-        //public UInt256 OutputHash
-        //{
-        //    get
-        //    {
-        //        if (_outputhash == null)
-        //        {
-        //            _outputhash = new UInt256(Crypto.Default.Hash256(this.GetOutputHashData()));
-        //        }
-        //        return _outputhash;
-        //    }
-        //}
+
         private UInt256 _inputOutputhash = null;
         public UInt256 InputOutputHash
         {
@@ -135,6 +112,7 @@ namespace OX.Network.P2P.Payloads
                 return attrs.Select(p => MessageSigner.ExtractEcdsaSignature(p.Data.ToHex(true))).ToArray();
             }
         }
+       
         InventoryType IInventory.InventoryType => InventoryType.TX;
 
         public bool IsLowPriority => NetworkFee < ProtocolSettings.Default.LowPriorityThreshold && SystemFee < Fixed8.One;

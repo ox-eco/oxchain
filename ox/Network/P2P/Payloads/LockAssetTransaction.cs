@@ -25,8 +25,8 @@ namespace OX.Network.P2P.Payloads
         public byte[] Attach;
 
         public override int Size => base.Size + Recipient.Size + sizeof(bool) + sizeof(uint) + sizeof(LockAssetPurpose) + LockContract.Size + Attach.GetVarSize();
-        public override Fixed8 SystemFee => AttributesFee + OutputFee + (Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero) + purposeFee;
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public override Fixed8 SystemFee => AttributesFee + OutputFee + (Attach.GetVarSize() > 40 ? Fixed8.One : Fixed8.Zero) + purposeFee;
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => true;
         Fixed8 purposeFee
         {
@@ -35,7 +35,7 @@ namespace OX.Network.P2P.Payloads
                 switch (Purpose)
                 {
                     case LockAssetPurpose.BlockBonusVote: return Fixed8.One * 1000;
-                    case LockAssetPurpose.DaoVote: return Fixed8.One;
+                    case LockAssetPurpose.DaoVote: return Fixed8.Zero;
                     case LockAssetPurpose.SlotOffVote: return Fixed8.One * 10;
                     default: return Fixed8.Zero;
                 }

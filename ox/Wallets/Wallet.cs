@@ -343,7 +343,7 @@ namespace OX.Wallets
             rand.NextBytes(nonce);
             attributes.Add(new TransactionAttribute()
             {
-                Usage = TransactionAttributeUsage.Remark,
+                Usage = TransactionAttributeUsage.Remark1,
                 Data = nonce
             });
 

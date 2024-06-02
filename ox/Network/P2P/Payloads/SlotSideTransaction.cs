@@ -40,7 +40,7 @@ namespace OX.Network.P2P.Payloads
 
         public override int Size => base.Size + Slot.Size + sizeof(byte) + sizeof(SideType) + Data.GetVarSize() + sizeof(byte) + AuthContract.Size + Attach.GetVarSize();
         public override Fixed8 SystemFee => Attach.GetVarSize() > 8 ? Fixed8.One : Fixed8.Zero + AttributesFee + OutputFee;
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => true;
         public SlotSideTransaction()
           : base(TransactionType.SlotSideTransaction)
