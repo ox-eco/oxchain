@@ -150,7 +150,8 @@ namespace OX.Network.P2P.Payloads
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
             if (this.LockContract != Blockchain.LockAssetContractScriptHash) return false;
-            if (this.Outputs.Length > 2) return false;
+            if (this.Purpose == LockAssetPurpose.Common || this.Purpose == LockAssetPurpose.DaoVote)
+                if (this.Outputs.Length > 2) return false;
             var contract = GetContract();
             if (this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash)).IsNull()) return false;
             if (Purpose != LockAssetPurpose.Common)
