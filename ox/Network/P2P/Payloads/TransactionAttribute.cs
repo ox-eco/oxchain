@@ -47,6 +47,8 @@ namespace OX.Network.P2P.Payloads
                 Data = reader.ReadBytes(20);
             else if (Usage == TransactionAttributeUsage.DescriptionUrl)
                 Data = reader.ReadBytes(reader.ReadByte());
+            else if (Usage == TransactionAttributeUsage.DaoVote)
+                Data = reader.ReadBytes(32 + sizeof(uint));
             else if (Usage == TransactionAttributeUsage.Description || (Usage >= TransactionAttributeUsage.Remark1 && Usage < TransactionAttributeUsage.RelatedScriptHash))
                 Data = reader.ReadVarBytes(ushort.MaxValue);
             else
