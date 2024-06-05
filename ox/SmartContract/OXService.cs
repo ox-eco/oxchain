@@ -30,6 +30,7 @@ namespace OX.SmartContract
             Register("OX.Runtime.GetTime", Runtime_GetTime, 1);
             Register("OX.Runtime.Serialize", Runtime_Serialize, 1);
             Register("OX.Runtime.Deserialize", Runtime_Deserialize, 1);
+            Register("OX.Runtime.Regex.IsMatch", Runtime_RegexIsMatch, 1);
             Register("OX.Blockchain.GetHeight", Blockchain_GetHeight, 1);
             Register("OX.Blockchain.GetHeader", Blockchain_GetHeader, 100);
             Register("OX.Blockchain.GetBlock", Blockchain_GetBlock, 200);

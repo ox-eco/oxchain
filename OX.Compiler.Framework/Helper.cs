@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace OX.SmartContract.Framework
 {
@@ -236,5 +237,7 @@ namespace OX.SmartContract.Framework
 
         [Syscall("OX.Runtime.Deserialize")]
         public extern static object Deserialize(this byte[] source);
+        [Syscall("OX.Runtime.Regex.IsMatch")]
+        public extern static bool RegexIsMatch(this string source,string pattern);
     }
 }

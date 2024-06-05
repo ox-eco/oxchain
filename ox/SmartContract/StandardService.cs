@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using VMArray = OX.VM.Types.Array;
 using VMBoolean = OX.VM.Types.Boolean;
 
@@ -48,6 +49,7 @@ namespace OX.SmartContract
             Register("System.Runtime.GetTime", Runtime_GetTime, 1);
             Register("System.Runtime.Serialize", Runtime_Serialize, 1);
             Register("System.Runtime.Deserialize", Runtime_Deserialize, 1);
+            Register("System.Runtime.Regex.IsMatch", Runtime_RegexIsMatch, 1);
             Register("System.Blockchain.GetHeight", Blockchain_GetHeight, 1);
             Register("System.Blockchain.GetHeader", Blockchain_GetHeader, 100);
             Register("System.Blockchain.GetBlock", Blockchain_GetBlock, 200);
@@ -175,7 +177,7 @@ namespace OX.SmartContract
                 sb.Emit(OpCode.CHECKSIG);
                 var bs = sb.ToArray().ToScriptHash().ToArray();
                 engine.CurrentContext.EvaluationStack.Push(bs);
-            }        
+            }
             return true;
         }
         protected bool Runtime_CheckWitness(ExecutionEngine engine)
@@ -400,7 +402,14 @@ namespace OX.SmartContract
             }
             return true;
         }
-
+        protected bool Runtime_RegexIsMatch(ExecutionEngine engine)
+        {
+            var str = System.Text.Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var pattern = System.Text.Encoding.UTF8.GetString(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var valid = Regex.IsMatch(str, pattern);
+            engine.CurrentContext.EvaluationStack.Push(valid);
+            return true;
+        }
         protected bool Blockchain_GetHeight(ExecutionEngine engine)
         {
             engine.CurrentContext.EvaluationStack.Push(Snapshot.Height);
