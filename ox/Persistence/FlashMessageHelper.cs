@@ -29,8 +29,11 @@ namespace OX.Persistence
         static uint _whiteList_refreshIndex = 0;
         static UInt160[] _whiteList = default;
         static readonly Dictionary<UInt160, byte[]> _domains = new Dictionary<UInt160, byte[]>();
+        static readonly Dictionary<string, UInt160> _AddressBydomains = new Dictionary<string, UInt160>();
         static readonly Dictionary<UInt160, byte[]> _marks = new Dictionary<UInt160, byte[]>();
         static readonly ReaderWriterLockSlim _domainRwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        static readonly ReaderWriterLockSlim _addressBydomainRwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        static readonly ReaderWriterLockSlim _markRwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         public static UInt160[] GetBlackList(this Blockchain blockchain)
         {
             if (_blackList_refreshIndex == 0 || blockchain.HeaderHeight > _blackList_refreshIndex + 10)
@@ -104,9 +107,29 @@ namespace OX.Persistence
                 _domainRwLock.ExitReadLock();
             }
         }
+        public static bool GetAddressByDomain(this Blockchain blockchain, string domain, out UInt160 address)
+        {
+            _addressBydomainRwLock.EnterReadLock();
+            try
+            {
+                if (!_AddressBydomains.TryGetValue(domain, out address))
+                {
+                    address = GetAddressByDomain(domain);
+                    if (domain != default)
+                    {
+                        _AddressBydomains[domain] = address;
+                    }
+                }
+                return domain != default;
+            }
+            finally
+            {
+                _addressBydomainRwLock.ExitReadLock();
+            }
+        }
         public static byte[] GetMark(this Blockchain blockchain, UInt160 address)
         {
-            _domainRwLock.EnterReadLock();
+            _markRwLock.EnterReadLock();
             try
             {
                 if (!_marks.TryGetValue(address, out byte[] result) || blockchain.HeaderHeight % 10 == 0)
@@ -121,7 +144,7 @@ namespace OX.Persistence
             }
             finally
             {
-                _domainRwLock.ExitReadLock();
+                _markRwLock.ExitReadLock();
             }
         }
         public static byte[] GetIntervalFunctionScriptHash(this Blockchain blockchain, out ContractState contractState)
@@ -178,6 +201,16 @@ namespace OX.Persistence
             });
             return item.IsNotNull() ? item.Value.Skip(20).ToArray() : default;
         }
+        public static UInt160 GetAddressByDomain(string domain)
+        {
+            StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
+            {
+                ScriptHash = Blockchain.FlashMessageContractScriptHash,
+                Key = System.Text.Encoding.UTF8.GetBytes("dms").Concat(new byte[] { 0 }).Concat(System.Text.Encoding.UTF8.GetBytes(domain)).ToArray(),
+            });
+
+            return item.IsNotNull() ? new UInt160(item.Value.Take(20).ToArray()) : default;
+        }
         public static byte[] GetMark(UInt160 address)
         {
             StorageItem item = Blockchain.Singleton.Store.GetStorages().TryGet(new StorageKey
@@ -223,12 +256,12 @@ namespace OX.Persistence
             });
             return item.IsNotNull() ? item.Value[0] : 0;
         }
-        public static bool AllowFlashMessage(this Blockchain blockchain, AccountState accountState,out uint expireIndex)
+        public static bool AllowFlashMessage(this Blockchain blockchain, AccountState accountState, out uint expireIndex)
         {
             expireIndex = 0;
             var txPoolCount = blockchain.MemPool.Count;
             if (txPoolCount > blockchain.MemPool.RebroadcastMultiplierThreshold * blockchain.GetPoolMutiple()) return false;
-            return blockchain.StatePool.AllowFlashMessage(accountState, txPoolCount,out expireIndex);
+            return blockchain.StatePool.AllowFlashMessage(accountState, txPoolCount, out expireIndex);
         }
     }
 }
