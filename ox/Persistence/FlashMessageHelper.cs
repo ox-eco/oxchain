@@ -115,7 +115,7 @@ namespace OX.Persistence
                 if (!_AddressBydomains.TryGetValue(domain, out address))
                 {
                     address = GetAddressByDomain(domain);
-                    if (domain != default)
+                    if (address != default)
                     {
                         _AddressBydomains[domain] = address;
                     }
