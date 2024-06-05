@@ -120,7 +120,7 @@ namespace OX.Persistence
                         _AddressBydomains[domain] = address;
                     }
                 }
-                return domain != default;
+                return address != default;
             }
             finally
             {
