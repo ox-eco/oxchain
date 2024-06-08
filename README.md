@@ -1,3 +1,4 @@
+[中文](Readme-cn.md)
 # **A Value-Co-Creation Ecosystem**
 ##### OX is a perpetual, collaborative, mutual-assistive, and co-creative trustable value ecosystem constructed using blockchain and smart contract technologies. Its underlying technology employs the mature, reliable, and high-performance upgraded Neo protocol, incorporating the DBFT consensus algorithm, the NeoVM virtual machine, and the Neo smart contract mechanism.
 
