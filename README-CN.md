@@ -1,4 +1,4 @@
-[English](Readme.md)
+[English](README.md)
 # **一个价值共创生态**
 **OX是一个利用区块链和智能合约技术构建的永续，协作，互助，共创的可信价值生态。底层技术采用成熟，可靠，高性能的Neo升级协议，包括DBFT共识算法，NeoVM虚拟机，Neo智能合约机制。**
 ## Flash Message
