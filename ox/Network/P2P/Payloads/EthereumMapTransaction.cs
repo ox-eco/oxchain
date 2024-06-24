@@ -116,7 +116,7 @@ namespace OX.Network.P2P.Payloads
         {
             if (this.EthMapContract != Blockchain.EthereumMapContractScriptHash) return false;
             if (this.EthereumAddress.IsNullOrEmpty()) return false;
-            if (this.Outputs.Length > 2) return false;
+            if (this.Outputs.Length > 4) return false;
             var contract = GetContract();
             var output = this.Outputs.FirstOrDefault(m => m.ScriptHash.Equals(contract.ScriptHash));
             if (output.IsNull()) return false;
