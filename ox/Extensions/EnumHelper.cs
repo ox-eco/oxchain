@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
 namespace OX
 {
-
+    public static class NoneFlagEnumHelper
+    {
+        public static EnumType[] All<EnumType>() where EnumType : struct
+        {
+            var names = Enum.GetNames(typeof(EnumType));
+            return names.Select(name => (EnumType)Enum.Parse(typeof(EnumType), name)).ToArray();
+        }
+    }
     public static class EnumHelper
     {
         public static int Value<EnumType>(this EnumType enu) where EnumType : struct
@@ -81,7 +89,7 @@ namespace OX
         {
             return EnumHelper.Total<EnumType>().Parse();
         }
-
+       
         public static bool Contains<EnumType>(this EnumType enu, EnumType enu2) where EnumType : struct
         {
             return Convert.ToInt32(enu.intersect(enu2)) == Convert.ToInt32(enu2);
