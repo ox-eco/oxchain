@@ -198,6 +198,11 @@ namespace OX.Wallets
                         //                    case PublishTransaction _:
                         //#pragma warning restore CS0612
                         break;
+                    case DeadlineTransaction _:
+                        //#pragma warning disable CS0612
+                        //                    case PublishTransaction _:
+                        //#pragma warning restore CS0612
+                        break;
                     case ClaimTransaction tx_claim:
                         foreach (CoinReference claim in tx_claim.Claims)
                         {

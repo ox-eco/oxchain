@@ -8,44 +8,45 @@ using System.IO;
 using System.Linq;
 
 namespace OX.Network.P2P.Payloads
-{
-    public class RangeTransaction : Transaction
+{   
+    public class DeadlineTransaction : Transaction
     {
-        public uint MaxIndex;
-        public uint MinIndex;
+        public uint UTCLatest;
+        public uint UTCEarliest;
         public override int Size => base.Size + sizeof(uint) + sizeof(uint);
         public override Fixed8 SystemFee => AttributesFee + OutputFee;
         public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => true;
-        public RangeTransaction()
-            : base(TransactionType.RangeTransaction)
+        public DeadlineTransaction()
+            : base(TransactionType.DeadlineTransaction)
         {
-            this.MaxIndex = 0x00;
-            this.MinIndex = 0x00;
+            this.UTCLatest = 0x00;
+            this.UTCEarliest = 0x00;
         }
 
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
-            MaxIndex = reader.ReadUInt32();
-            MinIndex = reader.ReadUInt32();
+            UTCLatest = reader.ReadUInt32();
+            UTCEarliest = reader.ReadUInt32();
         }
 
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
-            writer.Write(MaxIndex);
-            writer.Write(MinIndex);
+            writer.Write(UTCLatest);
+            writer.Write(UTCEarliest);
         }
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
-            if (MaxIndex > 0)
+            var ts = System.DateTime.Now.ToTimestamp();
+            if (UTCLatest > 0)
             {
-                if (MaxIndex <= snapshot.Height) return false;
+                if (UTCLatest <=ts) return false;
             }
-            if (MinIndex > 0)
+            if (UTCEarliest > 0)
             {
-                if (MinIndex > snapshot.Height + 1) return false;
+                if (UTCEarliest > ts + 1) return false;
             }
             return base.Verify(snapshot, mempool);
         }
-    }  
+    }
 }

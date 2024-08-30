@@ -50,7 +50,7 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(NftTransferTransaction))]
         NftTransferTransaction = 0xcc,
         [ReflectionCache(typeof(LockAssetTransaction))]
-        LockAssetTransaction =0xcd,
+        LockAssetTransaction = 0xcd,
         [ReflectionCache(typeof(BookTransaction))]
         BookTransaction = 0xce,
         [ReflectionCache(typeof(BookSectionTransaction))]
@@ -60,13 +60,15 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(SlotSideTransaction))]
         SlotSideTransaction = 0xb1,
         [ReflectionCache(typeof(SecretLetterTransaction))]
-        SecretLetterTransaction =0xb2,
+        SecretLetterTransaction = 0xb2,
         [ReflectionCache(typeof(AssetTrustTransaction))]
-        AssetTrustTransaction =0xb3,
+        AssetTrustTransaction = 0xb3,
         [ReflectionCache(typeof(RangeTransaction))]
         RangeTransaction = 0xb4,
         [ReflectionCache(typeof(EthereumMapTransaction))]
-        EthereumMapTransaction = 0xb5
-        
+        EthereumMapTransaction = 0xb5,
+        [ReflectionCache(typeof(DeadlineTransaction))]
+        DeadlineTransaction = 0xb6
+
     }
 }
