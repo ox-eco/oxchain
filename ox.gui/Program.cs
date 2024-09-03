@@ -24,7 +24,6 @@ namespace OX
             LevelDBStore store = new LevelDBStore(Settings.Default.Paths.Chain);
             OXSystem = new OXSystem(store);
             Application.Run(MainForm = new MainForm());
-            Application.Run(new MainForm());
         }
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
