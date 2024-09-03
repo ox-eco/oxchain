@@ -17,10 +17,10 @@ namespace OX.Network.P2P
     public class LocalNode : Peer
     {
         public class Relay { public IInventory Inventory; }
-        internal class RelayDirectly { public IInventory Inventory; }
-        internal class SendDirectly { public IInventory Inventory; }
-        internal class RelayFlash { public string RemoteNodeKey; public FlashMessage FlashMessage; }
-        //internal class RelayFlashDirectly { public IInventory Inventory; }
+        public class RelayDirectly { public IInventory Inventory; }
+        public class SendDirectly { public IInventory Inventory; }
+        public class RelayFlash { public string RemoteNodeKey; public FlashMessage FlashMessage; }
+        //public class RelayFlashDirectly { public IInventory Inventory; }
 
         public const uint ProtocolVersion = 0;
 
