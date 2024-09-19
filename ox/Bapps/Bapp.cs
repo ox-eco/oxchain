@@ -34,6 +34,7 @@ namespace OX.Bapps
     }
     public abstract class Bapp
     {
+        public static bool AllowUIBlockIndex { get; set; } = true;
         public static event BappEventHandler<BappEvent> BappEvent;
         public static event BappEventHandler<CrossBappMessage> CrossBappMessage;
         public static event BappEventHandler<Block> BappBlockEvent;
@@ -436,17 +437,25 @@ namespace OX.Bapps
             {
                 setBappState();
             }
+
             if (this.BappProvider.IsNotNull()) this.BappProvider.BeforeOnBlock(block);
-            if (this.BappApi.IsNotNull()) this.BappApi.BeforeOnBlock(block);
-            if (this.BappUi.IsNotNull()) this.BappUi.BeforeOnBlock(block);
-
+            if (AllowUIBlockIndex)
+            {
+                if (this.BappApi.IsNotNull()) this.BappApi.BeforeOnBlock(block);
+                if (this.BappUi.IsNotNull()) this.BappUi.BeforeOnBlock(block);
+            }
             if (this.BappProvider.IsNotNull()) this.BappProvider.OnBlock(block);
-            if (this.BappApi.IsNotNull()) this.BappApi.OnBlock(block);
-            if (this.BappUi.IsNotNull()) this.BappUi.OnBlock(block);
-
+            if (AllowUIBlockIndex)
+            {
+                if (this.BappApi.IsNotNull()) this.BappApi.OnBlock(block);
+                if (this.BappUi.IsNotNull()) this.BappUi.OnBlock(block);
+            }
             if (this.BappProvider.IsNotNull()) this.BappProvider.AfterOnBlock(block);
-            if (this.BappApi.IsNotNull()) this.BappApi.AfterOnBlock(block);
-            if (this.BappUi.IsNotNull()) this.BappUi.AfterOnBlock(block);
+            if (AllowUIBlockIndex)
+            {
+                if (this.BappApi.IsNotNull()) this.BappApi.AfterOnBlock(block);
+                if (this.BappUi.IsNotNull()) this.BappUi.AfterOnBlock(block);
+            }
 
         }
         void OnRebuild()
