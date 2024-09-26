@@ -27,7 +27,7 @@
         Hash11 = 0xab,
         Hash12 = 0xac,
         Hash13 = 0xad,
-        Hash14 = 0xae,
+        ApproveHash = 0xae,
         RelatedTransactionHash = 0xaf,
 
         DaoVote = 0xf0,

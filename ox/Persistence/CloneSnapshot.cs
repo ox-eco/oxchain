@@ -13,6 +13,7 @@ namespace OX.Persistence
         public override DataCache<UInt160, SideSateList> Sides { get; }
         public override DataCache<NftID, NFCState> NFTs { get; }
         public override DataCache<NFSStateKey, NFSState> NFTTransfers { get; }
+        public override DataCache<UInt160, MutualLockState> MutualLockStates { get; }
         public override DataCache<UInt256, BookState> Books { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
@@ -37,6 +38,7 @@ namespace OX.Persistence
             this.Sides = snapshot.Sides.CreateSnapshot();
             this.NFTs = snapshot.NFTs.CreateSnapshot();
             this.NFTTransfers = snapshot.NFTTransfers.CreateSnapshot();
+            this.MutualLockStates = snapshot.MutualLockStates.CreateSnapshot();
             this.Accounts = snapshot.Accounts.CreateSnapshot();
             this.Books = snapshot.Books.CreateSnapshot();
             this.UnspentCoins = snapshot.UnspentCoins.CreateSnapshot();
@@ -47,7 +49,7 @@ namespace OX.Persistence
             this.Storages = snapshot.Storages.CreateSnapshot();
             this.HeaderHashList = snapshot.HeaderHashList.CreateSnapshot();
             this.BlockBonusVoteList = snapshot.BlockBonusVoteList.CreateSnapshot();
-            this.SlotOffVoteList=snapshot.SlotOffVoteList.CreateSnapshot();
+            this.SlotOffVoteList = snapshot.SlotOffVoteList.CreateSnapshot();
             this.DaoVoteList = snapshot.DaoVoteList.CreateSnapshot();
             this.ValidatorsCount = snapshot.ValidatorsCount.CreateSnapshot();
             this.BlockHashIndex = snapshot.BlockHashIndex.CreateSnapshot();

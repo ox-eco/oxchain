@@ -101,6 +101,10 @@ namespace OX.Persistence.LevelDB
         {
             return new DbCache<NFSStateKey, NFSState>(db, null, null, Prefixes.DATA_NFT_Transfer);
         }
+        public override DataCache<UInt160, MutualLockState> GetMutualLockStates()
+        {
+            return new DbCache<UInt160, MutualLockState>(db, null, null, Prefixes.DATA_MutualLock);
+        }
         public override DataCache<UInt256, BookState> GetBooks()
         {
             return new DbCache<UInt256, BookState>(db, null, null, Prefixes.DATA_Book);

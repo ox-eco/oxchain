@@ -1,9 +1,6 @@
 ﻿{
   "ApplicationConfiguration": {
-    "Paths": {
-      "Chain": "Chain_{0}",
-      "BizChain": "BizChain_{0}",
-      "Index": "Index_{0}",
+    "Paths": {     
       "CertCache": "Certs"
     },
     "P2P": {
@@ -16,7 +13,7 @@
       "SslCert": "",
       "SslCertPassword": ""
     },
-    "Seeds": [
+    "Seeds": [   
       "seed.oxchain.link:11333",
       "seed1.oxchain.link:11333",
       "seed2.oxchain.link:11333",

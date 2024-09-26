@@ -19,6 +19,7 @@ namespace OX.Persistence.LevelDB
         public override DataCache<UInt160, SideSateList> Sides { get; }
         public override DataCache<NftID, NFCState> NFTs { get; }
         public override DataCache<NFSStateKey, NFSState> NFTTransfers { get; }
+        public override DataCache<UInt160, MutualLockState> MutualLockStates { get; }
         public override DataCache<UInt256, BookState> Books { get; }
         public override DataCache<UInt160, AccountState> Accounts { get; }
         public override DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
@@ -29,7 +30,7 @@ namespace OX.Persistence.LevelDB
         public override DataCache<StorageKey, StorageItem> Storages { get; }
         public override DataCache<UInt32Wrapper, HeaderHashList> HeaderHashList { get; }
         public override DataCache<UInt32Wrapper, BlockBonusVoteList> BlockBonusVoteList { get; }
-      public override DataCache<UInt160,SlotOffVoteList> SlotOffVoteList { get; }
+        public override DataCache<UInt160, SlotOffVoteList> SlotOffVoteList { get; }
         public override DataCache<UInt256, DaoVoteList> DaoVoteList { get; }
         public override MetaDataCache<ValidatorsCountState> ValidatorsCount { get; }
         public override MetaDataCache<HashIndexState> BlockHashIndex { get; }
@@ -46,6 +47,7 @@ namespace OX.Persistence.LevelDB
             Sides = new DbCache<UInt160, SideSateList>(db, options, batch, Prefixes.DATA_SideList);
             NFTs = new DbCache<NftID, NFCState>(db, options, batch, Prefixes.DATA_NFT);
             NFTTransfers = new DbCache<NFSStateKey, NFSState>(db, options, batch, Prefixes.DATA_NFT_Transfer);
+            MutualLockStates = new DbCache<UInt160, MutualLockState>(db, options, batch, Prefixes.DATA_MutualLock);
             Accounts = new DbCache<UInt160, AccountState>(db, options, batch, Prefixes.ST_Account);
             Books = new DbCache<UInt256, BookState>(db, options, batch, Prefixes.DATA_Book);
             UnspentCoins = new DbCache<UInt256, UnspentCoinState>(db, options, batch, Prefixes.ST_Coin);

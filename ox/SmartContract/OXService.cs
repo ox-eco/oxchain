@@ -1,4 +1,5 @@
 ﻿using Akka.Util;
+using OX.Cryptography;
 using OX.Cryptography.ECC;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
@@ -111,6 +112,8 @@ namespace OX.SmartContract
             Register("OX.Blockchain.IsInSide", Blockchain_IsInSide, 1);
             Register("OX.Blockchain.VerifySlotScriptHash", Blockchain_VerifySlotScriptHash, 1);
             Register("OX.Blockchain.VerifySlotPubKey", Blockchain_VerifySlotPubKey, 1);
+            Register("OX.Blockchain.VerifyApproveHash", Blockchain_VerifyApproveHash, 1);
+            Register("OX.Blockchain.GetMutualLockState", Blockchain_GetMutualLockState, 1);
             Register("OX.Blockchain.GetDaoVote", Blockchain_GetDaoVote, 1);
             Register("OX.Ethereum.EcRecover", Ethereum_EcRecover, 1);
             Register("OX.Ethereum.EcRecoverString", Ethereum_EcRecoverString, 1);
@@ -200,6 +203,28 @@ namespace OX.SmartContract
             var slot_script_hash = Contract.CreateSignatureRedeemScript(slot_pubkey).ToScriptHash();
             var valid = Snapshot.OnlyVerifySlotValidator(slot_script_hash, out AccountState _, out Fixed8 _, out Fixed8 _) && Snapshot.ValidSlotInVote_50000000(slot_script_hash);
             engine.CurrentContext.EvaluationStack.Push(valid);
+            return true;
+        }
+        private bool Blockchain_VerifyApproveHash(ExecutionEngine engine)
+        {
+            var h1 = new UInt256(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+            var h2 = new UInt256(Crypto.Default.Hash256(engine.CurrentContext.EvaluationStack.Pop().GetByteArray()));
+            engine.CurrentContext.EvaluationStack.Push(h1 == h2);
+            return true;
+        }
+        private bool Blockchain_GetMutualLockState(ExecutionEngine engine)
+        {
+            var sh = new UInt160(engine.CurrentContext.EvaluationStack.Pop().GetByteArray());
+             var mutualLockState=Snapshot.MutualLockStates.TryGet(sh);
+            bool locked = false;
+            if(mutualLockState.IsNotNull())
+            {
+                if(mutualLockState.Locked)
+                {
+                    locked = true;
+                }
+            }
+            engine.CurrentContext.EvaluationStack.Push(locked);
             return true;
         }
         private bool Blockchain_GetDaoVote(ExecutionEngine engine)

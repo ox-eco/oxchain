@@ -77,6 +77,10 @@ namespace OX
                         return TxData.AsSerializable<NftTransaction>();
                     case TransactionType.NftTransferTransaction:
                         return TxData.AsSerializable<NftTransferTransaction>();
+                    case TransactionType.MutualLockBuyerTransaction:
+                        return TxData.AsSerializable<MutualLockBuyerTransaction>();
+                    case TransactionType.MutualLockSellerTransaction:
+                        return TxData.AsSerializable<MutualLockSellerTransaction>();
                 }
                 return default;
 

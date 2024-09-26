@@ -68,7 +68,11 @@ namespace OX.Network.P2P.Payloads
         [ReflectionCache(typeof(EthereumMapTransaction))]
         EthereumMapTransaction = 0xb5,
         [ReflectionCache(typeof(DeadlineTransaction))]
-        DeadlineTransaction = 0xb6
+        DeadlineTransaction = 0xb6,
+        [ReflectionCache(typeof(MutualLockBuyerTransaction))]
+        MutualLockBuyerTransaction = 0xb7,
+        [ReflectionCache(typeof(MutualLockSellerTransaction))]
+        MutualLockSellerTransaction = 0xb8
 
     }
 }

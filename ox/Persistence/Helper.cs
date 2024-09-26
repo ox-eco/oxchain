@@ -101,6 +101,10 @@ namespace OX.Persistence
             if (tx.NftChangeType != NftChangeType.Issue) return default;
             return persistence.NFTTransfers.TryGet(new NFSStateKey { NFCID = tx.NFSStateKey.NFCID, IssueBlockIndex = issueInddex, IssueN = issueN });
         }
+        public static MutualLockState GetMutualLockState(this IPersistence persistence, UInt160 mutualLockScriptHash)
+        {
+            return persistence.MutualLockStates.TryGet(mutualLockScriptHash);
+        }
         public static BookState GetBookState(this IPersistence persistence, UInt256 bookId)
         {
             return persistence.Books.TryGet(bookId);

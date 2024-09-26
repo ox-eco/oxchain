@@ -33,5 +33,6 @@
         public const byte IX_BlockBonusVoteList = 0xf7;
         public const byte IX_SlotOffVoteList = 0xf8;
         public const byte IX_DaoVoteList = 0xf9;
+        public const byte DATA_MutualLock = 0xfa;
     }
 }

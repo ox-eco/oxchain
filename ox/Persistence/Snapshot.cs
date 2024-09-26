@@ -19,6 +19,7 @@ namespace OX.Persistence
         public abstract DataCache<UInt160, SideSateList> Sides { get; }
         public abstract DataCache<NftID, NFCState> NFTs { get; }
         public abstract DataCache<NFSStateKey, NFSState> NFTTransfers { get; }
+        public abstract DataCache<UInt160, MutualLockState> MutualLockStates { get; }
         public abstract DataCache<UInt256, BookState> Books { get; }
         public abstract DataCache<UInt160, AccountState> Accounts { get; }
         public abstract DataCache<UInt256, UnspentCoinState> UnspentCoins { get; }
@@ -155,6 +156,7 @@ namespace OX.Persistence
             Sides.Commit();
             NFTs.Commit();
             NFTTransfers.Commit();
+            MutualLockStates.Commit();
             Books.Commit();
             Accounts.Commit();
             UnspentCoins.Commit();

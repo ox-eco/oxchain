@@ -39,6 +39,10 @@ namespace OX.SmartContract.Framework.Services
         public static extern bool VerifySlotScriptHash(byte[] script_hash);
         [Syscall("OX.Blockchain.VerifySlotPubKey")]
         public static extern bool VerifySlotPubKey(byte[] script_hash);
+        [Syscall("OX.Blockchain.VerifyApproveHash")]
+        public static extern bool VerifyApproveHash(byte[] approve_hash, byte[] approve_data);
+        [Syscall("OX.Blockchain.GetMutualLockState")]
+        public static extern bool GetMutualLockState(byte[] mutualLockScriptHash);
         [Syscall("OX.Blockchain.GetDaoVote")]
         public static extern long GetDaoVote(byte[] asset_id, uint height);
     }

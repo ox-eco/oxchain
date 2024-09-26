@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Akka.Configuration;
+using Akka.IO;
 using OX.Cryptography.ECC;
 using OX.IO;
 using OX.IO.Actors;
@@ -43,6 +44,7 @@ namespace OX.Ledger
         public static UInt160 TrustAssetContractScriptHash = UInt160.Parse("0x789ee733b58932b97dc960260ca1647dfcb8808a");
         public static UInt160 EthereumMapContractScriptHash = UInt160.Parse("0x508c5bd9a4a5fd62ea2b0d1c853aff2cec5d5ea7");
         public static UInt160 FlashMessageContractScriptHash = UInt160.Parse("0xdb846839cfcfbbd25af6f19478974360a9396989");
+        public static UInt160 MutualLockContractScriptHash = UInt160.Parse("0xd5b2b80d0a174ad67cdb2e0ff6f0d9da56aba5f5");
         static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
         public static uint[] GenerationBonusAmount => genesisGenerationAmount;
         public static readonly TimeSpan TimePerBlock = TimeSpan.FromSeconds(SecondsPerBlock);
@@ -612,8 +614,12 @@ namespace OX.Ledger
                             if (out_prev.AssetId.Equals(OXS_Token.Hash) && account.Balances[out_prev.AssetId] < Blockchain.FlashMinOXCBalance)
                             {
                                 this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
-                            }
+                            }                           
                         }
+                    }
+                    foreach (var coin in tx.References)
+                    {
+                        snapshot.MutualLockStates.Delete(coin.Value.ScriptHash);
                     }
                     List<ApplicationExecutionResult> execution_results = new List<ApplicationExecutionResult>();
                     switch (tx)
@@ -877,6 +883,18 @@ namespace OX.Ledger
                                         snapshot.NFTs.GetAndChange(tx_nfs.NFSStateKey.NFCID, () => nft);
                                         break;
                                 }
+                            }
+                            break;
+                        case MutualLockSellerTransaction mlst:
+                            snapshot.MutualLockStates.Add(mlst.GetContract().ScriptHash, new MutualLockState { SellerTx = mlst });
+                            break;
+                        case MutualLockBuyerTransaction mlbt:
+                            var mutualState = snapshot.MutualLockStates.TryGet(mlbt.MutualLockScriptHash);
+                            if (mutualState.IsNotNull())
+                            {
+                                mutualState.Locked = true;
+                                mutualState.BuyerTxHash = mlbt.Hash;
+                                snapshot.MutualLockStates.GetAndChange(mlbt.MutualLockScriptHash, () => mutualState);
                             }
                             break;
                         case BookTransaction tx_book:

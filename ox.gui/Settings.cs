@@ -34,15 +34,15 @@ namespace OX
     internal class PathsSettings
     {
         public string Chain { get; }
-        public string BizChain { get; }
+         
         public string Index { get; }
         public string CertCache { get; }
 
         public PathsSettings(IConfigurationSection section)
         {
-            this.Chain = string.Format(section.GetSection("Chain").Value, Message.Magic.ToString("X8"));
-            this.BizChain = string.Format(section.GetSection("BizChain").Value, Message.Magic.ToString("X8"));
-            this.Index = string.Format(section.GetSection("Index").Value, Message.Magic.ToString("X8"));
+            this.Chain = $"c://oxtablet/blockchain_data/Magic_{Message.Magic.ToString("X8")}";
+
+            this.Index = $"c://oxtablet/GUI_data/Index_{Message.Magic.ToString("X8")}";
             this.CertCache = section.GetSection("CertCache").Value;
         }
     }
