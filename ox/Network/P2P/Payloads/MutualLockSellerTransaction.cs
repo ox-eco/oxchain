@@ -107,6 +107,7 @@ namespace OX.Network.P2P.Payloads
         {
             if (this.LockContract != Blockchain.MutualLockContractScriptHash) return false;
             if (this.Outputs.Length == 0 || this.Outputs.Length > 2) return false;
+            if (this.Seller.Equals(this.Buyer)) return false;
             var contract = GetContract();
             if (this.Outputs.Count(m => m.ScriptHash == contract.ScriptHash) != 1) return false;
             var output = this.Outputs.FirstOrDefault(m => m.ScriptHash == contract.ScriptHash && m.AssetId == this.AssetId && m.Value == Fixed8.One * this.Amount * 2);
