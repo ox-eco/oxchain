@@ -29,6 +29,15 @@ namespace OX.Cryptography
             }
             return key.CreateRandomApproveHash(pk, out approveCode, out approveSource);
         }
+        public static UInt256 CreateRandomApproveSource()
+        {
+            var pk = new byte[32];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(pk);
+            }
+            return new UInt256(Crypto.Default.Hash256(Crypto.Default.Hash256(pk)));
+        }
         public static UInt256 CreateRandomApproveHash(this KeyPair key, byte[] randomKey, out UInt256 approveCode, out UInt256 approveSource)
         {
             approveSource = new UInt256(Crypto.Default.Hash256(Crypto.Default.Hash256(randomKey)));
