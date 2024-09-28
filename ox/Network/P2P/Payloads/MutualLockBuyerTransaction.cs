@@ -66,9 +66,10 @@ namespace OX.Network.P2P.Payloads
             if (mutualLockState.Locked) return false;
             if (!mutualLockState.SellerTx.Buyer.Equals(this.Buyer)) return false;
             if (mutualLockState.SellerTx.Seller.Equals(this.Buyer)) return false;
-            var contract = mutualLockState.SellerTx.GetContract();
-            if (this.Outputs.Count(m => m.ScriptHash == contract.ScriptHash) != 1) return false;
-            var output = this.Outputs.FirstOrDefault(m => m.ScriptHash == contract.ScriptHash && m.AssetId == mutualLockState.SellerTx.AssetId && m.Value == Fixed8.One * mutualLockState.SellerTx.Amount);
+            var sh = mutualLockState.SellerTx.GetContract().ScriptHash;
+            if (sh != this.MutualLockScriptHash) return false;
+            if (this.Outputs.Count(m => m.ScriptHash == sh) != 1) return false;
+            var output = this.Outputs.FirstOrDefault(m => m.ScriptHash == sh && m.AssetId == mutualLockState.SellerTx.AssetId && m.Value == Fixed8.One * mutualLockState.SellerTx.Amount);
             if (output.IsNull()) return false;
             return base.Verify(snapshot, mempool);
         }
