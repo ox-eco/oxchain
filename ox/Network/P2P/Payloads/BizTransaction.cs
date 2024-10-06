@@ -9,8 +9,8 @@ namespace OX.Network.P2P.Payloads
     {
         public const int FreeDataSize = 64;
         public UInt160 BizScriptHash;
-        public byte Flag { get; protected set; }
-      
+        public byte Flag { get; set; }
+
         public override int Size => base.Size + BizScriptHash.Size + sizeof(byte);
 
         public BizTransaction(TransactionType type)
@@ -23,7 +23,7 @@ namespace OX.Network.P2P.Payloads
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             BizScriptHash = reader.ReadSerializable<UInt160>();
-            Flag =reader.ReadByte();
+            Flag = reader.ReadByte();
             DeserializeBizData(reader);
         }
         protected override void SerializeExclusiveData(BinaryWriter writer)
@@ -32,6 +32,6 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Flag);
             SerializeBizData(writer);
         }
-       
+
     }
 }
