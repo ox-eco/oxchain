@@ -37,7 +37,7 @@ namespace OX.Network.P2P.Payloads
         }
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
-            var ts = System.DateTime.Now.ToTimestamp();
+            var ts = System.DateTime.UtcNow.ToTimestamp();
             if (UTCLatest > 0)
             {
                 if (UTCLatest <=ts) return false;

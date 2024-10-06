@@ -14,7 +14,7 @@ namespace OX.Network.P2P.Payloads
         public AskTransaction()
             : base(TransactionType.AskTransaction)
         {
-            this.BizTxState = BizTransactionStatus.OnChain;
+            this.Flag = 0;
             this.MaxIndex = 0x00;
             this.MinIndex = 0x00;
             this.Inputs = new CoinReference[0];
@@ -36,15 +36,29 @@ namespace OX.Network.P2P.Payloads
         {
             if (!base.Verify(snapshot, mempool))
                 return false;
-            if (MaxIndex > 0)
+            if (Flag == 0)
             {
-                if (MaxIndex <= snapshot.Height) return false;
+                if (MaxIndex > 0)
+                {
+                    if (MaxIndex <= snapshot.Height) return false;
+                }
+                if (MinIndex > 0)
+                {
+                    if (MinIndex > snapshot.Height + 1) return false;
+                }
             }
-            if (MinIndex > 0)
+            else if (Flag == 1)
             {
-                if (MinIndex > snapshot.Height + 1) return false;
+                if (MaxIndex > 0)
+                {
+                    if (MaxIndex <= System.DateTime.UtcNow.ToTimestamp()) return false;
+                }
+                if (MinIndex > 0)
+                {
+                    if (MinIndex > System.DateTime.UtcNow.ToTimestamp() + 1) return false;
+                }
             }
-            if (!snapshot.VerifySlotValidator(this.BizScriptHash,out AccountState _,out Fixed8 _, out Fixed8 askFee)) return false;
+            if (!snapshot.VerifySlotValidator(this.BizScriptHash, out AccountState _, out Fixed8 _, out Fixed8 askFee)) return false;
             if (askFee == Fixed8.Zero) return true;
             var outputs = this.Outputs.Where(m => m.AssetId == Blockchain.OXC && m.ScriptHash.Equals(this.BizScriptHash));
             if (outputs.IsNullOrEmpty()) return false;

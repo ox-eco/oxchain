@@ -17,7 +17,7 @@ namespace OX.Network.P2P.Payloads
         public ReplyTransaction()
             : base(TransactionType.ReplyTransaction)
         {
-            this.BizTxState = BizTransactionStatus.OnChain;
+            this.Flag =0;
             this.To = UInt160.Zero;
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];

@@ -14,7 +14,7 @@ namespace OX.Network.P2P.Payloads
         public BillTransaction()
             : base(TransactionType.BillTransaction)
         {
-            this.BizTxState = BizTransactionStatus.OnChain;
+            this.Flag = 0;
             this.Inputs = new CoinReference[0];
             this.Outputs = new TransactionOutput[0];
             this.Attributes = new TransactionAttribute[0];

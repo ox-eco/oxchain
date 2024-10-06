@@ -9,9 +9,9 @@ namespace OX.Network.P2P.Payloads
     {
         public const int FreeDataSize = 64;
         public UInt160 BizScriptHash;
-        public BizTransactionStatus BizTxState { get; protected set; }
+        public byte Flag { get; protected set; }
       
-        public override int Size => base.Size + BizScriptHash.Size + sizeof(BizTransactionStatus);
+        public override int Size => base.Size + BizScriptHash.Size + sizeof(byte);
 
         public BizTransaction(TransactionType type)
             : base(type)
@@ -23,19 +23,15 @@ namespace OX.Network.P2P.Payloads
         protected override void DeserializeExclusiveData(BinaryReader reader)
         {
             BizScriptHash = reader.ReadSerializable<UInt160>();
-            BizTxState = (BizTransactionStatus)reader.ReadByte();
+            Flag =reader.ReadByte();
             DeserializeBizData(reader);
         }
         protected override void SerializeExclusiveData(BinaryWriter writer)
         {
             writer.Write(BizScriptHash);
-            writer.Write((byte)BizTxState);
+            writer.Write(Flag);
             SerializeBizData(writer);
         }
-        public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
-        {
-            if (BizTxState != BizTransactionStatus.OnChain) return false;
-            return base.Verify(snapshot, mempool);
-        }
+       
     }
 }
