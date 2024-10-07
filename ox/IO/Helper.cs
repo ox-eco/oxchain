@@ -11,7 +11,17 @@ namespace OX.IO
     public static class Helper
     {
         public const int GroupingSizeInBytes = 16;
+        public static bool TryAsSerializable<T>(this byte[] value, out T instance) where T : ISerializable, new()
+        {
+            instance = default(T);
+            try
+            {
+                instance = value.AsSerializable<T>();
+                return true;
+            }
+            catch { return false; }
 
+        }
         public static T AsSerializable<T>(this byte[] value, int start = 0) where T : ISerializable, new()
         {
             using (MemoryStream ms = new MemoryStream(value, start, value.Length - start, false))
