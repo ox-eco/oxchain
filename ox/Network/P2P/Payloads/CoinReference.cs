@@ -32,7 +32,28 @@ namespace OX.Network.P2P.Payloads
             if (!(obj is CoinReference)) return false;
             return Equals((CoinReference)obj);
         }
+        /// <summary>
+        /// Operator == returns true if left UIntBase is equals to right UIntBase
+        /// If any parameter is null, it returns false. If both are the same object, it returns true.
+        /// Example: UIntBase(02ff00ff00ff00ff00ff00ff00ff00ff00ff00a3) == UIntBase(02ff00ff00ff00ff00ff00ff00ff00ff00ff00a3) is true
+        /// </summary>
+        public static bool operator ==(CoinReference left, CoinReference right)
+        {
+            if (ReferenceEquals(left, right))
+                return true;
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                return false;
+            return left.Equals(right);
+        }
 
+        /// <summary>
+        /// Operator != returns true if left UIntBase is not equals to right UIntBase
+        /// Example: UIntBase(02ff00ff00ff00ff00ff00ff00ff00ff00ff00a3) != UIntBase(01ff00ff00ff00ff00ff00ff00ff00ff00ff00a4) is true
+        /// </summary>
+        public static bool operator !=(CoinReference left, CoinReference right)
+        {
+            return !(left == right);
+        }
         public override int GetHashCode()
         {
             return PrevHash.GetHashCode() + PrevIndex.GetHashCode();
