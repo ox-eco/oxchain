@@ -93,6 +93,7 @@ namespace OX.Network.P2P.Payloads
 
         public override bool Verify(Snapshot snapshot, IEnumerable<Transaction> mempool)
         {
+            if (!IsMustRelateTruster) return false;
             if (this.Targets.Length == 0) return false;
             if (this.Outputs.Length > 2) return false;
             var contract = GetContract();
