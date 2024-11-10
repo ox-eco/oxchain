@@ -40,9 +40,9 @@ namespace OX
 
         public PathsSettings(IConfigurationSection section)
         {
-            this.Chain = $"c://oxtablet/blockchain_data/Magic_{Message.Magic.ToString("X8")}";
+            this.Chain = $"c://ox-eco/blockchain_data/Magic_{Message.Magic.ToString("X8")}";
 
-            this.Index = $"c://oxtablet/GUI_data/Index_{Message.Magic.ToString("X8")}";
+            this.Index = $"c://ox-eco/GUI_data/Index_{Message.Magic.ToString("X8")}";
             this.CertCache = section.GetSection("CertCache").Value;
         }
     }
