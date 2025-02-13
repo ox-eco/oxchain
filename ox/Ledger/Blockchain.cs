@@ -45,7 +45,7 @@ namespace OX.Ledger
         public static UInt160 EthereumMapContractScriptHash = UInt160.Parse("0x508c5bd9a4a5fd62ea2b0d1c853aff2cec5d5ea7");
         public static UInt160 FlashMessageContractScriptHash = UInt160.Parse("0xdb846839cfcfbbd25af6f19478974360a9396989");
         public static UInt160 MutualLockContractScriptHash = UInt160.Parse("0xc2e87efec3a16b5f5f1c4a1dbea2ed2b6072a4df");
-        static readonly uint[] genesisGenerationAmount = { 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+        static readonly uint[] genesisGenerationAmount = { 800, 700, 600, 500, 400, 300, 200, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
         public static uint[] GenerationBonusAmount => genesisGenerationAmount;
         public static readonly TimeSpan TimePerBlock = TimeSpan.FromSeconds(SecondsPerBlock);
         public static readonly ECPoint[] StandbyValidators = ProtocolSettings.Default.StandbyValidators.OfType<string>().Select(p => ECPoint.DecodePoint(p.HexToBytes(), ECCurve.Secp256r1)).ToArray();
@@ -113,12 +113,6 @@ namespace OX.Ledger
                         {
                             AssetId = OXS_Token.Hash,
                             Value = OXS_Token.Amount,
-                            ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
-                        },
-                        new TransactionOutput
-                        {
-                            AssetId = OXC_Token.Hash,
-                            Value = Fixed8.One* 40000000,
                             ScriptHash = Contract.CreateMultiSigRedeemScript(StandbyValidators.Length / 2 + 1, StandbyValidators).ToScriptHash()
                         }
                     },
