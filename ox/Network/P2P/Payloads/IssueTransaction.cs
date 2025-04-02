@@ -54,7 +54,9 @@ namespace OX.Network.P2P.Payloads
                 AssetState asset = snapshot.Assets.TryGet(r.AssetId);
                 if (asset == null) return false;
                 if (asset.Amount < Fixed8.Zero) continue;
-                Fixed8 quantity_issued = asset.Available + mempool.OfType<IssueTransaction>().Where(p => p != this).SelectMany(p => p.Outputs).Where(p => p.AssetId == r.AssetId).Sum(p => p.Value);
+                var currentIssued = mempool.OfType<IssueTransaction>().Where(p => p != this).SelectMany(p => p.Outputs).Where(p => p.AssetId == r.AssetId).Sum(p => p.Value);
+                if (Fixed8.MaxValue - asset.Available < currentIssued) return false;
+                Fixed8 quantity_issued = asset.Available + currentIssued;
                 if (asset.Amount - quantity_issued < -r.Amount) return false;
             }
             return true;
