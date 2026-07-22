@@ -157,10 +157,10 @@ namespace OX.Cryptography.ECC
             else
             {
                 data = new byte[65];
-                byte[] yBytes = Y.Value.ToByteArray().Reverse().ToArray();
+                byte[] yBytes = Enumerable.Reverse(Y.Value.ToByteArray()).ToArray();
                 Buffer.BlockCopy(yBytes, 0, data, 65 - yBytes.Length, yBytes.Length);
             }
-            byte[] xBytes = X.Value.ToByteArray().Reverse().ToArray();
+            byte[] xBytes = Enumerable.Reverse(X.Value.ToByteArray()).ToArray();
             Buffer.BlockCopy(xBytes, 0, data, 33 - xBytes.Length, xBytes.Length);
             data[0] = commpressed ? Y.Value.IsEven ? (byte)0x02 : (byte)0x03 : (byte)0x04;
             return data;
@@ -393,7 +393,7 @@ namespace OX.Cryptography.ECC
                 throw new ArgumentException();
             if (p.IsInfinity)
                 return p;
-            BigInteger k = new BigInteger(n.Reverse().Concat(new byte[1]).ToArray());
+            BigInteger k = new BigInteger(Enumerable.Reverse(n).Concat(new byte[1]).ToArray());
             if (k.Sign == 0)
                 return p.Curve.Infinity;
             return Multiply(p, k);

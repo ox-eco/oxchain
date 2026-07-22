@@ -219,7 +219,7 @@ namespace OX.SmartContract
                 ContextItem item = ContextItems[ScriptHashes[i]];
                 using (ScriptBuilder sb = new ScriptBuilder())
                 {
-                    foreach (ContractParameter parameter in item.Parameters.Reverse())
+                    foreach (ContractParameter parameter in Enumerable.Reverse(item.Parameters))
                     {
                         sb.EmitPush(parameter);
                     }

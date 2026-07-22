@@ -25,8 +25,7 @@ namespace OX.Cryptography
             // Leading zero bytes get encoded as leading `1` characters
             int leadingZeroCount = input.TakeWhile(c => c == Alphabet[0]).Count();
             var leadingZeros = new byte[leadingZeroCount];
-            var bytesWithoutLeadingZeros = bi.ToByteArray()
-                .Reverse()// to big endian
+            var bytesWithoutLeadingZeros = Enumerable.Reverse(bi.ToByteArray())
                 .SkipWhile(b => b == 0);//strip sign byte
             return leadingZeros.Concat(bytesWithoutLeadingZeros).ToArray();
         }

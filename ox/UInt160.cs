@@ -80,7 +80,7 @@ namespace OX
                 value = value.Substring(2);
             if (value.Length != 40)
                 throw new FormatException();
-            return new UInt160(value.HexToBytes().Reverse().ToArray());
+            return new UInt160(Enumerable.Reverse(value.HexToBytes()).ToArray());
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace OX
                     result = null;
                     return false;
                 }
-            result = new UInt160(data.Reverse().ToArray());
+            result = new UInt160(Enumerable.Reverse(data).ToArray());
             return true;
         }
 

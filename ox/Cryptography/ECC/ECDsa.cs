@@ -26,7 +26,7 @@ namespace OX.Cryptography.ECC
         private BigInteger CalculateE(BigInteger n, byte[] message)
         {
             int messageBitLength = message.Length * 8;
-            BigInteger trunc = new BigInteger(message.Reverse().Concat(new byte[1]).ToArray());
+            BigInteger trunc = new BigInteger(Enumerable.Reverse(message).Concat(new byte[1]).ToArray());
             if (n.OXGetBitLength() < messageBitLength)
             {
                 trunc >>= messageBitLength - n.OXGetBitLength();
@@ -38,7 +38,7 @@ namespace OX.Cryptography.ECC
         {
             if (privateKey == null) throw new InvalidOperationException();
             BigInteger e = CalculateE(curve.N, message);
-            BigInteger d = new BigInteger(privateKey.Reverse().Concat(new byte[1]).ToArray());
+            BigInteger d = new BigInteger(Enumerable.Reverse(privateKey).Concat(new byte[1]).ToArray());
             BigInteger r, s;
             using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {

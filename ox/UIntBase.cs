@@ -134,7 +134,7 @@ namespace OX
         /// </summary>
         public override string ToString()
         {
-            return "0x" + data_bytes.Reverse().ToHexString();
+            return "0x" + Enumerable.Reverse(data_bytes).ToHexString();
         }
 
         /// <summary>

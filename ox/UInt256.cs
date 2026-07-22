@@ -81,7 +81,7 @@ namespace OX
                 s = s.Substring(2);
             if (s.Length != 64)
                 throw new FormatException();
-            return new UInt256(s.HexToBytes().Reverse().ToArray());
+            return new UInt256(Enumerable.Reverse(s.HexToBytes()).ToArray());
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace OX
                     result = null;
                     return false;
                 }
-            result = new UInt256(data.Reverse().ToArray());
+            result = new UInt256(Enumerable.Reverse(data).ToArray());
             return true;
         }
 

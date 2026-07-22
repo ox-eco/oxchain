@@ -35,7 +35,7 @@ namespace OX.Network.P2P.Payloads
             IPAddress address = new IPAddress(data).Unmap();
             data = reader.ReadBytes(2);
             if (data.Length != 2) throw new FormatException();
-            ushort port = data.Reverse().ToArray().ToUInt16(0);
+            ushort port = Enumerable.Reverse(data).ToArray().ToUInt16(0);
             EndPoint = new IPEndPoint(address, port);
         }
 
@@ -44,7 +44,7 @@ namespace OX.Network.P2P.Payloads
             writer.Write(Timestamp);
             writer.Write(Services);
             writer.Write(EndPoint.Address.MapToIPv6().GetAddressBytes());
-            writer.Write(BitConverter.GetBytes((ushort)EndPoint.Port).Reverse().ToArray());
+            writer.Write(Enumerable.Reverse(BitConverter.GetBytes((ushort)EndPoint.Port)).ToArray());
         }
     }
 }
