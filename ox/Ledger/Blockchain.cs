@@ -51,7 +51,6 @@ namespace OX.Ledger
         public static string[] StandbyValidatorAddress { get; private set; } = StandbyValidators.Select(m => Contract.CreateSignatureContract(m).Address).ToArray();
 #pragma warning disable CS0612
 
-
         public static readonly RegisterTransaction OXS_Token = new RegisterTransaction
         {
             AssetType = AssetType.GoverningToken,
