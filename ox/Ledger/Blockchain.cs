@@ -19,7 +19,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using static OX.Network.P2P.LocalNode;
-
 namespace OX.Ledger
 {
     public sealed class Blockchain : UntypedActor
@@ -51,6 +50,8 @@ namespace OX.Ledger
         public static readonly ECPoint[] StandbyValidators = ProtocolSettings.Default.StandbyValidators.OfType<string>().Select(p => ECPoint.DecodePoint(p.HexToBytes(), ECCurve.Secp256r1)).ToArray();
         public static string[] StandbyValidatorAddress { get; private set; } = StandbyValidators.Select(m => Contract.CreateSignatureContract(m).Address).ToArray();
 #pragma warning disable CS0612
+
+
         public static readonly RegisterTransaction OXS_Token = new RegisterTransaction
         {
             AssetType = AssetType.GoverningToken,
@@ -608,7 +609,7 @@ namespace OX.Ledger
                             if (out_prev.AssetId.Equals(OXS_Token.Hash) && account.Balances[out_prev.AssetId] < Blockchain.FlashMinOXCBalance)
                             {
                                 this.StatePool.TryRemoveAccount(out_prev.ScriptHash);
-                            }                           
+                            }
                         }
                     }
                     foreach (var coin in tx.References)
