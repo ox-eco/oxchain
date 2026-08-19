@@ -65,9 +65,12 @@ namespace OX.Ledger
         {
             foreach (var ats in snapshot.Accounts.Find().Select(m => m.Value))
             {
-                var balance = ats.GetBalance(Blockchain.OXS);
-                if (balance >= Blockchain.BappSlotRentOXS && ats.SlotState == SlotStatus.Freeze && ats.SlotExpire >= snapshot.Height)
-                    yield return ats;
+                if (ats.IsNotNull())
+                {
+                    var balance = ats.GetBalance(Blockchain.OXS);
+                    if (balance >= Blockchain.BappSlotRentOXS && ats.SlotState == SlotStatus.Freeze && ats.SlotExpire >= snapshot.Height)
+                        yield return ats;
+                }
             }
         }
     }
