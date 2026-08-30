@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Copyright>2015-2019 The OX Project</Copyright>
@@ -15,7 +15,7 @@
     <Description>OX Compiler for .NET</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <BaseOutputPath>C:\ox</BaseOutputPath>
   </PropertyGroup>
 
@@ -29,12 +29,12 @@
     <OutputType>Exe</OutputType>
     <PackageId>OX.OXN</PackageId>
     <PackAsTool>true</PackAsTool>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(SharedLibrary)' == true">
     <PackageId>OX.Compiler.MSIL</PackageId>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

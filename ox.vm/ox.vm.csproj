@@ -6,7 +6,7 @@
     <Description>OX.VM</Description>
     <Version>1.0.2</Version>
     <Authors>OX</Authors>
-	  <TargetFramework>net8.0</TargetFramework>
+	  <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>ox.vm</AssemblyName>
     <PackageId>OX.VM</PackageId>
     <PackageTags></PackageTags>
@@ -16,10 +16,9 @@
     <RootNamespace>OX.VM</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Nullable>warnings</Nullable>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>7.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>C:\ox</OutputPath>
