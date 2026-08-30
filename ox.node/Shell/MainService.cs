@@ -13,7 +13,7 @@ using OX.SmartContract;
 using OX.VM;
 using OX.Wallets;
 using OX.Wallets.NEP6;
-using OX.Wallets.SQLite;
+//using OX.Wallets.SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -90,7 +90,7 @@ namespace OX.Shell
                 case "start":
                     return OnStartCommand(args);
                 case "stop":
-                    return OnStopCommand(args);               
+                    return OnStopCommand(args);
                 case "upgrade":
                     return OnUpgradeCommand(args);
                 case "deploy":
@@ -504,14 +504,14 @@ namespace OX.Shell
             switch (Path.GetExtension(path))
             {
                 case ".db3":
-                    {
-                        Program.Wallet = UserWallet.Create(GetIndexer(), path, password);
-                        WalletAccount account = Program.Wallet.CreateAccount();
-                        Console.WriteLine($"address: {account.Address}");
-                        Console.WriteLine($" pubkey: {account.GetKey().PublicKey.EncodePoint(true).ToHexString()}");
-                        if (system.RpcServer != null)
-                            system.RpcServer.Wallet = Program.Wallet;
-                    }
+                    //{
+                    //    Program.Wallet = UserWallet.Create(GetIndexer(), path, password);
+                    //    WalletAccount account = Program.Wallet.CreateAccount();
+                    //    Console.WriteLine($"address: {account.Address}");
+                    //    Console.WriteLine($" pubkey: {account.GetKey().PublicKey.EncodePoint(true).ToHexString()}");
+                    //    if (system.RpcServer != null)
+                    //        system.RpcServer.Wallet = Program.Wallet;
+                    //}
                     break;
                 case ".json":
                     {
@@ -1408,51 +1408,51 @@ namespace OX.Shell
 
         private bool OnUpgradeWalletCommand(string[] args)
         {
-            if (args.Length < 3)
-            {
-                Console.WriteLine("error");
-                return true;
-            }
-            string path = args[2];
-            if (Path.GetExtension(path) != ".db3")
-            {
-                Console.WriteLine("Can't upgrade the wallet file.");
-                return true;
-            }
-            if (!File.Exists(path))
-            {
-                Console.WriteLine("File does not exist.");
-                return true;
-            }
-            string password = ReadUserInput("password", true);
-            if (password.Length == 0)
-            {
-                Console.WriteLine("cancelled");
-                return true;
-            }
-            string path_new = Path.ChangeExtension(path, ".json");
-            if (File.Exists(path_new))
-            {
-                Console.WriteLine($"File '{path_new}' already exists");
-                return true;
-            }
-            NEP6Wallet.Migrate(GetIndexer(), path_new, path, password).Save();
-            Console.WriteLine($"Wallet file upgrade complete. New wallet file has been auto-saved at: {path_new}");
+            //if (args.Length < 3)
+            //{
+            //    Console.WriteLine("error");
+            //    return true;
+            //}
+            //string path = args[2];
+            //if (Path.GetExtension(path) != ".db3")
+            //{
+            //    Console.WriteLine("Can't upgrade the wallet file.");
+            //    return true;
+            //}
+            //if (!File.Exists(path))
+            //{
+            //    Console.WriteLine("File does not exist.");
+            //    return true;
+            //}
+            //string password = ReadUserInput("password", true);
+            //if (password.Length == 0)
+            //{
+            //    Console.WriteLine("cancelled");
+            //    return true;
+            //}
+            //string path_new = Path.ChangeExtension(path, ".json");
+            //if (File.Exists(path_new))
+            //{
+            //    Console.WriteLine($"File '{path_new}' already exists");
+            //    return true;
+            //}
+            //NEP6Wallet.Migrate(GetIndexer(), path_new, path, password).Save();
+            //Console.WriteLine($"Wallet file upgrade complete. New wallet file has been auto-saved at: {path_new}");
             return true;
         }
 
         private static Wallet OpenWallet(WalletIndexer indexer, string path, string password)
         {
-            if (Path.GetExtension(path) == ".db3")
-            {
-                return UserWallet.Open(indexer, path, password);
-            }
-            else
-            {
-                NEP6Wallet nep6wallet = new NEP6Wallet(indexer, path);
-                nep6wallet.Unlock(password);
-                return nep6wallet;
-            }
+            //if (Path.GetExtension(path) == ".db3")
+            //{
+            //    //return UserWallet.Open(indexer, path, password);
+            //}
+            //else
+            //{
+            NEP6Wallet nep6wallet = new NEP6Wallet(indexer, path);
+            nep6wallet.Unlock(password);
+            return nep6wallet;
+            //}
         }
 
         private static void WriteLineWithoutFlicker(string message = "", int maxWidth = 80)
@@ -1462,6 +1462,6 @@ namespace OX.Shell
             if (spacesToErase < 0) spacesToErase = 0;
             Console.WriteLine(new string(' ', spacesToErase));
         }
-        
+
     }
 }

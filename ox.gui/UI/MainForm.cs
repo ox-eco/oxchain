@@ -1,5 +1,5 @@
 ﻿using Akka.Actor;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+//using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using OX.Cryptography;
 using OX.IO;
 using OX.IO.Actors;
@@ -12,7 +12,7 @@ using OX.SmartContract;
 using OX.VM;
 using OX.Wallets;
 using OX.Wallets.NEP6;
-using OX.Wallets.SQLite;
+//using OX.Wallets.SQLite;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -185,7 +185,7 @@ namespace OX.UI
                     }
                 Program.CurrentWallet.WalletTransaction += CurrentWallet_WalletTransaction;
             }
-            修改密码CToolStripMenuItem.Enabled = Program.CurrentWallet is UserWallet;
+            //修改密码CToolStripMenuItem.Enabled = Program.CurrentWallet is UserWallet;
             交易TToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             提取OXCCToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             signDataToolStripMenuItem.Enabled = Program.CurrentWallet != null;
@@ -496,74 +496,74 @@ namespace OX.UI
 
         private void 打开钱包数据库OToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenWalletDialog dialog = new OpenWalletDialog())
-            {
-                if (dialog.ShowDialog() != DialogResult.OK) return;
-                string path = dialog.WalletPath;
-                Wallet wallet;
-                if (Path.GetExtension(path) == ".db3")
-                {
-                    if (MessageBox.Show(LanHelper.LocalLanguage("Opening wallet files in older versions, update to newest format?Note: updated files cannot be openned by clients in older versions!"), LanHelper.LocalLanguage("Migrate Wallet"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
-                    {
-                        string path_old = path;
-                        path = Path.ChangeExtension(path_old, ".json");
-                        NEP6Wallet nep6wallet;
-                        try
-                        {
-                            nep6wallet = NEP6Wallet.Migrate(GetIndexer(), path, path_old, dialog.Password);
-                        }
-                        catch (CryptographicException)
-                        {
-                            MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
-                            return;
-                        }
-                        nep6wallet.Save();
-                        nep6wallet.Unlock(dialog.Password);
-                        wallet = nep6wallet;
-                        MessageBox.Show($"{LanHelper.LocalLanguage("Wallet file relocated. New wallet file has been saved at: ")}\n{path}");
-                    }
-                    else
-                    {
-                        try
-                        {
-                            wallet = UserWallet.Open(GetIndexer(), path, dialog.Password);
-                        }
-                        catch (CryptographicException)
-                        {
-                            MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
-                            return;
-                        }
-                    }
-                }
-                else
-                {
-                    NEP6Wallet nep6wallet = new NEP6Wallet(GetIndexer(), path);
-                    try
-                    {
-                        nep6wallet.Unlock(dialog.Password);
-                    }
-                    catch (CryptographicException)
-                    {
-                        MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
-                        return;
-                    }
-                    wallet = nep6wallet;
-                }
-                ChangeWallet(wallet);
-                Settings.Default.LastWalletPath = path;
-                Settings.Default.Save();
-            }
+            //using (OpenWalletDialog dialog = new OpenWalletDialog())
+            //{
+            //    if (dialog.ShowDialog() != DialogResult.OK) return;
+            //    string path = dialog.WalletPath;
+            //    Wallet wallet;
+            //    if (Path.GetExtension(path) == ".db3")
+            //    {
+            //        if (MessageBox.Show(LanHelper.LocalLanguage("Opening wallet files in older versions, update to newest format?Note: updated files cannot be openned by clients in older versions!"), LanHelper.LocalLanguage("Migrate Wallet"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+            //        {
+            //            string path_old = path;
+            //            path = Path.ChangeExtension(path_old, ".json");
+            //            NEP6Wallet nep6wallet;
+            //            try
+            //            {
+            //                nep6wallet = NEP6Wallet.Migrate(GetIndexer(), path, path_old, dialog.Password);
+            //            }
+            //            catch (CryptographicException)
+            //            {
+            //                MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
+            //                return;
+            //            }
+            //            nep6wallet.Save();
+            //            nep6wallet.Unlock(dialog.Password);
+            //            wallet = nep6wallet;
+            //            MessageBox.Show($"{LanHelper.LocalLanguage("Wallet file relocated. New wallet file has been saved at: ")}\n{path}");
+            //        }
+            //        else
+            //        {
+            //            try
+            //            {
+            //                wallet = UserWallet.Open(GetIndexer(), path, dialog.Password);
+            //            }
+            //            catch (CryptographicException)
+            //            {
+            //                MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
+            //                return;
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        NEP6Wallet nep6wallet = new NEP6Wallet(GetIndexer(), path);
+            //        try
+            //        {
+            //            nep6wallet.Unlock(dialog.Password);
+            //        }
+            //        catch (CryptographicException)
+            //        {
+            //            MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
+            //            return;
+            //        }
+            //        wallet = nep6wallet;
+            //    }
+            //    ChangeWallet(wallet);
+            //    Settings.Default.LastWalletPath = path;
+            //    Settings.Default.Save();
+            //}
         }
 
         private void 修改密码CToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (ChangePasswordDialog dialog = new ChangePasswordDialog())
             {
-                if (dialog.ShowDialog() != DialogResult.OK) return;
-                if (((UserWallet)Program.CurrentWallet).ChangePassword(dialog.OldPassword, dialog.NewPassword))
-                    MessageBox.Show(LanHelper.LocalLanguage("Change password successful."));
-                else
-                    MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
+                //if (dialog.ShowDialog() != DialogResult.OK) return;
+                //if (((UserWallet)Program.CurrentWallet).ChangePassword(dialog.OldPassword, dialog.NewPassword))
+                //    MessageBox.Show(LanHelper.LocalLanguage("Change password successful."));
+                //else
+                //    MessageBox.Show(LanHelper.LocalLanguage("Password Incorrect"));
             }
         }
 

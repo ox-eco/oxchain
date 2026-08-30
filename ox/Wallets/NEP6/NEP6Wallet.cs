@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using UserWallet = OX.Wallets.SQLite.UserWallet;
+//using UserWallet = OX.Wallets.SQLite.UserWallet;
 
 namespace OX.Wallets.NEP6
 {
@@ -480,21 +480,21 @@ namespace OX.Wallets.NEP6
             password = null;
         }
 
-        public static NEP6Wallet Migrate(WalletIndexer indexer, string path, string db3path, string password)
-        {
-            using (UserWallet wallet_old = UserWallet.Open(indexer, db3path, password))
-            {
-                NEP6Wallet wallet_new = new NEP6Wallet(indexer, path, wallet_old.Name);
-                using (wallet_new.Unlock(password))
-                {
-                    foreach (WalletAccount account in wallet_old.GetAccounts())
-                    {
-                        wallet_new.CreateAccount(account.Contract, account.GetKey());
-                    }
-                }
-                return wallet_new;
-            }
-        }
+        //public static NEP6Wallet Migrate(WalletIndexer indexer, string path, string db3path, string password)
+        //{
+        //    using (UserWallet wallet_old = UserWallet.Open(indexer, db3path, password))
+        //    {
+        //        NEP6Wallet wallet_new = new NEP6Wallet(indexer, path, wallet_old.Name);
+        //        using (wallet_new.Unlock(password))
+        //        {
+        //            foreach (WalletAccount account in wallet_old.GetAccounts())
+        //            {
+        //                wallet_new.CreateAccount(account.Contract, account.GetKey());
+        //            }
+        //        }
+        //        return wallet_new;
+        //    }
+        //}
 
         public virtual void Save()
         {

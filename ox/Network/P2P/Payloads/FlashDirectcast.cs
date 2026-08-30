@@ -18,7 +18,6 @@ using Nethereum.Signer;
 using Nethereum.Signer.Crypto;
 using Nethereum.Hex.HexConvertors.Extensions;
 using System.Runtime.CompilerServices;
-using Microsoft.EntityFrameworkCore.Metadata;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OX.Network.P2P.Payloads

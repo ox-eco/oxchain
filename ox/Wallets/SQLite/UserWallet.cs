@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OX.Cryptography;
+﻿using OX.Cryptography;
 using OX.IO;
 using OX.Ledger;
 using OX.Network.P2P.Payloads;
