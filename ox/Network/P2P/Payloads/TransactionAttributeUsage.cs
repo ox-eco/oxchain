@@ -35,7 +35,7 @@
         Remark2 = 0xf2,
         Remark3 = 0xf3,
         Remark4 = 0xf4,
-        AgentTip = 0xf5,
+        EthScriptHash = 0xf5,
         Tip1 = 0xf6,
         Tip2 = 0xf7,
         Tip3 = 0xf8,

@@ -20,7 +20,7 @@ namespace OX.Network.P2P.Payloads
                 return AttributesFee + OutputFee;
             }
         }
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage != TransactionAttributeUsage.EthScriptHash && m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => !(Outputs.All(p => p.AssetId == Blockchain.OXS_Token.Hash || p.AssetId == Blockchain.OXC_Token.Hash));
         public IssueTransaction()
             : base(TransactionType.IssueTransaction)

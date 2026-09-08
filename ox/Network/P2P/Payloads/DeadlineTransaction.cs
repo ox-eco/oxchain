@@ -15,7 +15,7 @@ namespace OX.Network.P2P.Payloads
         public uint UTCEarliest;
         public override int Size => base.Size + sizeof(uint) + sizeof(uint);
         public override Fixed8 SystemFee => AttributesFee + OutputFee;
-        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
+        public Fixed8 AttributesFee => Fixed8.One * this.Attributes.Where(m => m.Usage != TransactionAttributeUsage.EthScriptHash && m.Usage >= TransactionAttributeUsage.Remark1 && m.Usage < TransactionAttributeUsage.EthSignature && m.Data.GetVarSize() > 8).Count();
         public override bool NeedOutputFee => true;
         public DeadlineTransaction()
             : base(TransactionType.DeadlineTransaction)
